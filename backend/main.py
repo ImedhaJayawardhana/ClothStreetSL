@@ -11,6 +11,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def root():
     return {"status": "ok", "message": "ClothStreet API is running"}
