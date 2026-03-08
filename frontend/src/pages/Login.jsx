@@ -19,7 +19,7 @@ export default function Login() {
         try {
             await login(email, password);
             navigate('/');
-        } catch (_err) {
+        } catch {
             setError('Failed to login. Check your email and password.');
         }
         setLoading(false);
@@ -31,7 +31,7 @@ export default function Login() {
         try {
             await loginWithGoogle();
             navigate('/');
-        } catch (_err) {
+        } catch {
             setError('Failed to login with Google.');
         }
         setLoading(false);
