@@ -24,6 +24,7 @@ app.include_router(tailors_router, prefix="/tailors", tags=["Tailors"])
 app.include_router(fabrics_router, prefix="/fabrics", tags=["Fabrics"])
 app.include_router(quotations_router, prefix="/quotations", tags=["Quotations"])
 
+
 @app.get("/")
 def root():
     return {"message": "ClothStreetSL API is running"}

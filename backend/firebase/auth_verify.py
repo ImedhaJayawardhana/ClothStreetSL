@@ -3,8 +3,14 @@ from fastapi import Header, HTTPException
 
 
 def verify_token(authorization: str = Header(...)) -> dict:
+    """
+    FastAPI dependency — extracts and verifies Firebase Bearer token.
+    Returns the decoded token dict containing uid, email, etc.
+    """
     if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authorization header format")
+        raise HTTPException(
+            status_code=401, detail="Invalid authorization header format"
+        )
 
     token = authorization.split("Bearer ")[1]
 

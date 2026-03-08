@@ -9,14 +9,16 @@ router = APIRouter()
 @router.post("")
 def create_tailor(profile: TailorProfile, decoded_token: dict = Depends(verify_token)):
     uid = decoded_token["uid"]
-    db.collection("tailors").document(uid).set({
-        "uid": uid,
-        "name": profile.name,
-        "skills": profile.skills,
-        "location": profile.location,
-        "price_range": profile.price_range,
-        "availability": profile.availability,
-    })
+    db.collection("tailors").document(uid).set(
+        {
+            "uid": uid,
+            "name": profile.name,
+            "skills": profile.skills,
+            "location": profile.location,
+            "price_range": profile.price_range,
+            "availability": profile.availability,
+        }
+    )
     return {"message": "Tailor profile created", "uid": uid}
 
 
@@ -35,10 +37,16 @@ def get_tailor(tailor_id: str):
 
 
 @router.patch("/{tailor_id}")
-def update_tailor(tailor_id: str, updates: TailorProfileUpdate, decoded_token: dict = Depends(verify_token)):
+def update_tailor(
+    tailor_id: str,
+    updates: TailorProfileUpdate,
+    decoded_token: dict = Depends(verify_token),
+):
     uid = decoded_token["uid"]
     if uid != tailor_id:
-        raise HTTPException(status_code=403, detail="You can only update your own profile")
+        raise HTTPException(
+            status_code=403, detail="You can only update your own profile"
+        )
     doc = db.collection("tailors").document(tailor_id).get()
     if not doc.exists:
         raise HTTPException(status_code=404, detail="Tailor not found")

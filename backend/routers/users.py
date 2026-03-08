@@ -9,12 +9,14 @@ router = APIRouter()
 @router.post("/register")
 def register_user(user: User, decoded_token: dict = Depends(verify_token)):
     uid = decoded_token["uid"]
-    db.collection("users").document(uid).set({
-        "uid": uid,
-        "email": user.email,
-        "name": user.name,
-        "role": user.role,
-    })
+    db.collection("users").document(uid).set(
+        {
+            "uid": uid,
+            "email": user.email,
+            "name": user.name,
+            "role": user.role,
+        }
+    )
     return {"message": "User registered successfully", "uid": uid}
 
 
