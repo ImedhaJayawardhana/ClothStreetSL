@@ -25,8 +25,8 @@ export default function SignIn() {
         try {
             await register(name, email, password, role);
             navigate('/');
-        } catch (_err) {
-            console.log("error")
+        } catch {
+            setError('Failed to create account. Please try again.');
         }
         setLoading(false);
     }
@@ -37,7 +37,7 @@ export default function SignIn() {
         try {
             await loginWithGoogle(role);
             navigate('/');
-        } catch {
+        } catch (err) {
             setError(err.message || 'Failed to sign in with Google.');
         }
         setLoading(false);
