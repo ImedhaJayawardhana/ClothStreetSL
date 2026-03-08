@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+
 from firebase.admin import db
 from firebase.auth_verify import verify_token
 from models.schemas import Quotation, QuotationStatusUpdate
@@ -25,9 +26,7 @@ def create_quotation(quotation: Quotation, decoded_token: dict = Depends(verify_
 @router.get("/my")
 def get_my_quotations(decoded_token: dict = Depends(verify_token)):
     uid = decoded_token["uid"]
-    as_customer = (
-        db.collection("quotations").where("customer_id", "==", uid).stream()
-    )
+    as_customer = db.collection("quotations").where("customer_id", "==", uid).stream()
     as_tailor = db.collection("quotations").where("tailor_id", "==", uid).stream()
     results = []
     seen_ids = set()

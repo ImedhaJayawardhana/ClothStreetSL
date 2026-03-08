@@ -1,80 +1,30 @@
-from pydantic import BaseModel
-from typing import Literal, Optional, List
-from datetime import datetime
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from routers.users import router as users_router
+from routers.tailors import router as tailors_router
+from routers.fabrics import router as fabrics_router
+from routers.quotations import router as quotations_router
+
+app = FastAPI(
+    title="ClothStreet API",
+    description="Backend API for ClothStreetSL — a Sri Lankan fashion marketplace",
+    version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(users_router, prefix="/users", tags=["Users"])
+app.include_router(tailors_router, prefix="/tailors", tags=["Tailors"])
+app.include_router(fabrics_router, prefix="/fabrics", tags=["Fabrics"])
+app.include_router(quotations_router, prefix="/quotations", tags=["Quotations"])
 
 
-class User(BaseModel):
-    uid: str
-    email: str
-    name: str
-    role: Literal["customer", "tailor", "designer", "seller"]
-
-
-class TailorProfile(BaseModel):
-    uid: str
-    name: str
-    skills: List[str]
-    location: str
-    price_range: str
-    availability: bool
-
-
-class TailorProfileUpdate(BaseModel):
-    name: Optional[str] = None
-    skills: Optional[List[str]] = None
-    location: Optional[str] = None
-    price_range: Optional[str] = None
-    availability: Optional[bool] = None
-
-
-class DesignerProfile(BaseModel):
-    uid: str
-    name: str
-    style: str
-    portfolio_url: Optional[str] = None
-    price_range: str
-
-
-class DesignerProfileUpdate(BaseModel):
-    name: Optional[str] = None
-    style: Optional[str] = None
-    portfolio_url: Optional[str] = None
-    price_range: Optional[str] = None
-
-
-class Fabric(BaseModel):
-    name: str
-    type: str
-    color: str
-    price: float
-    stock: int
-    supplier_id: str
-
-
-class FabricUpdate(BaseModel):
-    name: Optional[str] = None
-    type: Optional[str] = None
-    color: Optional[str] = None
-    price: Optional[float] = None
-    stock: Optional[int] = None
-
-
-class Quotation(BaseModel):
-    customer_id: str
-    tailor_id: str
-    fabric_id: str
-    description: str
-    status: Literal["pending", "accepted", "completed"] = "pending"
-    price: float
-
-
-class QuotationStatusUpdate(BaseModel):
-    status: Literal["pending", "accepted", "completed"]
-
-
-class Order(BaseModel):
-    customer_id: str
-    items: List[dict]
-    total_price: float
-    status: Literal["pending", "processing", "completed", "cancelled"] = "pending"
-    created_at: Optional[datetime] = None
+@app.get("/")
+def root():
+    return {"message": "ClothStreetSL API is running"}
