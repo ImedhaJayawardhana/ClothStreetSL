@@ -260,7 +260,93 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============ MORE SECTIONS COMING (Parts 4–6) ============ */}
+
+      {/* ============ BUILT FOR INDUSTRY SECTION ============ */}
+      <section className="industry-section">
+        <div className="industry-container">
+          {/* Header */}
+          <div className="industry-header">
+            <span className="industry-label">Why Choose Us</span>
+            <h2 className="industry-title">Built for Sri Lanka's Textile Industry</h2>
+            <p className="industry-subtitle">
+              Everything you need to source, produce, and track your textile orders in one secure, unified platform.
+            </p>
+          </div>
+
+          {/* 4 Feature Cards */}
+          <div className="industry-grid">
+            <div className="industry-card">
+              <div className="industry-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><polyline points="16 11 18 13 22 9" />
+                </svg>
+              </div>
+              <h3 className="industry-card-title">Transparent Matching</h3>
+              <p className="industry-card-text">
+                Find exactly what you need with our AI-powered matching system that connects you with the right suppliers and tailors.
+              </p>
+            </div>
+
+            <div className="industry-card">
+              <div className="industry-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                </svg>
+              </div>
+              <h3 className="industry-card-title">Verified Network</h3>
+              <p className="industry-card-text">
+                Every supplier and artisan in our ecosystem is strictly vetted to ensure premium quality and unparalleled reliability.
+              </p>
+            </div>
+
+            <div className="industry-card">
+              <div className="industry-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+              </div>
+              <h3 className="industry-card-title">End-to-End Coverage</h3>
+              <p className="industry-card-text">
+                From discovering raw fabric to the final stitch of your custom garment — manage the entire lifecycle here.
+              </p>
+            </div>
+
+            <div className="industry-card">
+              <div className="industry-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </div>
+              <h3 className="industry-card-title">Secure & Efficient Workflow</h3>
+              <p className="industry-card-text">
+                Protect your transactions and manage orders with milestone tracking, secure payments, and instant notifications.
+              </p>
+            </div>
+          </div>
+
+          {/* Stats Row */}
+          <div className="industry-stats">
+            <div className="industry-stat">
+              <div className="industry-stat-val">500<span className="accent">+</span></div>
+              <div className="industry-stat-label">Verified Suppliers</div>
+            </div>
+            <div className="industry-stat">
+              <div className="industry-stat-val">1,200<span className="accent">+</span></div>
+              <div className="industry-stat-label">Skilled Tailors</div>
+            </div>
+            <div className="industry-stat">
+              <div className="industry-stat-val">10K<span className="accent">+</span></div>
+              <div className="industry-stat-label">Orders Processed</div>
+            </div>
+            <div className="industry-stat">
+              <div className="industry-stat-val">98<span className="accent">%</span></div>
+              <div className="industry-stat-label">Success Rate</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ MORE SECTIONS COMING (Parts 5–6) ============ */}
     </div>
   );
 }
