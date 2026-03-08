@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import heroImg from "../assets/textile-hero-bg.png";
+import craftImg from "../assets/craftsperson-bg.png";
 import "./Home.css";
 
 export default function Home() {
@@ -173,7 +174,93 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============ MORE SECTIONS COMING (Parts 3–6) ============ */}
+      {/* ============ FIND CRAFTSPERSON SECTION ============ */}
+      <section className="craft-section">
+        <div className="craft-container">
+          {/* Left — Image */}
+          <div className="craft-image-col">
+            <div className="craft-image-wrap">
+              <img src={craftImg} alt="Premium Sri Lankan textiles" className="craft-image" />
+              {/* Floating profile card */}
+              <div className="craft-profile-card">
+                <div className="craft-profile-avatar">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="craft-profile-name">Kumara S.</p>
+                  <p className="craft-profile-role">Master Tailor · Colombo</p>
+                </div>
+                <div className="craft-profile-rating">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15" strokeWidth="1">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                  <span>4.9</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right — Content */}
+          <div className="craft-content-col">
+            <span className="craft-label">Expert Craftspeople</span>
+            <h2 className="craft-title">
+              Find the Perfect<br />
+              Craftsperson for Your<br />
+              Vision
+            </h2>
+
+            {/* Feature List */}
+            <div className="craft-features">
+              <div className="craft-feature">
+                <div className="craft-feature-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="craft-feature-title">Verified Artisans</p>
+                  <p className="craft-feature-text">Every craftsperson is vetted for skill, reliability, and quality of work before joining our platform.</p>
+                </div>
+              </div>
+
+              <div className="craft-feature">
+                <div className="craft-feature-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="18" height="18" x="3" y="3" rx="2" /><path d="M3 9h18" /><path d="M9 21V9" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="craft-feature-title">Portfolio Reviews</p>
+                  <p className="craft-feature-text">Browse detailed portfolios with photos of past work, specializations, and customer reviews.</p>
+                </div>
+              </div>
+
+              <div className="craft-feature">
+                <div className="craft-feature-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="craft-feature-title">Direct Communication</p>
+                  <p className="craft-feature-text">Chat directly with tailors and designers to discuss your requirements before placing an order.</p>
+                </div>
+              </div>
+            </div>
+
+            <Link to="/tailors" className="craft-cta">
+              Browse Artisans
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ MORE SECTIONS COMING (Parts 4–6) ============ */}
     </div>
   );
 }
