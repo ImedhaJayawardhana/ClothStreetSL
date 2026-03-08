@@ -346,7 +346,102 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============ MORE SECTIONS COMING (Parts 5–6) ============ */}
+
+      {/* ============ TESTIMONIALS SECTION ============ */}
+      <section className="testimonials-section">
+        <div className="testimonials-container">
+          <div className="testimonials-header">
+            <span className="testimonials-label">Customer Success</span>
+            <h2 className="testimonials-title">Trusted by Thousands</h2>
+            <p className="testimonials-subtitle">
+              Hear what tailors, designers, and fabric suppliers across Sri Lanka have to say about ClothStreet.
+            </p>
+          </div>
+
+          <div className="testimonials-grid">
+            <div className="testimonial-card">
+              <div className="testimonial-stars">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+              </div>
+              <p className="testimonial-text">
+                "ClothStreet completely transformed how I source materials. The quality of fabrics from verified suppliers is unmatched, and tracking my orders has never been easier."
+              </p>
+              <div className="testimonial-author">
+                <div className="testimonial-avatar">P</div>
+                <div>
+                  <h4 className="testimonial-name">Priyanka Fernando</h4>
+                  <p className="testimonial-role">Fashion Designer · Kandy</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="testimonial-card">
+              <div className="testimonial-stars">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+              </div>
+              <p className="testimonial-text">
+                "As a tailor, getting a steady stream of verified customers was challenging. Now, I have clients booking months in advance. Truly the best platform for our industry."
+              </p>
+              <div className="testimonial-author">
+                <div className="testimonial-avatar">S</div>
+                <div>
+                  <h4 className="testimonial-name">Sunil Perera</h4>
+                  <p className="testimonial-role">Master Tailor · Colombo</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="testimonial-card">
+              <div className="testimonial-stars">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#facc15" stroke="#facc15"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+              </div>
+              <p className="testimonial-text">
+                "We set up our fabric supply store here and saw sales jump within the first week. The platform handles all the logistics and payments, letting us focus on the craft."
+              </p>
+              <div className="testimonial-author">
+                <div className="testimonial-avatar avatar-blue">A</div>
+                <div>
+                  <h4 className="testimonial-name">Aruni Jayawardena</h4>
+                  <p className="testimonial-role">Fabric Supplier · Matara</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ CTA BANNER SECTION ============ */}
+      <section className="cta-banner-section">
+        <div className="cta-banner-container">
+          <div className="cta-banner-content">
+            <h2>Ready to Transform Your Textile Business?</h2>
+            <p>Join thousands of suppliers, tailors, and designers who are already growing with ClothStreet.</p>
+            <div className="cta-banner-actions">
+              <Link to="/register" className="btn-banner-primary">
+                Get Started Free
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+                </svg>
+              </Link>
+              <Link to="/login" className="btn-banner-outline">
+                Already a member? Login
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

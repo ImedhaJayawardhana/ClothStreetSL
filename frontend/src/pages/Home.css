@@ -716,7 +716,225 @@
   font-weight: 500;
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== TESTIMONIALS SECTION ===== */
+.testimonials-section {
+  padding: 100px 24px;
+  background: #f8f9fb;
+}
+
+.testimonials-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.testimonials-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.testimonials-label {
+  display: inline-block;
+  padding: 5px 16px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #6366f1;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.testimonials-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 16px;
+  letter-spacing: -0.02em;
+}
+
+.testimonials-subtitle {
+  font-size: 1.05rem;
+  color: #6b7280;
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.testimonial-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 36px 32px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
+}
+
+.testimonial-stars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.testimonial-text {
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.7;
+  margin: 0 0 32px;
+  flex: 1;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: auto;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 24px;
+}
+
+.testimonial-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.avatar-blue {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+}
+
+.testimonial-name {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.testimonial-role {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* ===== CTA BANNER SECTION ===== */
+.cta-banner-section {
+  padding: 80px 24px;
+  background: #ffffff;
+}
+
+.cta-banner-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.cta-banner-content {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  border-radius: 24px;
+  padding: 64px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(109, 40, 217, 0.3);
+}
+
+.cta-banner-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAlMjAwTDAlMjAyMEwyMCUyMDIwTDIwJTIwMFoiIGZpbGw9Im5vbmUiLz48Y2lyY2xlIGN4PSIyIiBjeT0iMiIgcj0iMiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA3KSIvPjwvc3ZnPg==') repeat;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.cta-banner-content h2 {
+  position: relative;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 20px;
+  letter-spacing: -0.02em;
+}
+
+.cta-banner-content p {
+  position: relative;
+  font-size: 1.15rem;
+  color: rgba(237, 233, 254, 0.9);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.cta-banner-actions {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-banner-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #6d28d9;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.btn-banner-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  background: #f8fafc;
+}
+
+.btn-banner-outline {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.btn-banner-outline:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
 @media (max-width: 1024px) {
   .industry-grid {
     grid-template-columns: repeat(2, 1fr);
