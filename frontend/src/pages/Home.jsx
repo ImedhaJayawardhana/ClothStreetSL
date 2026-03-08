@@ -113,7 +113,67 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============ MORE SECTIONS COMING (Parts 2–6) ============ */}
+      {/* ============ HOW IT WORKS SECTION ============ */}
+      <section className="hiw-section">
+        <div className="hiw-container">
+          {/* Section Header */}
+          <div className="hiw-header">
+            <span className="hiw-label">Easy Process</span>
+            <h2 className="hiw-title">How It Works</h2>
+            <p className="hiw-subtitle">
+              From finding the perfect fabric to getting your custom outfit — our platform
+              makes every step seamless, transparent, and delightful.
+            </p>
+          </div>
+
+          {/* Step Cards */}
+          <div className="hiw-grid">
+            {/* Step 1 */}
+            <div className="hiw-card">
+              <div className="hiw-step-number">1</div>
+              <div className="hiw-icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" />
+                </svg>
+              </div>
+              <h3 className="hiw-card-title">Browse & Select</h3>
+              <p className="hiw-card-text">
+                Explore thousands of premium fabrics from verified Sri Lankan suppliers. Filter by material, color, and price.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="hiw-card hiw-card-featured">
+              <div className="hiw-step-number">2</div>
+              <div className="hiw-icon-wrap hiw-icon-featured">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><line x1="20" x2="8.12" y1="4" y2="15.88" /><line x1="14.47" x2="20" y1="14.48" y2="20" /><line x1="8.12" x2="12" y1="8.12" y2="12" />
+                </svg>
+              </div>
+              <h3 className="hiw-card-title">Find Your Craftsperson</h3>
+              <p className="hiw-card-text">
+                Connect with skilled tailors and designers rated by the community. View portfolios, reviews, and pricing.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="hiw-card">
+              <div className="hiw-step-number">3</div>
+              <div className="hiw-icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
+                </svg>
+              </div>
+              <h3 className="hiw-card-title">Track Production</h3>
+              <p className="hiw-card-text">
+                Monitor every stage of your order in real-time. From cutting to stitching, stay updated with live tracking.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ MORE SECTIONS COMING (Parts 3–6) ============ */}
     </div>
   );
 }
