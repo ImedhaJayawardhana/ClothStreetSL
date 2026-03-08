@@ -37,7 +37,7 @@ export default function SignIn() {
         try {
             await loginWithGoogle(role);
             navigate('/');
-        } catch (err) {
+        } catch {
             setError(err.message || 'Failed to sign in with Google.');
         }
         setLoading(false);
