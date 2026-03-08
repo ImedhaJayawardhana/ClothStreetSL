@@ -25,8 +25,8 @@ export default function SignIn() {
         try {
             await register(name, email, password, role);
             navigate('/');
-        } catch (err) {
-            setError('Failed to create account. Email may already be in use.');
+        } catch (_err) {
+            console.log("error")
         }
         setLoading(false);
     }
