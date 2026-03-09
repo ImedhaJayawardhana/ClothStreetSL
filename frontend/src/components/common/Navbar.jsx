@@ -39,6 +39,27 @@ export default function Navbar() {
         </>
     );
 
+    // Links for Supplier, Tailor, Designer Role
+    const businessLinks = (
+        <>
+            <Link to="/dashboard" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
+                Dashboard
+            </Link>
+            <Link to="/shop" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
+                Shop
+            </Link>
+            <Link to="/tailors" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
+                Tailors
+            </Link>
+            <Link to="/designers" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
+                Designers
+            </Link>
+            <Link to="/ai-match" className="px-4 py-2.5 rounded-md text-purple-600 hover:bg-purple-50 font-medium text-sm transition-colors">
+                AI Match
+            </Link>
+        </>
+    );
+
     const handleLogout = async () => {
         try {
             await logout();
@@ -67,6 +88,7 @@ export default function Navbar() {
                     <div className="hidden md:flex items-center space-x-2">
                         {!user && unauthLinks}
                         {user?.role === "customer" && customerLinks}
+                        {(user?.role === "seller" || user?.role === "tailor" || user?.role === "designer") && businessLinks}
                     </div>
 
                     {/* Right Section */}
@@ -102,9 +124,13 @@ export default function Navbar() {
                                             <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                         </div>
                                         
-                                        {user.role === "customer" && (
+                                        {user.role === "customer" ? (
                                             <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
                                                 Profile
+                                            </Link>
+                                        ) : (
+                                            <Link to="/portfolio" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+                                                Portfolio
                                             </Link>
                                         )}
                                         
