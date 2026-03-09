@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Navbar() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     // Default Links for Unauthenticated Users
     const unauthLinks = (
@@ -19,8 +21,34 @@ export default function Navbar() {
         </>
     );
 
+    // Links for Customer Role
+    const customerLinks = (
+        <>
+            <Link to="/shop" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
+                Shop
+            </Link>
+            <Link to="/tailors" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
+                Tailors
+            </Link>
+            <Link to="/designers" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
+                Designers
+            </Link>
+            <Link to="/ai-match" className="px-4 py-2.5 rounded-md text-purple-600 hover:bg-purple-50 font-medium text-sm transition-colors">
+                AI Match
+            </Link>
+        </>
+    );
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (error) {
+            console.error("Failed to log out", error);
+        }
+    };
+
     return (
-        <nav className="border-b border-gray-100 bg-white">
+        <nav className="border-b border-gray-100 bg-white relative z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo Section */}
@@ -38,6 +66,7 @@ export default function Navbar() {
                     {/* Center Links */}
                     <div className="hidden md:flex items-center space-x-2">
                         {!user && unauthLinks}
+                        {user?.role === "customer" && customerLinks}
                     </div>
 
                     {/* Right Section */}
@@ -48,7 +77,7 @@ export default function Navbar() {
                             </svg>
                         </button>
                         
-                        {!user && (
+                        {!user ? (
                             <div className="flex items-center space-x-4 ml-2">
                                 <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
                                     Login
@@ -56,6 +85,43 @@ export default function Navbar() {
                                 <Link to="/register" className="px-5 py-2.5 rounded-md bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors shadow-sm">
                                     Signup
                                 </Link>
+                            </div>
+                        ) : (
+                            <div className="relative ml-2">
+                                <button 
+                                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                    className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-700 font-bold border-2 border-transparent hover:border-purple-300 transition-all focus:outline-none"
+                                >
+                                    {user.name ? user.name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase() || 'U'}
+                                </button>
+
+                                {isProfileOpen && (
+                                    <div className="absolute right-0 mt-3 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                                        <div className="px-4 py-2 border-b border-gray-50 mb-1">
+                                            <p className="text-sm font-medium text-gray-900 truncate">{user.name || 'User'}</p>
+                                            <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                        </div>
+                                        
+                                        {user.role === "customer" && (
+                                            <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+                                                Profile
+                                            </Link>
+                                        )}
+                                        
+                                        <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+                                            Orders
+                                        </Link>
+                                        
+                                        <div className="border-t border-gray-50 mt-1 pt-1">
+                                            <button 
+                                                onClick={handleLogout}
+                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                            >
+                                                Logout
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
