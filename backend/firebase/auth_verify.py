@@ -4,7 +4,9 @@ from fastapi import Header, HTTPException
 
 def verify_token(authorization: str = Header(...)) -> dict:
     if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authorization header format")
+        raise HTTPException(
+            status_code=401, detail="Invalid authorization header format"
+        )
     token = authorization.split("Bearer ")[1]
     try:
         decoded_token = firebase_admin.auth.verify_id_token(token)
