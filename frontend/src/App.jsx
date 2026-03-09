@@ -3,6 +3,7 @@ import { useAuth } from "./context/AuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import BrowseTailors from "./pages/BrowseTailors";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/tailors" element={<BrowseTailors />} />
         </Routes>
       </main>
       <Footer />
