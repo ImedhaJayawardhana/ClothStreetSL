@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 
 export default function BrowseTailors() {
@@ -23,6 +23,77 @@ export default function BrowseTailors() {
         }
         fetchTailors();
     }, []);
+
+    const handleAddMockData = async () => {
+        setLoading(true);
+        const mockTailors = [
+            {
+                name: "Kamal Perera",
+                location: "Colombo 07",
+                specializations: ["Bespoke Suits", "Formal Wear"],
+                skills: ["Suit Tailoring", "Pattern Drafting", "Alterations"],
+                rating: 4.9,
+                orders: 487,
+                experience: 15,
+                priceMin: 15000,
+                priceMax: 45000,
+                status: "Available",
+                portfolioImages: [
+                    "https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?auto=format&fit=crop&w=500&q=80",
+                    "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=500&q=80"
+                ]
+            },
+            {
+                name: "Samanthi Silva",
+                location: "Kandy",
+                specializations: ["Wedding Dresses", "Evening Gowns"],
+                skills: ["Bridal Wear", "Embroidery", "Beading", "Custom Fitting"],
+                rating: 4.8,
+                orders: 312,
+                experience: 10,
+                priceMin: 25000,
+                priceMax: 150000,
+                status: "Busy",
+                portfolioImages: [
+                    "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=500&q=80",
+                    "https://images.unsplash.com/photo-1566207274740-0f8cf6b7d5a5?auto=format&fit=crop&w=500&q=80"
+                ]
+            },
+            {
+                name: "Ruwan Textiles",
+                location: "Galle",
+                specializations: ["Casual Wear", "Shirts", "Traditional Wear"],
+                skills: ["Cotton Shirts", "Sarongs", "Bulk Orders"],
+                rating: 4.6,
+                orders: 850,
+                experience: 8,
+                priceMin: 2500,
+                priceMax: 10000,
+                status: "Available",
+                portfolioImages: [
+                    "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=500&q=80",
+                    "https://images.unsplash.com/photo-1578932750294-f5075e85f44a?auto=format&fit=crop&w=500&q=80"
+                ]
+            }
+        ];
+
+        try {
+            for (const tailor of mockTailors) {
+                const newDocRef = doc(collection(db, "tailors"));
+                await setDoc(newDocRef, tailor);
+            }
+            const querySnapshot = await getDocs(collection(db, "tailors"));
+            const tailorsData = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            setTailors(tailorsData);
+            setSearchQuery('');
+            setAvailableOnly(false);
+            setActiveSpecialization('All');
+        } catch (error) {
+            console.error("Error adding mock data", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const filteredTailors = tailors.filter(tailor => {
         const matchesSearch =
@@ -340,6 +411,15 @@ export default function BrowseTailors() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
                             Clear all filters
+                        </button>
+                        <button 
+                            onClick={handleAddMockData}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 mt-4 sm:mt-0 sm:ml-4 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm shadow-violet-200"
+                        >
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Populate Mock Tailors
                         </button>
                     </div>
                 )}
