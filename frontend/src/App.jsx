@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
+import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -10,6 +11,7 @@ import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import SellerDashboard from "./pages/supplier/seller-dashboard";
 import TailorDashboard from "./pages/Tailor/TailorDashboard";
+import CustomerProfile from "./pages/CustomerProfile";
 
 function PrivateRoute({ children }) {
   const { user } = useAuth();
@@ -31,9 +33,11 @@ export default function App() {
           <Route path="/fabrics" element={<BrowseMaterials />} />
           <Route path="/dashboard" element={<SellerDashboard />} />
           <Route path="/tailor-dashboard" element={<TailorDashboard />} />
+          <Route path="/profile" element={<PrivateRoute><CustomerProfile /></PrivateRoute>} />
         </Routes>
       </main>
       <Footer />
+      <Toaster position="bottom-right" />
     </div>
   );
 }

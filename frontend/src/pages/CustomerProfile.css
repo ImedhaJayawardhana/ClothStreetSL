@@ -1,0 +1,522 @@
+/* ============ CUSTOMER PROFILE ============ */
+
+/* -- Hero Banner -- */
+.cp-hero {
+  position: relative;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 40%, #6366f1 100%);
+  padding: 48px 0 56px;
+  overflow: hidden;
+}
+
+.cp-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.06) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.cp-hero-inner {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+/* -- Avatar -- */
+.cp-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.cp-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: 700;
+  color: #fff;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.cp-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cp-camera-badge {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(6px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+/* -- Info -- */
+.cp-hero-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cp-hero-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.cp-hero-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.cp-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cp-role-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+.cp-hero-contacts {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.cp-hero-contact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cp-hero-contact svg {
+  width: 15px;
+  height: 15px;
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+
+/* -- Edit Profile Button -- */
+.cp-edit-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 10px;
+  background: #fff;
+  color: #1e1b4b;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.cp-edit-btn:hover {
+  background: #f8f7ff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.cp-edit-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ============ EDIT PROFILE VIEW ============ */
+
+.cp-edit-wrapper {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 40px 32px 60px;
+}
+
+.cp-edit-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e1b4b;
+  margin-bottom: 28px;
+}
+
+/* -- Card -- */
+.cp-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cp-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}
+
+/* -- Photo Section -- */
+.cp-photo-section {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.cp-photo-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 700;
+  color: #4f46e5;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 3px solid #e0e7ff;
+}
+
+.cp-photo-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cp-photo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cp-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cp-upload-btn:hover {
+  border-color: #6366f1;
+  color: #4f46e5;
+  background: #f5f3ff;
+}
+
+.cp-photo-hint {
+  font-size: 12px;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+/* -- Section Header -- */
+.cp-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cp-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e1b4b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* -- Status Pills -- */
+.cp-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cp-status-pill.processing {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.cp-status-pill.shipped {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+.cp-status-pill.delivered {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+/* -- Lists & Tables -- */
+.cp-order-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.cp-order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.cp-order-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.cp-section-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cp-section-edit-btn:hover {
+  border-color: #6366f1;
+  color: #4f46e5;
+}
+
+.cp-section-edit-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* -- Fields Row -- */
+.cp-fields-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.cp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cp-field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-transform: capitalize;
+}
+
+.cp-field-value {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1e1b4b;
+}
+
+/* -- Inputs -- */
+.cp-input-group {
+  position: relative;
+}
+
+.cp-input-group svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.cp-input {
+  width: 100%;
+  padding: 12px 14px 12px 40px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1e1b4b;
+  background: #fff;
+  transition: border-color 0.2s ease;
+  outline: none;
+}
+
+.cp-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.cp-input-plain {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1e1b4b;
+  background: #fff;
+  transition: border-color 0.2s ease;
+  outline: none;
+}
+
+.cp-input-plain:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* -- Textarea -- */
+.cp-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1e1b4b;
+  background: #fff;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+  outline: none;
+}
+
+.cp-textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.cp-textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* -- Bottom Actions -- */
+.cp-bottom-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.cp-cancel-btn {
+  padding: 11px 28px;
+  border-radius: 10px;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cp-cancel-btn:hover {
+  border-color: #9ca3af;
+  background: #f9fafb;
+}
+
+.cp-save-btn {
+  padding: 11px 28px;
+  border-radius: 10px;
+  border: none;
+  background: #1e1b4b;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cp-save-btn:hover {
+  background: #312e81;
+  box-shadow: 0 4px 12px rgba(30, 27, 75, 0.3);
+}
+
+/* -- Responsive -- */
+@media (max-width: 768px) {
+  .cp-hero-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .cp-hero-contacts {
+    justify-content: center;
+  }
+
+  .cp-hero-name-row {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cp-fields-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .cp-edit-wrapper {
+    padding: 24px 16px 48px;
+  }
+
+  .cp-card {
+    padding: 20px;
+  }
+
+  .cp-photo-section {
+    flex-direction: column;
+    text-align: center;
+  }
+}
