@@ -267,3 +267,139 @@ export default function SellerDashboard() {
             ))}
           </div>
         </section>
+
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent Orders */}
+          <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeWidth="2" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+                </svg>
+                <h2 className="font-bold text-gray-900">Recent Orders</h2>
+              </div>
+              {/* /orders matches the Orders link in your Navbar dropdown */}
+              <button onClick={() => navigate("/orders")}
+                className="text-sm text-purple-600 hover:text-purple-800 font-semibold flex items-center gap-1">
+                View all
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+              </button>
+            </div>
+            {orders.length === 0 ? (
+              <div className="px-6 py-10 text-center text-gray-400 text-sm">No orders yet.</div>
+            ) : (
+              <div className="divide-y divide-gray-50">
+                {orders.map((order) => (
+                  <div key={order.id} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
+                        <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeWidth="2" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900 text-sm">{order.orderId || order.id}</p>
+                        <p className="text-xs text-gray-500">
+                          {order.itemName || order.item || "Order"} · {formatDate(order.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className={`text-xs font-semibold px-3 py-1 rounded-full ${statusColours[order.status] || "bg-gray-100 text-gray-600"}`}>
+                        {order.status}
+                      </span>
+                      <span className="font-bold text-gray-900 text-sm whitespace-nowrap">
+                        Rs {Number(order.total ?? order.totalAmount ?? 0).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="px-6 py-4 border-t border-gray-100">
+              <button onClick={() => navigate("/orders")}
+                className="w-full flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-purple-600 font-medium py-2 rounded-xl hover:bg-gray-50 transition-colors border border-gray-200">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                View Order History & Track Orders
+              </button>
+            </div>
+          </div>
+          {/* Right column */}
+          <div className="flex flex-col gap-4">
+            {/* AI Match — /ai-match matches your Navbar AI Match link */}
+            <div className="bg-purple-600 rounded-2xl p-5 text-white relative overflow-hidden">
+              <div className="absolute -right-6 -bottom-6 w-24 h-24 bg-purple-500 rounded-full opacity-50" />
+              <div className="absolute -right-2 -top-4 w-16 h-16 bg-purple-400 rounded-full opacity-30" />
+              <div className="relative">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeWidth="2" d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
+                  </svg>
+                </div>
+                <h3 className="font-bold text-lg mb-1">Try AI Smart Match</h3>
+                <p className="text-purple-200 text-sm mb-4 leading-snug">
+                  Get AI-powered fabric and tailor recommendations for your project.
+                </p>
+                <button onClick={() => navigate("/ai-match")}
+                  className="w-full bg-white text-purple-600 font-bold py-2.5 rounded-xl text-sm hover:bg-purple-50 transition-colors flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeWidth="2" d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
+                  </svg>
+                  Get Recommendations
+                </button>
+              </div>
+            </div>
+            {/* Top Rated — from tailors collection */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100">
+                <svg className="w-4 h-4 text-amber-500 fill-current" viewBox="0 0 24 24">
+                  <path d="M13 2L15.09 8.26L22 9L17 13.74L18.18 21L13 17.77L7.82 21L9 13.74L4 9L10.91 8.26L13 2Z" />
+                </svg>
+                <h3 className="font-bold text-gray-900 text-sm">Top Rated This Week</h3>
+              </div>
+              {topRated.length === 0 ? (
+                <div className="px-5 py-6 text-center text-gray-400 text-sm">No data yet.</div>
+              ) : (
+                <div className="divide-y divide-gray-50">
+                  {topRated.map((tailor) => {
+                    const tailorName   = tailor.name || tailor.shopName || "Tailor";
+                    const avatarColors = ["bg-blue-500", "bg-purple-500", "bg-rose-500", "bg-emerald-500"];
+                    const color        = avatarColors[tailorName.charCodeAt(0) % avatarColors.length];
+                    return (
+                      <div key={tailor.id} className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          {tailor.photoUrl ? (
+                            <img src={tailor.photoUrl} alt={tailorName} className="w-9 h-9 rounded-full object-cover" />
+                          ) : (
+                            <div className={`w-9 h-9 rounded-full ${color} flex items-center justify-center text-white text-sm font-bold`}>
+                              {tailorName.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-semibold text-gray-900 text-sm">{tailorName}</p>
+                            <p className="text-xs text-gray-500">{tailor.specialty || tailor.skills?.[0] || "Tailor"}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <svg className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 24 24">
+                            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
+                          </svg>
+                          <span className="text-sm font-bold text-gray-800">
+                            {tailor.rating ? Number(tailor.rating).toFixed(1) : "N/A"}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      </main>
+      
+    </div>
+  );
+}
