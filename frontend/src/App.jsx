@@ -13,6 +13,8 @@ import Footer from "./components/common/Footer";
 import SellerDashboard from "./pages/supplier/seller-dashboard";
 import TailorDashboard from "./pages/Tailor/TailorDashboard";
 import CustomerProfile from "./pages/CustomerProfile";
+import AIMatch from "./pages/AIMatch";
+
 
 function PrivateRoute({ children }) {
   const { user } = useAuth();
@@ -30,7 +32,9 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/tailors" element={<BrowseTailors />} />
           <Route path="/designers" element={<BrowseDesigners />} />
+          <Route path="/match" element={<AIMatch />} />
           <Route path="/cart" element={<Cart />} />
+
           <Route path="/shop" element={<BrowseMaterials />} />
           <Route path="/fabrics" element={<BrowseMaterials />} />
           <Route path="/dashboard" element={<SellerDashboard />} />

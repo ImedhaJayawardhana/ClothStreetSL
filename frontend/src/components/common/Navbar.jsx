@@ -35,7 +35,7 @@ export default function Navbar() {
             <Link to="/designers" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
                 Designers
             </Link>
-            <Link to="/ai-match" className="px-4 py-2.5 rounded-md text-purple-600 hover:bg-purple-50 font-medium text-sm transition-colors">
+            <Link to="/match" className="px-4 py-2.5 rounded-md text-purple-600 hover:bg-purple-50 font-medium text-sm transition-colors">
                 AI Match
             </Link>
         </>
@@ -56,7 +56,7 @@ export default function Navbar() {
             <Link to="/designers" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
                 Designers
             </Link>
-            <Link to="/ai-match" className="px-4 py-2.5 rounded-md text-purple-600 hover:bg-purple-50 font-medium text-sm transition-colors">
+            <Link to="/match" className="px-4 py-2.5 rounded-md text-purple-600 hover:bg-purple-50 font-medium text-sm transition-colors">
                 AI Match
             </Link>
         </>
