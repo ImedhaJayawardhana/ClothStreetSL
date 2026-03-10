@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import BrowseTailors from "./pages/BrowseTailors";
+import Cart from "./pages/Cart";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import SellerDashboard from "./pages/supplier/seller-dashboard";
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/tailors" element={<BrowseTailors />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/dashboard" element={<SellerDashboard />} />
           <Route path="/tailor-dashboard" element={<TailorDashboard />} />
         </Routes>

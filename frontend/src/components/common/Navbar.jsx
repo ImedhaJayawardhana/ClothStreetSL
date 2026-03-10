@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 
 export default function Navbar() {
     const { user, logout } = useAuth();
+    const { cartCount } = useCart();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     // Default Links for Unauthenticated Users
@@ -93,11 +95,16 @@ export default function Navbar() {
 
                     {/* Right Section */}
                     <div className="flex items-center space-x-5">
-                        <button className="p-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors shadow-sm bg-gray-50/50">
+                        <Link to="/cart" className="relative p-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors shadow-sm bg-gray-50/50">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
                             </svg>
-                        </button>
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-purple-600 text-white text-[11px] font-bold leading-none shadow-sm">
+                                    {cartCount > 99 ? "99+" : cartCount}
+                                </span>
+                            )}
+                        </Link>
 
                         {!user ? (
                             <div className="flex items-center space-x-4 ml-2">
