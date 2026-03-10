@@ -47,6 +47,17 @@ export function AuthProvider({ children }) {
     return result;
   }
 
+  async function updateProfile(uid, data) {
+    const userRef = doc(db, "users", uid);
+    await setDoc(userRef, data, { merge: true });
+    
+    // Update local state immediately without waiting for onAuthStateChanged
+    setUser(prev => ({
+      ...prev,
+      ...data
+    }));
+  }
+
   async function logout() {
     return signOut(auth);
   }
@@ -69,7 +80,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, loading, register, login, loginWithGoogle, logout, updateProfile }}>
       {!loading && children}
     </AuthContext.Provider>
   );

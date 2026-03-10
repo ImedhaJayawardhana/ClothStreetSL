@@ -3,8 +3,9 @@ import { useAuth } from "../context/AuthContext";
 import "./CustomerProfile.css";
 
 export default function CustomerProfile() {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Section-level edit toggles
   const [editingPersonal, setEditingPersonal] = useState(false);
@@ -58,8 +59,17 @@ export default function CustomerProfile() {
   };
 
   const handleSave = async () => {
-    // Firestore save will be implemented in Section 3
-    setIsEditing(false);
+    try {
+      setIsSaving(true);
+      await updateProfile(user.uid, formData);
+      setEditingPersonal(false);
+      setEditingBio(false);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Failed to update profile", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // ==================== PROFILE VIEW ====================
@@ -301,8 +311,13 @@ export default function CustomerProfile() {
         <button className="cp-cancel-btn" onClick={handleCancel}>
           Cancel
         </button>
-        <button className="cp-save-btn" onClick={handleSave}>
-          Save Changes
+        <button 
+          className="cp-save-btn" 
+          onClick={handleSave}
+          disabled={isSaving}
+          style={isSaving ? { opacity: 0.7, cursor: "not-allowed" } : {}}
+        >
+          {isSaving ? "Saving..." : "Save Changes"}
         </button>
       </div>
     </div>
