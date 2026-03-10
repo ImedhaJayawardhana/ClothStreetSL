@@ -42,7 +42,7 @@ export default function Navbar() {
     // Links for Supplier, Tailor, Designer Role
     const businessLinks = (
         <>
-            <Link to="/dashboard" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
+            <Link to={user?.role === "tailor" ? "/tailor-dashboard" : "/dashboard"} className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
                 Dashboard
             </Link>
             <Link to="/shop" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
@@ -98,7 +98,7 @@ export default function Navbar() {
                                 <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
                             </svg>
                         </button>
-                        
+
                         {!user ? (
                             <div className="flex items-center space-x-4 ml-2">
                                 <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
@@ -110,7 +110,7 @@ export default function Navbar() {
                             </div>
                         ) : (
                             <div className="relative ml-2">
-                                <button 
+                                <button
                                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                                     className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-700 font-bold border-2 border-transparent hover:border-purple-300 transition-all focus:outline-none"
                                 >
@@ -123,7 +123,7 @@ export default function Navbar() {
                                             <p className="text-sm font-medium text-gray-900 truncate">{user.name || 'User'}</p>
                                             <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                         </div>
-                                        
+
                                         {user.role === "customer" ? (
                                             <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
                                                 Profile
@@ -133,13 +133,13 @@ export default function Navbar() {
                                                 Portfolio
                                             </Link>
                                         )}
-                                        
+
                                         <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
                                             Orders
                                         </Link>
-                                        
+
                                         <div className="border-t border-gray-50 mt-1 pt-1">
-                                            <button 
+                                            <button
                                                 onClick={handleLogout}
                                                 className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                                             >
