@@ -9,6 +9,7 @@ export default function CustomerProfile() {
 
   // Section-level edit toggles
   const [editingPersonal, setEditingPersonal] = useState(false);
+  const [editingMeasurements, setEditingMeasurements] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
 
   // Form state
@@ -19,6 +20,14 @@ export default function CustomerProfile() {
     city: user?.city || "Colombo",
     bio: user?.bio || "",
     photoURL: user?.photoURL || "",
+    measurements: user?.measurements || {
+      chest: "",
+      waist: "",
+      hips: "",
+      inseam: "",
+      shoulder: "",
+      sleeve: "",
+    },
   });
 
   // Get the user's initial letter for the avatar
@@ -31,6 +40,17 @@ export default function CustomerProfile() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleMeasurementChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      measurements: {
+        ...prev.measurements,
+        [name]: value,
+      },
+    }));
   };
 
   const handlePhotoUpload = (e) => {
@@ -52,8 +72,17 @@ export default function CustomerProfile() {
       city: user?.city || "Colombo",
       bio: user?.bio || "",
       photoURL: user?.photoURL || "",
+      measurements: user?.measurements || {
+        chest: "",
+        waist: "",
+        hips: "",
+        inseam: "",
+        shoulder: "",
+        sleeve: "",
+      },
     });
     setEditingPersonal(false);
+    setEditingMeasurements(false);
     setEditingBio(false);
     setIsEditing(false);
   };
@@ -63,6 +92,7 @@ export default function CustomerProfile() {
       setIsSaving(true);
       await updateProfile(user.uid, formData);
       setEditingPersonal(false);
+      setEditingMeasurements(false);
       setEditingBio(false);
       setIsEditing(false);
     } catch (error) {
@@ -147,6 +177,25 @@ export default function CustomerProfile() {
             </button>
           </div>
         </section>
+
+        {/* ---- My Measurements Summary ---- */}
+        <div className="cp-edit-wrapper" style={{ paddingTop: "40px" }}>
+          <div className="cp-card">
+            <div className="cp-section-header">
+              <h3 className="cp-section-title">My Measurements</h3>
+            </div>
+            <div className="cp-fields-row" style={{ rowGap: "16px" }}>
+              {["chest", "waist", "hips", "inseam", "shoulder", "sleeve"].map((field) => (
+                <div className="cp-field" key={field}>
+                  <span className="cp-field-label">{field}</span>
+                  <span className="cp-field-value">
+                    {user?.measurements?.[field] ? `${user.measurements[field]} cm` : "Not set"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -247,6 +296,52 @@ export default function CustomerProfile() {
               <span className="cp-field-label">Phone</span>
               <span className="cp-field-value">{formData.phone || "—"}</span>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* ---- Body Measurements Section ---- */}
+      <div className="cp-card">
+        <div className="cp-section-header">
+          <h3 className="cp-section-title">Body Measurements (cm)</h3>
+          <button
+            className="cp-section-edit-btn"
+            onClick={() => setEditingMeasurements(!editingMeasurements)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+              <path d="m15 5 4 4" />
+            </svg>
+            {editingMeasurements ? "Cancel" : "Edit"}
+          </button>
+        </div>
+
+        {editingMeasurements ? (
+          <div className="cp-fields-row" style={{ rowGap: "16px" }}>
+            {["chest", "waist", "hips", "inseam", "shoulder", "sleeve"].map((field) => (
+              <div className="cp-field" key={field}>
+                <label className="cp-field-label">{field}</label>
+                <input
+                  className="cp-input-plain"
+                  type="number"
+                  name={field}
+                  value={formData.measurements[field]}
+                  onChange={handleMeasurementChange}
+                  placeholder={`e.g. 90`}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="cp-fields-row" style={{ rowGap: "16px" }}>
+            {["chest", "waist", "hips", "inseam", "shoulder", "sleeve"].map((field) => (
+              <div className="cp-field" key={field}>
+                <span className="cp-field-label">{field}</span>
+                <span className="cp-field-value">
+                  {formData.measurements[field] ? `${formData.measurements[field]} cm` : "Not set"}
+                </span>
+              </div>
+            ))}
           </div>
         )}
       </div>
