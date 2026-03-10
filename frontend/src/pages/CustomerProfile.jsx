@@ -1,0 +1,105 @@
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import "./CustomerProfile.css";
+
+export default function CustomerProfile() {
+  const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Get the user's initial letter for the avatar
+  const getInitial = () => {
+    if (user?.name) return user.name.charAt(0).toUpperCase();
+    if (user?.email) return user.email.charAt(0).toUpperCase();
+    return "U";
+  };
+
+  // ==================== PROFILE VIEW ====================
+  if (!isEditing) {
+    return (
+      <div>
+        {/* Hero Banner */}
+        <section className="cp-hero">
+          <div className="cp-hero-inner">
+            {/* Avatar */}
+            <div className="cp-avatar-wrap">
+              <div className="cp-avatar">
+                {user?.photoURL ? (
+                  <img src={user.photoURL} alt={user.name || "Profile"} />
+                ) : (
+                  getInitial()
+                )}
+              </div>
+              <div className="cp-camera-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                  <circle cx="12" cy="13" r="3" />
+                </svg>
+              </div>
+            </div>
+
+            {/* User Info */}
+            <div className="cp-hero-info">
+              <div className="cp-hero-name-row">
+                <h1 className="cp-hero-name">{user?.name || "User"}</h1>
+                <span className="cp-role-badge">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+                  </svg>
+                  Customer
+                </span>
+              </div>
+
+              <div className="cp-hero-contacts">
+                {/* Email */}
+                <div className="cp-hero-contact">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="20" height="16" x="2" y="4" rx="2" />
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                  </svg>
+                  <span>{user?.email || "—"}</span>
+                </div>
+
+                {/* Phone */}
+                <div className="cp-hero-contact">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                  <span>{user?.phone || "+94 77 000 0000"}</span>
+                </div>
+
+                {/* City */}
+                <div className="cp-hero-contact">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  <span>{user?.city || "Colombo"}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Edit Profile Button */}
+            <button className="cp-edit-btn" onClick={() => setIsEditing(true)}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                <path d="m15 5 4 4" />
+              </svg>
+              Edit Profile
+            </button>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  // ==================== EDIT PROFILE VIEW (Section 2) ====================
+  return (
+    <div className="cp-edit-wrapper">
+      <h2 className="cp-edit-title">Edit Profile</h2>
+      <p style={{ color: "#9ca3af" }}>Edit mode coming in next section...</p>
+      <div className="cp-bottom-actions">
+        <button className="cp-cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+      </div>
+    </div>
+  );
+}
