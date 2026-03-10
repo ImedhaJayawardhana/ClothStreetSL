@@ -33,6 +33,39 @@ export default function AIMatch() {
   // Estimated price per piece
   const pricePerPiece = Math.round(formData.budget / formData.quantity);
 
+  const handleSubmit = async () => {
+    // Validate: garmentType must be selected
+    if (!formData.garmentType) {
+      setError('Please select a garment type');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setResults(null);
+
+    try {
+      const res = await fetch('/api/ai/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (!res.ok) throw new Error('API failed');
+
+      const data = await res.json();
+      setResults(data);
+
+    } catch (err) {
+      console.warn("API failed, falling back to mock data", err);
+      // Fallback to mock data if API not ready
+      setTimeout(() => {
+        setResults(mockResults);
+        setLoading(false);
+      }, 1500); // simulate network delay
+    }
+  };
+
   const handleQualitySelect = (value) => {
     setFormData(prev => ({ ...prev, quality: value }));
   };
@@ -100,6 +133,7 @@ export default function AIMatch() {
                     <option value="Uniform">Uniform</option>
                     <option value="Other">Other</option>
                   </select>
+                  {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
                 </div>
 
                 {/* Total Budget */}
@@ -170,9 +204,22 @@ export default function AIMatch() {
                 <div className="pt-4">
                   <button
                     type="button"
-                    className="w-full flex items-center justify-center gap-2 py-4 px-6 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-lg font-bold shadow-lg shadow-purple-500/30 transition-all transform hover:-translate-y-0.5"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className={`w-full flex items-center justify-center gap-2 py-4 px-6 rounded-xl text-white text-lg font-bold shadow-lg transition-all transform ${
+                      loading
+                        ? 'bg-purple-400 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 hover:-translate-y-0.5 shadow-purple-500/30'
+                    }`}
                   >
-                    <span>✦ Get AI Recommendations →</span>
+                    {loading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Analyzing...</span>
+                      </>
+                    ) : (
+                      <span>✦ Get AI Recommendations →</span>
+                    )}
                   </button>
                 </div>
               </div>
