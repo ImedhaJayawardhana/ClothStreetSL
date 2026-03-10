@@ -204,4 +204,37 @@ export default function SellerDashboard() {
     </div>
   );
   return (
-    <div className="min-h-screen bg-gray-50 font-sans flex flex-col"
+    <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
+
+ 
+      <div className="bg-purple-600 px-6 py-5 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          {sellerProfile?.logoUrl ? (
+            <img src={sellerProfile.logoUrl} alt="Shop logo"
+              className="w-12 h-12 rounded-2xl object-cover shadow-lg" />
+          ) : (
+            <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-xl shadow-lg">
+              {avatarLetter}
+            </div>
+          )}
+          <div>
+            <p className="text-purple-200 text-sm">
+              Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"},
+            </p>
+            {/* displayName uses same user object as Navbar */}
+            <p className="text-white font-bold text-xl leading-tight">{displayName}</p>
+            <span className="inline-block mt-1 text-xs bg-purple-500 text-white px-2.5 py-0.5 rounded-full font-medium capitalize">
+              {user?.role}
+            </span>
+          </div>
+        </div>
+        <button onClick={() => navigate("/seller-shop")}
+          className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-4 py-2 rounded-xl text-sm font-semibold transition-colors">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          My Profile
+        </button>
+      </div>
+      {/* Your existing <Navbar /> is rendered by the router — no duplicate here */}
+      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8 flex-1 w-full">
