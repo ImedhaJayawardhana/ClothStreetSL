@@ -71,7 +71,7 @@ const quickActions = [
     ),
   },
 ];
-const footerLinks = {
+const FOOTER_LINKS = {
   Platform: ["Fabric Marketplace", "Find Tailors", "AI Recommendations", "Order Tracking", "Join as Supplier"],
   "For Business": ["List Your Fabrics", "Tailor Registration", "Designer Portal", "Bulk Orders", "Enterprise Solutions"],
 };
