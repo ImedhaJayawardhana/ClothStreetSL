@@ -166,3 +166,264 @@ function ItemModal({ item, onClose, onSave }) {
         </div>
     );
 }
+/* ─── Main Component ─────────────────────────────────────────── */
+export default function Inventory() {
+    const { user } = useAuth();
+    const navigate = useNavigate();
+    const [items, setItems] = useState(SAMPLE_ITEMS);
+    const [activeTab, setActiveTab] = useState("All");
+    const [search, setSearch] = useState("");
+    const [sortBy, setSortBy] = useState("name");
+    const [viewMode, setViewMode] = useState("grid"); // grid | list
+    const [modal, setModal] = useState(null); // null | { mode: "add" | "edit", item?: {...} }
+    /* ── Derived stats ── */
+    const totalListings = items.length;
+    const totalSales = items.reduce((s, i) => s + (i.sales || 0), 0);
+    const lowCount = items.filter((i) => i.stockStatus === "low").length;
+    const outCount = items.filter((i) => i.stockStatus === "out").length;
+    const stockValue = items.reduce((s, i) => s + (i.price || 0) * (i.stock || 0), 0);
+    /* ── Filtered + sorted list ── */
+    const filtered = useMemo(() => {
+        let list = [...items];
+        // Tab filter
+        if (activeTab === "In Stock") list = list.filter((i) => i.stockStatus === "in");
+        if (activeTab === "Low Stock") list = list.filter((i) => i.stockStatus === "low");
+        if (activeTab === "Out of Stock") list = list.filter((i) => i.stockStatus === "out");
+        // Search
+        if (search) {
+            const q = search.toLowerCase();
+            list = list.filter((i) =>
+                i.name.toLowerCase().includes(q) ||
+                i.type?.toLowerCase().includes(q) ||
+                i.category?.toLowerCase().includes(q)
+            );
+        }
+        // Sort
+        list.sort((a, b) => {
+            if (sortBy === "name") return a.name.localeCompare(b.name);
+            if (sortBy === "price") return a.price - b.price;
+            if (sortBy === "stock") return b.stock - a.stock;
+            if (sortBy === "sales") return b.sales - a.sales;
+            return 0;
+        });
+        return list;
+    }, [items, activeTab, search, sortBy]);
+    function handleSave(form) {
+        if (modal?.mode === "add") {
+            setItems((prev) => [
+                ...prev,
+                {
+                    ...form,
+                    id: `inv_${Date.now()}`,
+                    rating: 5.0,
+                    sales: 0,
+                    colors: [],
+                    badge: null,
+                    image: null,
+                    price: Number(form.price) || 0,
+                    stock: Number(form.stock) || 0,
+                },
+            ]);
+        } else {
+            setItems((prev) => prev.map((i) => (i.id === form.id ? { ...i, ...form } : i)));
+        }
+        setModal(null);
+    }
+    const formatValue = (v) => {
+        if (v >= 1_000_000) return `Rs${(v / 1_000_000).toFixed(1)}M`;
+        if (v >= 1_000) return `Rs${(v / 1_000).toFixed(0)}K`;
+        return `Rs${v}`;
+    };
+    const stats = [
+        {
+            label: "Total Listings",
+            value: totalListings,
+            icon: (
+                <svg className="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeWidth="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                </svg>
+            ),
+            bg: "from-purple-700 to-purple-900",
+            valueClass: "text-white",
+        },
+        {
+            label: "Total Sales",
+            value: totalSales,
+            icon: (
+                <svg className="w-5 h-5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+            ),
+            bg: "from-emerald-600 to-emerald-800",
+            valueClass: "text-white",
+        },
+        {
+            label: "Low / Out Stock",
+            value: `${lowCount} / ${outCount}`,
+            icon: (
+                <svg className="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            ),
+            bg: "from-amber-500 to-orange-700",
+            valueClass: "text-white",
+        },
+        {
+            label: "Stock Value",
+            value: formatValue(stockValue),
+            icon: (
+                <svg className="w-5 h-5 text-violet-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+            ),
+            bg: "from-violet-600 to-violet-900",
+            valueClass: "text-white",
+        },
+    ];
+    return (
+        <div className="min-h-screen bg-gray-50">
+            {/* ── Hero Header ────────────────────────────────────── */}
+            <div
+                className="relative overflow-hidden"
+                style={{ background: "linear-gradient(135deg, #3b0764 0%, #6d28d9 50%, #4c1d95 100%)" }}
+            >
+                {/* decorative blobs */}
+                <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full opacity-20"
+                    style={{ background: "radial-gradient(circle, #a78bfa, transparent)" }} />
+                <div className="absolute -bottom-8 left-1/3 w-48 h-48 rounded-full opacity-10"
+                    style={{ background: "radial-gradient(circle, #c4b5fd, transparent)" }} />
+                <div className="relative max-w-7xl mx-auto px-6 pt-8 pb-10">
+                    {/* Breadcrumb */}
+                    <div className="flex items-center gap-2 text-purple-300 text-xs mb-4">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeWidth="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                        <Link to="/dashboard" className="hover:text-white transition-colors">Supplier Portal</Link>
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeWidth="2" d="M9 18l6-6-6-6" />
+                        </svg>
+                        <span className="text-purple-200">Inventory</span>
+                    </div>
+                    <div className="flex items-end justify-between flex-wrap gap-4">
+                        <div>
+                            <h1 className="text-3xl font-extrabold text-white tracking-tight">My Inventory</h1>
+                            <p className="text-purple-200 mt-1 text-sm">
+                                Manage your {totalListings} fabric listings on ClothStreet
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => setModal({ mode: "add" })}
+                            className="flex items-center gap-2 bg-white text-purple-700 font-bold px-5 py-2.5 rounded-xl shadow-lg hover:bg-purple-50 transition-colors text-sm"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeWidth="2.5" d="M12 5v14M5 12h14" />
+                            </svg>
+                            Add New Item
+                        </button>
+                    </div>
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+                        {stats.map((stat) => (
+                            <div
+                                key={stat.label}
+                                className={`bg-gradient-to-br ${stat.bg} rounded-2xl p-5 shadow-lg relative overflow-hidden`}
+                            >
+                                <div className="absolute -right-3 -bottom-3 w-16 h-16 rounded-full bg-white/5" />
+                                <div className="flex items-center gap-2 mb-2">
+                                    {stat.icon}
+                                    <span className="text-xs text-white/70 font-medium">{stat.label}</span>
+                                </div>
+                                <p className={`text-2xl sm:text-3xl font-extrabold ${stat.valueClass} leading-none`}>
+                                    {stat.value}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+            {/* ── Filters & Grid ────────────────────────────────── */}
+            <div className="max-w-7xl mx-auto px-6 py-6">
+                {/* Toolbar */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+                    <div className="flex flex-wrap items-center gap-3">
+                        {/* Search */}
+                        <div className="relative flex-1 min-w-[180px]">
+                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="11" cy="11" r="8" strokeWidth="2" />
+                                <path d="m21 21-4.3-4.3" strokeWidth="2" />
+                            </svg>
+                            <input
+                                type="text"
+                                placeholder="Search listings…"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition"
+                            />
+                        </div>
+                        {/* Filter icon (decorative) */}
+                        <button className="flex items-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl text-sm text-gray-500 hover:border-purple-300 hover:text-purple-600 transition-colors">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <line x1="4" x2="4" y1="21" y2="14" strokeWidth="2" />
+                                <line x1="4" x2="4" y1="10" y2="3" strokeWidth="2" />
+                                <line x1="12" x2="12" y1="21" y2="12" strokeWidth="2" />
+                                <line x1="12" x2="12" y1="8" y2="3" strokeWidth="2" />
+                                <line x1="20" x2="20" y1="21" y2="16" strokeWidth="2" />
+                                <line x1="20" x2="20" y1="12" y2="3" strokeWidth="2" />
+                                <line x1="2" x2="6" y1="14" y2="14" strokeWidth="2" />
+                                <line x1="10" x2="14" y1="8" y2="8" strokeWidth="2" />
+                                <line x1="18" x2="22" y1="16" y2="16" strokeWidth="2" />
+                            </svg>
+                        </button>
+                        {/* Tabs */}
+                        <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+                            {TABS.map((tab) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${activeTab === tab
+                                        ? "bg-purple-600 text-white shadow-sm"
+                                        : "text-gray-500 hover:text-gray-900"
+                                        }`}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
+                        {/* Sort */}
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="text-xs border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 transition text-gray-600"
+                        >
+                            <option value="name">Name ↕</option>
+                            <option value="price">Price ↕</option>
+                            <option value="stock">Stock ↕</option>
+                            <option value="sales">Sales ↕</option>
+                        </select>
+                        {/* View toggle */}
+                        <div className="flex items-center gap-1 border border-gray-200 rounded-xl p-1">
+                            {["grid", "list"].map((v) => (
+                                <button
+                                    key={v}
+                                    onClick={() => setViewMode(v)}
+                                    className={`p-1.5 rounded-lg transition-all ${viewMode === v ? "bg-purple-600 text-white" : "text-gray-400 hover:text-gray-700"}`}
+                                >
+                                    {v === "grid" ? (
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <rect x="3" y="3" width="7" height="7" rx="1" strokeWidth="2" />
+                                            <rect x="14" y="3" width="7" height="7" rx="1" strokeWidth="2" />
+                                            <rect x="3" y="14" width="7" height="7" rx="1" strokeWidth="2" />
+                                            <rect x="14" y="14" width="7" height="7" rx="1" strokeWidth="2" />
+                                        </svg>
+                                    ) : (
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <line x1="3" y1="6" x2="21" y2="6" strokeWidth="2" />
+                                            <line x1="3" y1="12" x2="21" y2="12" strokeWidth="2" />
+                                            <line x1="3" y1="18" x2="21" y2="18" strokeWidth="2" />
+                                        </svg>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
