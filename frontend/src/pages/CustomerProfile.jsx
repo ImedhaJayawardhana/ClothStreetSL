@@ -158,7 +158,7 @@ export default function CustomerProfile() {
       await sendPasswordResetEmail(auth, user.email);
       toast.success("Password reset email sent!");
     } catch {
-      toast.error("Failed to send reset email");
+      toast.error("Failed to save profile");
     }
   };
 
@@ -168,7 +168,7 @@ export default function CustomerProfile() {
         await deleteUser(auth.currentUser);
         toast.success("Account deleted");
       } catch {
-        toast.error("Failed to delete account. Please re-login and try again.");
+        toast.error("Failed to save profile");
       }
     }
   };
