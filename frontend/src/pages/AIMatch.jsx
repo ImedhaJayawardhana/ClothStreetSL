@@ -387,12 +387,20 @@ export default function AIMatch() {
                       </div>
                     </div>
                     
-                    <button
-                      onClick={() => addToCart({ ...material, priceBase: parseInt(material.price.replace(/\D/g, '')), quantity: 1, type: 'fabric', image: 'https://images.unsplash.com/photo-1605000578643-4f9339e07fb6?auto=format&fit=crop&q=80&w=400' })}
-                      className="w-full py-2.5 px-4 rounded-xl text-purple-600 bg-purple-50 hover:bg-purple-600 hover:text-white font-medium transition-colors text-sm"
-                    >
-                      Add to Cart
-                    </button>
+                    <div className="flex gap-3 mt-4">
+                      <Link
+                        to="/shop"
+                        className="flex-1 text-center py-2.5 px-3 rounded-xl text-purple-600 bg-purple-50 hover:bg-purple-100 font-medium transition-colors text-sm"
+                      >
+                        View Details
+                      </Link>
+                      <button
+                        onClick={() => addToCart({ ...material, unitPrice: parseInt(material.price.replace(/\D/g, '')), quantity: 1, type: 'fabric', image: 'https://images.unsplash.com/photo-1605000578643-4f9339e07fb6?auto=format&fit=crop&q=80&w=400' })}
+                        className="flex-1 py-2.5 px-3 rounded-xl text-white bg-purple-600 hover:bg-purple-700 font-medium transition-colors text-sm shadow-sm"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
