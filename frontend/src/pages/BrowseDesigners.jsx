@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import DesignerCard from '../components/common/DesignerCard';
+import designersData from '../data/designersData';
 
 export default function BrowseDesigners() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -11,6 +13,23 @@ export default function BrowseDesigners() {
         'Resort Wear', 'Swimwear', 'Corporate Wear', 'Uniforms',
         'Kids Wear', 'Playful Prints'
     ];
+
+    // ── Filtering logic ──
+    const filteredDesigners = designersData.filter(designer => {
+        const query = searchQuery.toLowerCase();
+        const matchesSearch =
+            designer.name.toLowerCase().includes(query) ||
+            designer.location.toLowerCase().includes(query) ||
+            designer.styles.some(s => s.toLowerCase().includes(query));
+
+        const matchesAvailable = availableOnly ? designer.status === 'Available' : true;
+
+        const matchesStyle = activeStyle === 'All'
+            || designer.specialties.includes(activeStyle)
+            || designer.styles.includes(activeStyle);
+
+        return matchesSearch && matchesAvailable && matchesStyle;
+    });
 
     return (
         <div className="min-h-screen bg-white">
@@ -120,8 +139,44 @@ export default function BrowseDesigners() {
             {/* ───────────── RESULTS COUNT ───────────── */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 mb-2">
                 <p className="text-sm text-gray-500">
-                    <span className="font-semibold text-gray-800">6</span> designers found
+                    <span className="font-semibold text-gray-800">{filteredDesigners.length}</span> designers found
                 </p>
+            </div>
+
+            {/* ───────────── DESIGNERS GRID ───────────── */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+                {filteredDesigners.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
+                        {filteredDesigners.map(designer => (
+                            <DesignerCard key={designer.id} designer={designer} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="bg-gray-50 rounded-3xl border border-gray-100 border-dashed p-12 text-center mt-6">
+                        <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4">
+                            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-2">No designers found</h3>
+                        <p className="text-gray-500 max-w-sm mx-auto mb-6">
+                            We couldn't find any designers matching your current filters. Try adjusting your search or clearing filters.
+                        </p>
+                        <button
+                            onClick={() => {
+                                setSearchQuery('');
+                                setAvailableOnly(false);
+                                setActiveStyle('All');
+                            }}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                        >
+                            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Clear all filters
+                        </button>
+                    </div>
+                )}
             </div>
 
         </div>
