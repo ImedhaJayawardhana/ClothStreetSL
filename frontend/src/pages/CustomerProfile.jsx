@@ -6,11 +6,60 @@ export default function CustomerProfile() {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
 
+  // Section-level edit toggles
+  const [editingPersonal, setEditingPersonal] = useState(false);
+  const [editingBio, setEditingBio] = useState(false);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "+94 77 000 0000",
+    city: user?.city || "Colombo",
+    bio: user?.bio || "",
+    photoURL: user?.photoURL || "",
+  });
+
   // Get the user's initial letter for the avatar
   const getInitial = () => {
     if (user?.name) return user.name.charAt(0).toUpperCase();
     if (user?.email) return user.email.charAt(0).toUpperCase();
     return "U";
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData((prev) => ({ ...prev, photoURL: reader.result }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleCancel = () => {
+    // Reset form to current user data
+    setFormData({
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "+94 77 000 0000",
+      city: user?.city || "Colombo",
+      bio: user?.bio || "",
+      photoURL: user?.photoURL || "",
+    });
+    setEditingPersonal(false);
+    setEditingBio(false);
+    setIsEditing(false);
+  };
+
+  const handleSave = async () => {
+    // Firestore save will be implemented in Section 3
+    setIsEditing(false);
   };
 
   // ==================== PROFILE VIEW ====================
@@ -92,13 +141,169 @@ export default function CustomerProfile() {
     );
   }
 
-  // ==================== EDIT PROFILE VIEW (Section 2) ====================
+  // ==================== EDIT PROFILE VIEW ====================
   return (
     <div className="cp-edit-wrapper">
       <h2 className="cp-edit-title">Edit Profile</h2>
-      <p style={{ color: "#9ca3af" }}>Edit mode coming in next section...</p>
+
+      {/* ---- Photo Section ---- */}
+      <div className="cp-card">
+        <div className="cp-photo-section">
+          <div className="cp-photo-avatar">
+            {formData.photoURL ? (
+              <img src={formData.photoURL} alt="Profile" />
+            ) : (
+              getInitial()
+            )}
+          </div>
+          <div className="cp-photo-actions">
+            <label className="cp-upload-btn" style={{ cursor: "pointer" }}>
+              Upload new photo
+              <input
+                type="file"
+                accept="image/png, image/jpeg"
+                style={{ display: "none" }}
+                onChange={handlePhotoUpload}
+              />
+            </label>
+            <span className="cp-photo-hint">
+              At least 800×800 px recommended.<br />
+              JPG or PNG is allowed.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ---- Personal Info Section ---- */}
+      <div className="cp-card">
+        <div className="cp-section-header">
+          <h3 className="cp-section-title">Personal Info</h3>
+          <button
+            className="cp-section-edit-btn"
+            onClick={() => setEditingPersonal(!editingPersonal)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+              <path d="m15 5 4 4" />
+            </svg>
+            {editingPersonal ? "Cancel" : "Edit"}
+          </button>
+        </div>
+
+        {editingPersonal ? (
+          <div className="cp-fields-row">
+            <div className="cp-field">
+              <label className="cp-field-label">Full Name</label>
+              <input
+                className="cp-input-plain"
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="cp-field">
+              <label className="cp-field-label">Email</label>
+              <input
+                className="cp-input-plain"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="cp-field">
+              <label className="cp-field-label">Phone</label>
+              <input
+                className="cp-input-plain"
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="cp-fields-row">
+            <div className="cp-field">
+              <span className="cp-field-label">Full Name</span>
+              <span className="cp-field-value">{formData.name || "—"}</span>
+            </div>
+            <div className="cp-field">
+              <span className="cp-field-label">Email</span>
+              <span className="cp-field-value">{formData.email || "—"}</span>
+            </div>
+            <div className="cp-field">
+              <span className="cp-field-label">Phone</span>
+              <span className="cp-field-value">{formData.phone || "—"}</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ---- Location Section ---- */}
+      <div className="cp-card">
+        <div className="cp-section-header">
+          <h3 className="cp-section-title">Location</h3>
+          <button
+            className="cp-section-edit-btn"
+            onClick={handleCancel}
+          >
+            Cancel
+          </button>
+        </div>
+
+        <div className="cp-input-group">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <input
+            className="cp-input"
+            type="text"
+            name="city"
+            value={formData.city}
+            onChange={handleInputChange}
+            placeholder="Enter your city"
+          />
+        </div>
+      </div>
+
+      {/* ---- Bio Section ---- */}
+      <div className="cp-card">
+        <div className="cp-section-header">
+          <h3 className="cp-section-title">Bio</h3>
+          <button
+            className="cp-section-edit-btn"
+            onClick={() => setEditingBio(!editingBio)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+              <path d="m15 5 4 4" />
+            </svg>
+            {editingBio ? "Cancel" : "Edit"}
+          </button>
+        </div>
+
+        <textarea
+          className="cp-textarea"
+          name="bio"
+          value={formData.bio}
+          onChange={handleInputChange}
+          placeholder="Tell us about yourself..."
+          disabled={!editingBio}
+          style={!editingBio ? { opacity: 0.7, cursor: "not-allowed" } : {}}
+        />
+      </div>
+
+      {/* ---- Bottom Actions ---- */}
       <div className="cp-bottom-actions">
-        <button className="cp-cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+        <button className="cp-cancel-btn" onClick={handleCancel}>
+          Cancel
+        </button>
+        <button className="cp-save-btn" onClick={handleSave}>
+          Save Changes
+        </button>
       </div>
     </div>
   );
