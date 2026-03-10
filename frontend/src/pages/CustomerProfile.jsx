@@ -157,7 +157,7 @@ export default function CustomerProfile() {
     try {
       await sendPasswordResetEmail(auth, user.email);
       toast.success("Password reset email sent!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to send reset email");
     }
   };
@@ -167,7 +167,7 @@ export default function CustomerProfile() {
       try {
         await deleteUser(auth.currentUser);
         toast.success("Account deleted");
-      } catch (error) {
+      } catch {
         toast.error("Failed to delete account. Please re-login and try again.");
       }
     }
@@ -251,17 +251,17 @@ export default function CustomerProfile() {
 
         {/* ---- Profile Dashboard Content ---- */}
         <div className="cp-edit-wrapper" style={{ paddingTop: "40px", maxWidth: "1000px" }}>
-          
+
           <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "28px" }}>
-            
+
             {/* ====== LEFT COLUMN ====== */}
             <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-              
+
               {/* About Me */}
               <div className="cp-card" style={{ marginBottom: "0" }}>
                 <div className="cp-section-header">
                   <h3 className="cp-section-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /><path d="M16 13H8" /><path d="M16 17H8" /><path d="M10 9H8" /></svg>
                     About Me
                   </h3>
                 </div>
@@ -274,7 +274,7 @@ export default function CustomerProfile() {
               <div className="cp-card" style={{ marginBottom: "0" }}>
                 <div className="cp-section-header">
                   <h3 className="cp-section-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
                     Recent Orders
                   </h3>
                   <Link to="/orders" style={{ fontSize: "13px", color: "#6366f1", fontWeight: "600", textDecoration: "none" }}>View All</Link>
@@ -299,12 +299,12 @@ export default function CustomerProfile() {
 
             {/* ====== RIGHT COLUMN ====== */}
             <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-              
+
               {/* Address Details */}
               <div className="cp-card" style={{ marginBottom: "0" }}>
                 <div className="cp-section-header">
                   <h3 className="cp-section-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
                     Address Details
                   </h3>
                 </div>
@@ -332,7 +332,7 @@ export default function CustomerProfile() {
               <div className="cp-card" style={{ marginBottom: "0" }}>
                 <div className="cp-section-header">
                   <h3 className="cp-section-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
                     Saved Tailors
                   </h3>
                 </div>
@@ -349,7 +349,7 @@ export default function CustomerProfile() {
                     </div>
                   ))}
                 </div>
-                <button 
+                <button
                   onClick={() => navigate('/tailors')}
                   style={{ width: "100%", marginTop: "20px", padding: "8px 0", borderRadius: "8px", border: "1.5px solid #e0e7ff", background: "#f8fafc", color: "#4f46e5", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}
                 >
@@ -361,7 +361,7 @@ export default function CustomerProfile() {
               <div className="cp-card" style={{ height: "100%", marginBottom: "0" }}>
                 <div className="cp-section-header">
                   <h3 className="cp-section-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
                     Measurements
                   </h3>
                 </div>
@@ -593,7 +593,7 @@ export default function CustomerProfile() {
       <div className="cp-card">
         <h3 className="cp-section-title" style={{ marginBottom: "20px" }}>Preferences</h3>
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          
+
           {/* Email Toggle */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
@@ -648,7 +648,7 @@ export default function CustomerProfile() {
               <p style={{ fontSize: "15px", fontWeight: "600", color: "#dc2626" }}>Delete Account</p>
               <p style={{ fontSize: "13px", color: "#6b7280" }}>Permanently remove your account and data.</p>
             </div>
-            <button 
+            <button
               onClick={handleDeleteAccount}
               style={{
                 padding: "8px 16px",
@@ -699,8 +699,8 @@ export default function CustomerProfile() {
         <button className="cp-cancel-btn" onClick={handleCancel}>
           Cancel
         </button>
-        <button 
-          className="cp-save-btn" 
+        <button
+          className="cp-save-btn"
           onClick={handleSave}
           disabled={isSaving}
           style={isSaving ? { opacity: 0.7, cursor: "not-allowed" } : {}}
