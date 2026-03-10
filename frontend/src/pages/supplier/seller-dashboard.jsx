@@ -251,3 +251,19 @@ export default function SellerDashboard() {
             </div>
           ))}
         </section>
+
+        <section>
+          <h2 className="text-base font-bold text-gray-900 mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {quickActions.map((action) => (
+              <button key={action.label} onClick={() => navigate(action.route)}
+                className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-purple-200 transition-all text-left group">
+                <div className={`w-12 h-12 rounded-2xl ${action.iconBg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                  {action.icon}
+                </div>
+                <p className="font-bold text-gray-900 text-sm">{action.label}</p>
+                <p className="text-xs text-gray-500 mt-1 leading-snug">{action.desc}</p>
+              </button>
+            ))}
+          </div>
+        </section>
