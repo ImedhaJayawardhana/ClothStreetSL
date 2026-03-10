@@ -427,3 +427,183 @@ export default function Inventory() {
                         </div>
                     </div>
                 </div>
+
+                {/* Results count */}
+                <p className="text-xs text-gray-500 mb-4 font-medium">{filtered.length} listings</p>
+
+                {/* Grid */}
+                {viewMode === "grid" ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {filtered.map((item) => {
+                            const ss = stockStatusConfig[item.stockStatus] || stockStatusConfig.in;
+                            const bd = item.badge ? badgeConfig[item.badge] : null;
+                            return (
+                                <div
+                                    key={item.id}
+                                    className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden group"
+                                >
+                                    {/* Image */}
+                                    <div className="relative h-44 overflow-hidden bg-gradient-to-br from-purple-50 to-gray-100">
+                                        {item.image ? (
+                                            <img
+                                                src={item.image}
+                                                alt={item.name}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <svg className="w-12 h-12 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="1.5" />
+                                                    <path d="m9 9 4 4 4-4" strokeWidth="1.5" />
+                                                </svg>
+                                            </div>
+                                        )}
+                                        {bd && (
+                                            <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-lg text-xs font-bold ${bd.bg} ${bd.text} capitalize`}>
+                                                {bd.label}
+                                            </span>
+                                        )}
+                                        <span className={`absolute top-3 right-3 px-2.5 py-1 rounded-lg text-xs font-bold ${ss.bg} ${ss.text}`}>
+                                            {ss.label}
+                                        </span>
+                                    </div>
+
+                                    {/* Body */}
+                                    <div className="p-4">
+                                        <div className="flex items-start justify-between gap-2 mb-1">
+                                            <h3 className="font-bold text-gray-900 text-sm leading-tight">{item.name}</h3>
+                                            <div className="flex items-center gap-1 shrink-0">
+                                                <svg className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 24 24">
+                                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                                </svg>
+                                                <span className="text-xs font-semibold text-gray-700">{item.rating}</span>
+                                            </div>
+                                        </div>
+
+                                        <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeWidth="2" d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0116 0z" />
+                                                <circle cx="12" cy="10" r="3" strokeWidth="2" />
+                                            </svg>
+                                            {item.category}
+                                        </p>
+
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${ss.bg} ${ss.text}`}>
+                                                {item.stockStatus === "in" ? `In Stock · ${item.stock}m` :
+                                                    item.stockStatus === "low" ? `Low Stock · ${item.stock}m` : "Out of Stock · 0m"}
+                                            </span>
+                                            <span className="text-xs text-gray-400">{item.sales} sales</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-1.5 mb-3">
+                                            {item.colors.slice(0, 5).map((c, i) => (
+                                                <span
+                                                    key={i}
+                                                    className="w-4 h-4 rounded-full border border-white shadow-sm ring-1 ring-gray-200"
+                                                    style={{ background: c }}
+                                                />
+                                            ))}
+                                            {item.colors.length > 5 && (
+                                                <span className="text-xs text-gray-400">+{item.colors.length - 5}</span>
+                                            )}
+                                        </div>
+
+                                        <div className="flex items-center justify-between pt-1">
+                                            <div>
+                                                <span className="text-base font-extrabold text-gray-900">
+                                                    Rs {item.price.toLocaleString()}
+                                                </span>
+                                                <span className="text-xs text-gray-400"> /m</span>
+                                            </div>
+                                            <button
+                                                onClick={() => setModal({ mode: "edit", item })}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl transition-colors"
+                                            >
+                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                                Edit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                        {/* Add New card */}
+                        <button
+                            onClick={() => setModal({ mode: "add" })}
+                            className="bg-white rounded-2xl border-2 border-dashed border-gray-200 hover:border-purple-400 hover:bg-purple-50 transition-all flex flex-col items-center justify-center gap-3 h-full min-h-[280px] group"
+                        >
+                            <div className="w-12 h-12 rounded-full bg-gray-100 group-hover:bg-purple-100 flex items-center justify-center transition-colors">
+                                <svg className="w-6 h-6 text-gray-400 group-hover:text-purple-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeWidth="2" d="M12 5v14M5 12h14" />
+                                </svg>
+                            </div>
+                            <span className="text-sm font-semibold text-gray-400 group-hover:text-purple-600 transition-colors">
+                                Add New Listing
+                            </span>
+                        </button>
+                    </div>
+                ) : (
+                    /* List View */
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <table className="w-full text-sm">
+                            <thead className="bg-gray-50 border-b border-gray-100">
+                                <tr>
+                                    {["Item", "Category", "Stock", "Price", "Sales", "Actions"].map((h) => (
+                                        <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500">{h}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {filtered.map((item) => {
+                                    const ss = stockStatusConfig[item.stockStatus] || stockStatusConfig.in;
+                                    return (
+                                        <tr key={item.id} className="hover:bg-purple-50/20 transition-colors">
+                                            <td className="px-5 py-3.5">
+                                                <div>
+                                                    <p className="font-semibold text-gray-900">{item.name}</p>
+                                                    <p className="text-xs text-gray-400">{item.type}</p>
+                                                </div>
+                                            </td>
+                                            <td className="px-5 py-3.5 text-gray-600">{item.category}</td>
+                                            <td className="px-5 py-3.5">
+                                                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${ss.bg} ${ss.text}`}>
+                                                    {ss.label}
+                                                </span>
+                                            </td>
+                                            <td className="px-5 py-3.5 font-bold text-gray-900">Rs {item.price.toLocaleString()}</td>
+                                            <td className="px-5 py-3.5 text-gray-600">{item.sales}</td>
+                                            <td className="px-5 py-3.5">
+                                                <button
+                                                    onClick={() => setModal({ mode: "edit", item })}
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl transition-colors"
+                                                >
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                    Edit
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+
+            {/* ── Modal ─────────────────────────────────────────── */}
+            {modal && (
+                <ItemModal
+                    item={modal.mode === "edit" ? modal.item : null}
+                    onClose={() => setModal(null)}
+                    onSave={handleSave}
+                />
+            )}
+        </div>
+    );
+}
