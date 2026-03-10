@@ -157,10 +157,112 @@ export default function AIMatch() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN - Info Cards (Step 3 placeholder) */}
+          {/* RIGHT COLUMN - Info Cards */}
           <div className="w-full lg:w-2/5 space-y-6">
-            <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center text-gray-500 flex flex-col items-center justify-center h-full min-h-[400px]">
-              <p>Right column info cards (Step 3 goes here)</p>
+            
+            {/* Smart AI Engine Card */}
+            <div className="rounded-2xl bg-gradient-to-br from-[#1a0533] to-[#2d1b69] p-6 text-white shadow-lg overflow-hidden relative">
+              <div className="absolute top-0 right-0 p-8 opacity-10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2v20"></path>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+              </div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-purple-500/20 rounded-lg backdrop-blur-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-300">
+                      <path d="M12 2v20"></path>
+                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-white">Smart AI Engine</h3>
+                    <p className="text-purple-200 text-sm">Trained on 10,000+ orders</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1 bg-green-500/20 text-green-400 rounded-full p-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <p className="text-purple-100 text-sm">Best fabric types for your garment</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1 bg-green-500/20 text-green-400 rounded-full p-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <p className="text-purple-100 text-sm">Most cost-effective suppliers</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1 bg-green-500/20 text-green-400 rounded-full p-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <p className="text-purple-100 text-sm">Top-rated tailors with relevant experience</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1 bg-green-500/20 text-green-400 rounded-full p-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <p className="text-purple-100 text-sm">Optimized quantities to reduce waste</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* How It Works Card */}
+            <div className="rounded-2xl bg-white border border-gray-100 p-6 shadow-sm">
+              <div className="flex items-center gap-3 mb-5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
+                  <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+                </svg>
+                <h3 className="font-bold text-lg text-gray-900">How It Works</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">1</div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">🎯 Enter your project requirements</h4>
+                    <p className="text-sm text-gray-500 mt-1">Specify your garment, budget, and desired quality.</p>
+                  </div>
+                </div>
+                
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm">2</div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">📈 AI analyzes market data & past orders</h4>
+                    <p className="text-sm text-gray-500 mt-1">Our engine matches your needs against 10,000+ data points.</p>
+                  </div>
+                </div>
+                
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="w-8 h-8 rounded-full bg-green-50 text-green-600 flex items-center justify-center font-bold text-sm">3</div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">💡 Receive personalized matches</h4>
+                    <p className="text-sm text-gray-500 mt-1">Get instant curated lists of fabrics and expert tailors.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Badge Card */}
+            <div className="rounded-2xl bg-gray-900 p-6 text-white shadow-lg">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex text-yellow-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <h3 className="font-bold text-lg">Trusted by 5,000+ businesses</h3>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed">
+                AI has helped ClothStreet businesses save an average of <strong className="text-white">23% on procurement costs</strong> and reduce sourcing time by <strong className="text-white">65%</strong>.
+              </p>
             </div>
           </div>
           
