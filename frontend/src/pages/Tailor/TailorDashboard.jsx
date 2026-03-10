@@ -143,3 +143,102 @@ function StatCard({ stat }) {
     );
 }
 
+const DUMMY_EARNINGS = {
+    total: "Rs 18,000",
+    fromOrders: 1,
+    growthPercent: 24,
+};
+
+const DUMMY_RATINGS = {
+    average: 4.9,
+    total: 407,
+    breakdown: [
+        { stars: 5, count: 312 },
+        { stars: 4, count: 85 },
+        { stars: 3, count: 8 },
+        { stars: 2, count: 2 },
+        { stars: 1, count: 0 },
+    ],
+};
+
+// ─── Earnings Card ────────────────────────────────────────────────────────────
+function EarningsCard({ data }) {
+    return (
+        <div className="bg-gradient-to-br from-violet-700 via-purple-600 to-indigo-700 rounded-2xl p-6 flex flex-col gap-3 shadow-lg text-white h-full">
+            {/* Header */}
+            <div className="flex items-center gap-2 text-purple-200 text-sm font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
+                    <path d="M12 18V6" />
+                </svg>
+                Total Earnings
+            </div>
+
+            {/* Amount */}
+            <p className="text-4xl font-extrabold leading-tight tracking-tight">{data.total}</p>
+
+            {/* Sub-label */}
+            <p className="text-purple-300 text-sm">from {data.fromOrders} completed order{data.fromOrders !== 1 ? "s" : ""}</p>
+
+            {/* Growth badge */}
+            <div className="mt-auto flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-3 py-1 w-fit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                    <polyline points="16 7 22 7 22 13" />
+                </svg>
+                <span className="text-green-400 text-sm font-semibold">+{data.growthPercent}% vs last month</span>
+            </div>
+        </div>
+    );
+}
+
+// ─── Ratings Card ─────────────────────────────────────────────────────────────
+function StarIcon({ filled = true, size = 16 }) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
+            fill={filled ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="1.5"
+            strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+    );
+}
+
+function RatingsCard({ data }) {
+    const maxCount = Math.max(...data.breakdown.map((b) => b.count), 1);
+
+    return (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4 h-full">
+            {/* Title row */}
+            <div className="flex items-center justify-between">
+                <h2 className="text-gray-800 font-bold text-base flex items-center gap-2">
+                    <span className="text-yellow-400">⭐</span> Ratings &amp; Reviews
+                </h2>
+                <div className="flex items-center gap-1.5">
+                    <div className="flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map((s) => <StarIcon key={s} filled={s <= Math.round(data.average)} size={14} />)}
+                    </div>
+                    <span className="text-yellow-500 font-bold text-sm">{data.average}</span>
+                    <span className="text-gray-400 text-sm">({data.total} reviews)</span>
+                </div>
+            </div>
+
+            {/* Breakdown rows */}
+            <div className="flex flex-col gap-2">
+                {data.breakdown.map((row) => (
+                    <div key={row.stars} className="flex items-center gap-3">
+                        <span className="text-gray-500 text-sm w-4 text-right">{row.stars}</span>
+                        <StarIcon filled size={13} />
+                        <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                                className="h-full bg-yellow-400 rounded-full transition-all duration-500"
+                                style={{ width: `${(row.count / maxCount) * 100}%` }}
+                            />
+                        </div>
+                        <span className="text-gray-400 text-sm w-6 text-right">{row.count}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
