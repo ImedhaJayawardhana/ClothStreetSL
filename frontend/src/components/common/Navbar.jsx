@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
@@ -7,6 +7,18 @@ export default function Navbar() {
     const { user, logout } = useAuth();
     const { cartCount } = useCart();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const profileRef = useRef(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (profileRef.current && !profileRef.current.contains(e.target)) {
+                setIsProfileOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // Default Links for Unauthenticated Users
     const unauthLinks = (
@@ -116,7 +128,7 @@ export default function Navbar() {
                                 </Link>
                             </div>
                         ) : (
-                            <div className="relative ml-2">
+                            <div className="relative ml-2" ref={profileRef}>
                                 <button
                                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                                     className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-700 font-bold border-2 border-transparent hover:border-purple-300 transition-all focus:outline-none"
@@ -132,22 +144,28 @@ export default function Navbar() {
                                         </div>
 
                                         {user.role === "customer" ? (
-                                            <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+                                            <Link to="/profile" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
                                                 Profile
                                             </Link>
                                         ) : (
-                                            <Link to="/portfolio" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+                                            <Link to="/portfolio" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
                                                 Portfolio
                                             </Link>
                                         )}
 
-                                        <Link to="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+                                        {user.role === "seller" && (
+                                            <Link to="/inventory" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+                                                Inventory
+                                            </Link>
+                                        )}
+
+                                        <Link to="/orders" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
                                             Orders
                                         </Link>
 
                                         <div className="border-t border-gray-50 mt-1 pt-1">
                                             <button
-                                                onClick={handleLogout}
+                                                onClick={() => { handleLogout(); setIsProfileOpen(false); }}
                                                 className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                                             >
                                                 Logout
