@@ -523,3 +523,145 @@ const DUMMY_REVIEWS = [
         daysAgo: 14,
     },
 ];
+function StarRow({ count, size = 14 }) {
+    return (
+        <div className="flex gap-0.5">
+            {[1, 2, 3, 4, 5].map((s) => (
+                <svg key={s} xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
+                    fill={s <= count ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="1.5"
+                    strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+            ))}
+        </div>
+    );
+}
+
+function ReviewCard({ review }) {
+    return (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3">
+            {/* Stars */}
+            <StarRow count={review.stars} />
+            {/* Quote */}
+            <p className="text-gray-600 text-sm italic leading-relaxed flex-1">
+                &ldquo;{review.quote}&rdquo;
+            </p>
+            {/* Reviewer row */}
+            <div className="flex items-center justify-between mt-1">
+                <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-violet-100 text-violet-600 text-xs font-bold flex items-center justify-center flex-shrink-0">
+                        {review.name.charAt(0)}
+                    </div>
+                    <span className="text-gray-700 font-semibold text-sm">{review.name}</span>
+                </div>
+                <span className="text-gray-400 text-xs">
+                    {review.daysAgo === 1 ? "1 day ago" : `${review.daysAgo} days ago`}
+                </span>
+            </div>
+        </div>
+    );
+}
+
+function RecentReviewsSection({ reviews }) {
+    return (
+        <div className="flex flex-col gap-4">
+            <h2 className="text-gray-800 font-bold text-base flex items-center gap-2">
+                <span className="text-yellow-400">⭐</span> Recent Reviews
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {reviews.map((r) => <ReviewCard key={r.id} review={r} />)}
+            </div>
+        </div>
+    );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+export default function TailorDashboard() {
+    const { user: authUser } = useAuth();
+
+    // ── Live stat counts from Firestore ──
+    const [statCounts, setStatCounts] = useState({
+        active: null,
+        inProgress: null,
+        readyToDeliver: null,
+        completed: null,
+    });
+    const [statsLoading, setStatsLoading] = useState(true);
+
+    useEffect(() => {
+        if (!authUser?.uid) return;
+        const fetchStats = async () => {
+            try {
+                const col = collection(db, "jobRequests");
+                const q = query(col, where("tailorId", "==", authUser.uid));
+                const snap = await getDocs(q);
+
+                const counts = { active: 0, inProgress: 0, readyToDeliver: 0, completed: 0 };
+                snap.forEach((doc) => {
+                    const status = (doc.data().status || "").toLowerCase();
+                    if (status === "active") counts.active++;
+                    if (status === "in progress") counts.inProgress++;
+                    if (status === "ready to deliver") counts.readyToDeliver++;
+                    if (status === "completed") counts.completed++;
+                });
+                setStatCounts(counts);
+            } catch (err) {
+                console.error("Failed to load job stats:", err);
+            } finally {
+                setStatsLoading(false);
+            }
+        };
+        fetchStats();
+    }, [authUser]);
+
+    // Merge live counts into the stat card definitions (fallback to dummy while loading)
+    const liveStats = DUMMY_STATS.map((s) => {
+        if (statsLoading) return s;
+        const countMap = {
+            "Active Orders": statCounts.active,
+            "In Progress": statCounts.inProgress,
+            "Ready to Deliver": statCounts.readyToDeliver,
+            "Completed": statCounts.completed,
+        };
+        return { ...s, value: countMap[s.label] ?? s.value };
+    });
+
+    // Banner still uses dummy until profile Firestore integration
+    const user = DUMMY_USER;
+
+    return (
+        <div className="min-h-screen bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+                {/* ── Banner ── */}
+                <WelcomeBanner user={user} />
+
+                {/* ── Stat Cards ── */}
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {liveStats.map((stat) => (
+                        <StatCard key={stat.id} stat={{
+                            ...stat,
+                            value: statsLoading
+                                ? <span className="inline-block w-8 h-6 bg-gray-200 rounded animate-pulse" />
+                                : stat.value,
+                        }} />
+                    ))}
+                </div>
+
+                {/* ── Earnings + Ratings ── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <EarningsCard data={DUMMY_EARNINGS} />
+                    <RatingsCard data={DUMMY_RATINGS} />
+                </div>
+
+                {/* ── Orders Row ── */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <OrderRequestsCard requests={DUMMY_REQUESTS} />
+                    <ActiveOrdersCard orders={DUMMY_ORDERS} />
+                </div>
+
+                {/* ── Recent Reviews ── */}
+                <RecentReviewsSection reviews={DUMMY_REVIEWS} />
+            </div>
+        </div>
+    );
+}
