@@ -300,7 +300,7 @@ export default function TailorProfile() {
   };
 
   const handleDeletePortfolioImage = async (idx, url) => {
-    try { await deleteObject(ref(storage, url)); } catch (_) {}
+    try { await deleteObject(ref(storage, url)); } catch { /* ignore if already deleted */ }
     setDraftPortfolioImages((prev) => prev.filter((_, i) => i !== idx));
   };
 
