@@ -238,3 +238,16 @@ export default function SellerDashboard() {
       </div>
       {/* Your existing <Navbar /> is rendered by the router — no duplicate here */}
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8 flex-1 w-full">
+
+        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {statsData.map((stat) => (
+            <div key={stat.label}
+              className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+              <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center mb-3`}>
+                {stat.icon}
+              </div>
+              <p className={`text-3xl font-bold ${stat.color}`}>{stat.value}</p>
+              <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
+            </div>
+          ))}
+        </section>
