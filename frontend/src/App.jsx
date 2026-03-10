@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import BrowseTailors from "./pages/BrowseTailors";
 import Cart from "./pages/Cart";
 import BrowseMaterials from "./pages/BrowseMaterials";
+import BrowseDesigners from "./pages/BrowseDesigners";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import SellerDashboard from "./pages/supplier/seller-dashboard";
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/tailors" element={<BrowseTailors />} />
+          <Route path="/designers" element={<BrowseDesigners />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/shop" element={<BrowseMaterials />} />
           <Route path="/fabrics" element={<BrowseMaterials />} />
