@@ -168,8 +168,8 @@ function ItemModal({ item, onClose, onSave }) {
 }
 /* ─── Main Component ─────────────────────────────────────────── */
 export default function Inventory() {
-    const { user } = useAuth();
-    const navigate = useNavigate();
+    const { user: _user } = useAuth();
+    const _navigate = useNavigate();
     const [items, setItems] = useState(SAMPLE_ITEMS);
     const [activeTab, setActiveTab] = useState("All");
     const [search, setSearch] = useState("");
