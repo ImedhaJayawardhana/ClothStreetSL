@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { auth, storage } from "../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -20,6 +21,7 @@ const mockTailors = [
 
 export default function CustomerProfile() {
   const { user, updateProfile } = useAuth();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -275,7 +277,7 @@ export default function CustomerProfile() {
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
                     Recent Orders
                   </h3>
-                  <a href="#" style={{ fontSize: "13px", color: "#6366f1", fontWeight: "600", textDecoration: "none" }}>View All</a>
+                  <Link to="/orders" style={{ fontSize: "13px", color: "#6366f1", fontWeight: "600", textDecoration: "none" }}>View All</Link>
                 </div>
                 <div className="cp-order-list">
                   {mockOrders.map((order, idx) => (
@@ -347,7 +349,10 @@ export default function CustomerProfile() {
                     </div>
                   ))}
                 </div>
-                <button style={{ width: "100%", marginTop: "20px", padding: "8px 0", borderRadius: "8px", border: "1.5px solid #e0e7ff", background: "#f8fafc", color: "#4f46e5", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}>
+                <button 
+                  onClick={() => navigate('/tailors')}
+                  style={{ width: "100%", marginTop: "20px", padding: "8px 0", borderRadius: "8px", border: "1.5px solid #e0e7ff", background: "#f8fafc", color: "#4f46e5", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}
+                >
                   Browse Tailors
                 </button>
               </div>
