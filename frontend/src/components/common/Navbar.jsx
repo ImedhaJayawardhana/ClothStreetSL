@@ -148,7 +148,11 @@ export default function Navbar() {
                                                 Profile
                                             </Link>
                                         ) : (
-                                            <Link to="/portfolio" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+                                            <Link
+                                                to={user?.role === "tailor" ? "/tailor-profile" : "/portfolio"}
+                                                onClick={() => setIsProfileOpen(false)}
+                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors"
+                                            >
                                                 Portfolio
                                             </Link>
                                         )}
