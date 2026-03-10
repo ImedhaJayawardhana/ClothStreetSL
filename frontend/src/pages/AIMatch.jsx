@@ -1,12 +1,34 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+
+// Mock Fallback Data
+const mockResults = {
+  materials: [
+    { id: 1, name: 'Premium Cotton Fabric', supplier: 'TextileCo Lanka', price: 'Rs 450/m', rating: 4.8, match: 97, color: 'White' },
+    { id: 2, name: 'Polyester Blend', supplier: 'FabricHub Colombo', price: 'Rs 280/m', rating: 4.5, match: 89, color: 'Blue' },
+    { id: 3, name: 'Organic Linen', supplier: 'EcoTextile SL', price: 'Rs 620/m', rating: 4.9, match: 85, color: 'Beige' }
+  ],
+  tailors: [
+    { id: 1, name: 'Nimal Perera', location: 'Colombo 05', experience: '12 years', rating: 4.9, match: 96, speciality: 'Formal Wear' },
+    { id: 2, name: 'Kamala Silva', location: 'Kandy', experience: '8 years', rating: 4.7, match: 91, speciality: 'Traditional' },
+    { id: 3, name: 'Ravi Fernando', location: 'Galle', experience: '15 years', rating: 4.8, match: 88, speciality: 'Casual Wear' }
+  ]
+};
 
 export default function AIMatch() {
+  const { addToCart } = useCart();
+  
   const [formData, setFormData] = useState({
     garmentType: '',
     budget: 50000,
     quantity: 100,
     quality: 'Standard'
   });
+
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState(null);
 
   // Estimated price per piece
   const pricePerPiece = Math.round(formData.budget / formData.quantity);
@@ -267,6 +289,117 @@ export default function AIMatch() {
           </div>
           
         </div>
+
+        {/* RESULTS SECTION */}
+        {loading && (
+          <div className="mt-16 flex flex-col items-center justify-center py-12">
+            <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mb-4"></div>
+            <p className="text-gray-600 font-medium">Analyzing market data & past orders...</p>
+          </div>
+        )}
+
+        {results && !loading && (
+          <div className="mt-16 animate-fade-in-up">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-bold text-gray-900">Your Perfect Matches</h2>
+              <p className="text-gray-500 mt-2">We found the best suppliers and tailors for your specific requirements.</p>
+            </div>
+
+            {/* Materials Subsection */}
+            <div className="mb-12">
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <span className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                </span>
+                Recommended Materials
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {results.materials.map((material) => (
+                  <div key={material.id} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-bold rounded-bl-xl ${
+                      material.match >= 90 ? 'bg-green-100 text-green-700' :
+                      material.match >= 75 ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {material.match}% Match
+                    </div>
+                    
+                    <h4 className="font-bold text-lg text-gray-900 pr-16">{material.name}</h4>
+                    <p className="text-sm text-gray-500 mb-4">{material.supplier}</p>
+                    
+                    <div className="flex gap-4 mb-6">
+                      <div className="flex items-center gap-1 text-sm font-medium text-gray-900">
+                        <span className="text-yellow-400">⭐</span> {material.rating}
+                      </div>
+                      <div className="text-sm font-medium text-gray-900 border-l border-gray-200 pl-4">
+                        {material.price}
+                      </div>
+                      <div className="text-sm text-gray-500 border-l border-gray-200 pl-4">
+                        {material.color}
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => addToCart({ ...material, priceBase: parseInt(material.price.replace(/\D/g, '')), quantity: 1, type: 'fabric', image: 'https://images.unsplash.com/photo-1605000578643-4f9339e07fb6?auto=format&fit=crop&q=80&w=400' })}
+                      className="w-full py-2.5 px-4 rounded-xl text-purple-600 bg-purple-50 hover:bg-purple-600 hover:text-white font-medium transition-colors text-sm"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Tailors Subsection */}
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <span className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                </span>
+                Recommended Tailors
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {results.tailors.map((tailor) => (
+                  <div key={tailor.id} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-bold rounded-bl-xl ${
+                      tailor.match >= 90 ? 'bg-green-100 text-green-700' :
+                      tailor.match >= 75 ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {tailor.match}% Match
+                    </div>
+                    
+                    <h4 className="font-bold text-lg text-gray-900 pr-16">{tailor.name}</h4>
+                    <p className="text-sm text-gray-500 mb-4">{tailor.location}</p>
+                    
+                    <div className="flex gap-4 mb-6">
+                      <div className="flex items-center gap-1 text-sm font-medium text-gray-900">
+                        <span className="text-yellow-400">⭐</span> {tailor.rating}
+                      </div>
+                      <div className="text-sm font-medium text-gray-900 border-l border-gray-200 pl-4">
+                        {tailor.experience}
+                      </div>
+                      <div className="text-sm text-gray-500 border-l border-gray-200 pl-4">
+                        {tailor.speciality}
+                      </div>
+                    </div>
+                    
+                    <Link
+                      to={`/tailors`}
+                      className="block text-center w-full py-2.5 px-4 rounded-xl text-indigo-600 bg-indigo-50 hover:bg-indigo-600 hover:text-white font-medium transition-colors text-sm"
+                    >
+                      View Profile
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        )}
+
       </section>
     </div>
   );
