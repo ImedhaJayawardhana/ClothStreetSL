@@ -186,6 +186,12 @@
   border-radius: 16px;
   padding: 28px 32px;
   margin-bottom: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cp-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
 }
 
 /* -- Photo Section -- */
@@ -262,6 +268,53 @@
   font-size: 18px;
   font-weight: 700;
   color: #1e1b4b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* -- Status Pills -- */
+.cp-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cp-status-pill.processing {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.cp-status-pill.shipped {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+.cp-status-pill.delivered {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+/* -- Lists & Tables -- */
+.cp-order-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.cp-order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.cp-order-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .cp-section-edit-btn {

@@ -6,6 +6,18 @@ import { sendPasswordResetEmail, deleteUser } from "firebase/auth";
 import toast from "react-hot-toast";
 import "./CustomerProfile.css";
 
+// --- Mock Data for Dashboard Widgets ---
+const mockOrders = [
+  { id: "#CS-8472", date: "Oct 12, 2025", total: "Rs. 4,500", status: "Delivered", class: "delivered" },
+  { id: "#CS-8591", date: "Nov 03, 2025", total: "Rs. 12,000", status: "Shipped", class: "shipped" },
+  { id: "#CS-8610", date: "Nov 15, 2025", total: "Rs. 3,250", status: "Processing", class: "processing" },
+];
+
+const mockTailors = [
+  { name: "Saman Tailors", specialty: "Menswear & Suits", rating: "4.8" },
+  { name: "Kandy Fashions", specialty: "Dresses & Blouses", rating: "4.5" },
+];
+
 export default function CustomerProfile() {
   const { user, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
@@ -236,66 +248,130 @@ export default function CustomerProfile() {
         </section>
 
         {/* ---- Profile Dashboard Content ---- */}
-        <div className="cp-edit-wrapper" style={{ paddingTop: "40px" }}>
+        <div className="cp-edit-wrapper" style={{ paddingTop: "40px", maxWidth: "1000px" }}>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "28px" }}>
             
-            {/* Left Column */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            {/* ====== LEFT COLUMN ====== */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+              
               {/* About Me */}
               <div className="cp-card" style={{ marginBottom: "0" }}>
                 <div className="cp-section-header">
-                  <h3 className="cp-section-title">About Me</h3>
+                  <h3 className="cp-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                    About Me
+                  </h3>
                 </div>
                 <p style={{ color: user?.bio ? "#374151" : "#9ca3af", fontSize: "14.5px", lineHeight: "1.6" }}>
                   {user?.bio || "No bio added yet. Click 'Edit Profile' to tell us about yourself."}
                 </p>
               </div>
 
+              {/* Recent Orders Widget */}
+              <div className="cp-card" style={{ marginBottom: "0" }}>
+                <div className="cp-section-header">
+                  <h3 className="cp-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                    Recent Orders
+                  </h3>
+                  <a href="#" style={{ fontSize: "13px", color: "#6366f1", fontWeight: "600", textDecoration: "none" }}>View All</a>
+                </div>
+                <div className="cp-order-list">
+                  {mockOrders.map((order, idx) => (
+                    <div className="cp-order-item" key={idx}>
+                      <div>
+                        <p style={{ fontSize: "14px", fontWeight: "700", color: "#1e1b4b" }}>{order.id}</p>
+                        <p style={{ fontSize: "12.5px", color: "#6b7280", marginTop: "2px" }}>{order.date}</p>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <p style={{ fontSize: "14.5px", fontWeight: "600", color: "#1e1b4b", marginBottom: "6px" }}>{order.total}</p>
+                        <span className={`cp-status-pill ${order.class}`}>{order.status}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+            {/* ====== RIGHT COLUMN ====== */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+              
               {/* Address Details */}
               <div className="cp-card" style={{ marginBottom: "0" }}>
                 <div className="cp-section-header">
-                  <h3 className="cp-section-title">Address Details</h3>
+                  <h3 className="cp-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Address Details
+                  </h3>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "14.5px", color: "#374151" }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "#6b7280" }}>Street:</span>
-                    <span style={{ fontWeight: "500" }}>{user?.address?.street || "—"}</span>
+                    <span style={{ fontWeight: "500", textAlign: "right" }}>{user?.address?.street || "—"}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "#6b7280" }}>City:</span>
-                    <span style={{ fontWeight: "500" }}>{user?.address?.city || user?.city || "—"}</span>
+                    <span style={{ fontWeight: "500", textAlign: "right" }}>{user?.address?.city || user?.city || "—"}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "#6b7280" }}>Province:</span>
-                    <span style={{ fontWeight: "500" }}>{user?.address?.province || "—"}</span>
+                    <span style={{ fontWeight: "500", textAlign: "right" }}>{user?.address?.province || "—"}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "#6b7280" }}>Postal / Zip:</span>
-                    <span style={{ fontWeight: "500" }}>{user?.address?.zip || "—"}</span>
+                    <span style={{ fontWeight: "500", textAlign: "right" }}>{user?.address?.zip || "—"}</span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Right Column */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              {/* Saved Tailors Widget */}
+              <div className="cp-card" style={{ marginBottom: "0" }}>
+                <div className="cp-section-header">
+                  <h3 className="cp-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                    Saved Tailors
+                  </h3>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  {mockTailors.map((tailor, idx) => (
+                    <div key={idx} style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div style={{ width: "40px", height: "40px", borderRadius: "8px", background: "#e0e7ff", display: "flex", alignItems: "center", justifyContent: "center", color: "#4f46e5", fontWeight: "bold", fontSize: "16px" }}>
+                        {tailor.name.charAt(0)}
+                      </div>
+                      <div>
+                        <p style={{ fontSize: "14px", fontWeight: "600", color: "#1e1b4b" }}>{tailor.name}</p>
+                        <p style={{ fontSize: "12px", color: "#6b7280", marginTop: "2px" }}>★ {tailor.rating} • {tailor.specialty}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button style={{ width: "100%", marginTop: "20px", padding: "8px 0", borderRadius: "8px", border: "1.5px solid #e0e7ff", background: "#f8fafc", color: "#4f46e5", fontSize: "13px", fontWeight: "600", cursor: "pointer" }}>
+                  Browse Tailors
+                </button>
+              </div>
+
               {/* My Measurements */}
               <div className="cp-card" style={{ height: "100%", marginBottom: "0" }}>
                 <div className="cp-section-header">
-                  <h3 className="cp-section-title">My Measurements</h3>
+                  <h3 className="cp-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Measurements
+                  </h3>
                 </div>
-                <div className="cp-fields-row" style={{ rowGap: "24px", gridTemplateColumns: "1fr 1fr" }}>
+                <div className="cp-fields-row" style={{ rowGap: "20px", gridTemplateColumns: "1fr 1fr" }}>
                   {["chest", "waist", "hips", "inseam", "shoulder", "sleeve"].map((field) => (
                     <div className="cp-field" key={field}>
                       <span className="cp-field-label">{field}</span>
-                      <span className="cp-field-value" style={{ fontSize: "16px" }}>
+                      <span className="cp-field-value" style={{ fontSize: "15px" }}>
                         {user?.measurements?.[field] ? `${user.measurements[field]} cm` : "—"}
                       </span>
                     </div>
                   ))}
                 </div>
               </div>
+
             </div>
 
           </div>
