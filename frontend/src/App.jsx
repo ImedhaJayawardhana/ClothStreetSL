@@ -16,6 +16,7 @@ import CustomerProfile from "./pages/CustomerProfile";
 import AIMatch from "./pages/AIMatch";
 import Inventory from "./pages/supplier/Inventory";
 import TailorProfile from "./pages/Tailor/TailorProfile";
+import DesignerProfile from "./pages/designer/DesignerProfile";
 
 
 function PrivateRoute({ children }) {
@@ -45,6 +46,8 @@ export default function App() {
           <Route path="/profile" element={<PrivateRoute><CustomerProfile /></PrivateRoute>} />
           <Route path="/tailor-profile" element={<PrivateRoute><TailorProfile /></PrivateRoute>} />
           <Route path="/tailor/:tailorId" element={<TailorProfile />} />
+          <Route path="/designer-profile" element={<PrivateRoute><DesignerProfile /></PrivateRoute>} />
+          <Route path="/designer/:designerId" element={<DesignerProfile />} />
         </Routes>
       </main>
       <Footer />

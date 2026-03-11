@@ -1,0 +1,734 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { db, storage } from "../../firebase/firebase";
+import { useAuth } from "../../context/AuthContext";
+
+// ─── Default / placeholder designer data ───────────────────────────────────────
+const DEFAULT_DESIGNER = {
+  uid: "",
+  name: "New Designer",
+  location: "Colombo, Sri Lanka",
+  bio: "I create stunning, bespoke fashion pieces that reflect unique aesthetic visions.",
+  profilePhoto: "",
+  hourlyRate: 5000,
+  rating: 5.0,
+  services: ["Fashion Illustration", "Bespoke Design", "Consultation"],
+  aesthetics: ["Minimalist", "Avant-garde", "Streetwear"],
+  portfolioImages: [],
+  reviews: [
+    {
+      id: 1,
+      text: "An absolute visionary! The custom dress exceeded all my expectations.",
+      rating: 5,
+      reviewer: "Amaya Silva",
+    },
+    {
+      id: 2,
+      text: "Highly professional and the attention to detail is unmatched. I love the streetwear collection.",
+      rating: 5,
+      reviewer: "Kaveen Fernando",
+    },
+  ],
+};
+
+// ─── Icons & Helpers ──────────────────────────────────────────────────────────
+function StarIcon({ filled = true, size = 16 }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
+      fill={filled ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
+
+function StarRow({ count, size = 14 }) {
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <StarIcon key={s} filled={s <= count} size={size} />
+      ))}
+    </div>
+  );
+}
+
+function ShareIcon({ size = 16 }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+    </svg>
+  );
+}
+
+function Tag({ label, onRemove, editMode, colorScheme = "purple" }) {
+  const baseColors = {
+    purple: "bg-purple-50 text-purple-700 border-purple-100",
+    indigo: "bg-indigo-50 text-indigo-700 border-indigo-100",
+  };
+  const btnColors = {
+    purple: "bg-purple-200 hover:bg-red-200 hover:text-red-600 text-purple-600",
+    indigo: "bg-indigo-200 hover:bg-red-200 hover:text-red-600 text-indigo-600",
+  };
+  
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border ${baseColors[colorScheme]}`}>
+      {label}
+      {editMode && onRemove && (
+        <button onClick={onRemove}
+          className={`w-3.5 h-3.5 rounded-full flex items-center justify-center transition-colors text-[9px] font-bold ${btnColors[colorScheme]}`}>
+          ✕
+        </button>
+      )}
+    </span>
+  );
+}
+
+// ─── Review Card ─────────────────────────────────────────────────────────────
+function ReviewCard({ review }) {
+  return (
+    <div className="bg-white border border-fuchsia-100 rounded-2xl p-5 shadow-sm flex flex-col gap-3 hover:shadow-md hover:border-fuchsia-200 transition-all duration-200">
+      <StarRow count={review.rating} size={14} />
+      <p className="text-gray-700 text-sm leading-relaxed font-medium flex-1">
+        &ldquo;{review.text}&rdquo;
+      </p>
+      <div className="flex items-center gap-2.5 pt-1 border-t border-gray-50">
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-fuchsia-400 to-purple-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+          {review.reviewer?.charAt(0).toUpperCase() || "U"}
+        </div>
+        <div>
+          <p className="text-gray-800 font-semibold text-sm">{review.reviewer}</p>
+          <div className="flex items-center gap-1">
+            <StarIcon size={10} filled />
+            <span className="text-yellow-500 text-xs font-bold">{review.rating}.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+function Skeleton({ className }) {
+  return <div className={`bg-purple-100 animate-pulse rounded-xl ${className}`} />;
+}
+
+// ─── Portfolio Gallery ────────────────────────────────────────────────────────
+function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage }) {
+  const fileRef = useRef();
+
+  return (
+    <div className="bg-white rounded-2xl border border-fuchsia-100 shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 pt-5 pb-3">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-fuchsia-100 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+              fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+              <circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+            </svg>
+          </div>
+          <span className="font-bold text-gray-800 text-sm">Portfolio Gallery</span>
+          {images.length > 0 && (
+            <span className="text-xs text-fuchsia-600 bg-fuchsia-50 px-2 py-0.5 rounded-full font-medium">
+              {images.length} photos
+            </span>
+          )}
+        </div>
+        {editMode && (
+          <>
+            <button
+              onClick={() => fileRef.current.click()}
+              className="flex items-center gap-1.5 text-xs text-fuchsia-600 border border-fuchsia-200 rounded-lg px-3 py-1.5 hover:bg-fuchsia-50 transition-colors font-medium"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Add Photos
+            </button>
+            <input ref={fileRef} type="file" accept="image/*" multiple className="hidden"
+              onChange={(e) => onAddImages(Array.from(e.target.files))} />
+          </>
+        )}
+      </div>
+
+      {/* Scrollable row */}
+      <div className="flex gap-3 overflow-x-auto px-5 pb-5 pt-1"
+        style={{ scrollbarWidth: "none" }}>
+        {images.length === 0 ? (
+          <div className="w-full flex flex-col items-center justify-center py-10 text-gray-400 gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+              fill="none" stroke="#fbcfe8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+              <circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+            </svg>
+            <p className="text-sm">No portfolio photos yet</p>
+          </div>
+        ) : (
+          images.map((img, idx) => (
+            <div key={idx} className="relative flex-shrink-0 group">
+              <img src={img} alt={`Portfolio ${idx + 1}`}
+                className="w-40 h-40 object-cover rounded-xl shadow-sm border border-fuchsia-50 group-hover:shadow-md transition-shadow duration-200" />
+              {editMode && (
+                <button onClick={() => onDeleteImage(idx, img)}
+                  className="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                  ✕
+                </button>
+              )}
+              {/* Hover overlay */}
+              <div className="absolute inset-0 rounded-xl bg-black/0 group-hover:bg-black/10 transition-colors duration-200" />
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function DesignerProfile() {
+  const { designerId } = useParams();
+  const { user: authUser } = useAuth();
+
+  // ── State ──
+  const [designer, setDesigner] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Draft state
+  const [draftName, setDraftName] = useState("");
+  const [draftLocation, setDraftLocation] = useState("");
+  const [draftBio, setDraftBio] = useState("");
+  const [draftRate, setDraftRate] = useState(0);
+  const [draftServices, setDraftServices] = useState([]);
+  const [draftAesthetics, setDraftAesthetics] = useState([]);
+  const [draftPortfolioImages, setDraftPortfolioImages] = useState([]);
+  const [draftProfilePhoto, setDraftProfilePhoto] = useState("");
+  const [newServiceInput, setNewServiceInput] = useState("");
+  const [newAestheticInput, setNewAestheticInput] = useState("");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [isSaved, setIsSaved] = useState(false); // Bookmarked state
+
+  const profilePhotoRef = useRef();
+
+  const resolvedDesignerId = designerId || authUser?.uid;
+  const isOwner = authUser?.uid && authUser.uid === resolvedDesignerId;
+
+  // ── Load designer data ──
+  useEffect(() => {
+    if (!resolvedDesignerId) {
+      setDesigner(DEFAULT_DESIGNER);
+      setLoading(false);
+      return;
+    }
+    const fetchDesigner = async () => {
+      setLoading(true);
+      try {
+        const snap = await getDoc(doc(db, "designers", resolvedDesignerId));
+        if (snap.exists()) {
+          setDesigner({ uid: resolvedDesignerId, ...snap.data() });
+        } else {
+          setDesigner({ ...DEFAULT_DESIGNER, uid: resolvedDesignerId });
+        }
+      } catch (error) {
+        console.error("Failed to fetch designer profile", error);
+        setDesigner({ ...DEFAULT_DESIGNER, uid: resolvedDesignerId });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDesigner();
+  }, [resolvedDesignerId]);
+
+  const enterEditMode = () => {
+    setDraftName(designer.name || "");
+    setDraftLocation(designer.location || "");
+    setDraftBio(designer.bio || "");
+    setDraftRate(designer.hourlyRate || 0);
+    setDraftServices([...(designer.services || [])]);
+    setDraftAesthetics([...(designer.aesthetics || [])]);
+    setDraftPortfolioImages([...(designer.portfolioImages || [])]);
+    setDraftProfilePhoto(designer.profilePhoto || "");
+    setEditMode(true);
+  };
+
+  const cancelEdit = () => setEditMode(false);
+
+  const handleProfilePhotoChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingPhoto(true);
+    try {
+      const storageRef = ref(storage, `designers/${resolvedDesignerId}/profilePhoto`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      setDraftProfilePhoto(url);
+    } catch (err) {
+      console.error("Photo upload failed:", err);
+      alert("Photo upload failed: " + err.message);
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const handleAddPortfolioImages = async (files) => {
+    for (const file of files) {
+      try {
+        const storageRef = ref(storage, `designers/${resolvedDesignerId}/portfolio/${Date.now()}_${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        setDraftPortfolioImages((prev) => [...prev, url]);
+      } catch (err) {
+        console.error("Portfolio upload failed:", err);
+        alert("Portfolio upload failed: " + err.message);
+      }
+    }
+  };
+
+  const handleDeletePortfolioImage = async (idx, url) => {
+    try { 
+      await deleteObject(ref(storage, url)); 
+    } catch { 
+      /* ignore if already deleted */ 
+    }
+    setDraftPortfolioImages((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const updatedData = {
+        uid: resolvedDesignerId,
+        name: draftName || authUser?.displayName || "Designer",
+        location: draftLocation,
+        bio: draftBio,
+        profilePhoto: draftProfilePhoto,
+        hourlyRate: Number(draftRate),
+        services: draftServices,
+        aesthetics: draftAesthetics,
+        portfolioImages: draftPortfolioImages,
+        rating: designer.rating || 5.0,
+        reviews: designer.reviews || [],
+      };
+      await setDoc(doc(db, "designers", resolvedDesignerId), updatedData, { merge: true });
+      setDesigner((prev) => ({ ...prev, ...updatedData }));
+      setEditMode(false);
+    } catch (err) {
+      console.error("Save failed:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleShare = () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({ title: `${designer?.name} – Designer Profile`, url });
+    } else {
+      navigator.clipboard.writeText(url);
+      alert("Profile link copied to clipboard!");
+    }
+  };
+
+  // ─── Loading skeleton ──────────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 py-10 px-4">
+        <div className="max-w-5xl mx-auto space-y-6">
+          <Skeleton className="h-52 w-full" />
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex-1 space-y-4">
+              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-52 w-full" />
+            </div>
+            <div className="w-full lg:w-72 flex-shrink-0">
+              <Skeleton className="h-80 w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const displayServices = editMode ? draftServices : designer.services || [];
+  const displayAesthetics = editMode ? draftAesthetics : designer.aesthetics || [];
+  const displayRate = editMode ? draftRate : designer.hourlyRate;
+  const displayProfilePhoto = editMode ? draftProfilePhoto : designer.profilePhoto;
+  const displayBio = editMode ? draftBio : designer.bio;
+  const displayName = editMode ? draftName : designer.name;
+  const displayLocation = editMode ? draftLocation : designer.location || "Sri Lanka";
+  const displayPortfolioImages = editMode ? draftPortfolioImages : designer.portfolioImages || [];
+  const reviews = designer.reviews || DEFAULT_DESIGNER.reviews;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-fuchsia-50 via-white to-purple-50">
+
+      {/* ── Hero Banner ─────────────────────────────────────────────────────── */}
+      <div className="bg-gradient-to-r from-fuchsia-800 via-purple-700 to-violet-800 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-white/5" />
+          <div className="absolute top-4 right-32 w-32 h-32 rounded-full bg-white/5" />
+          <div className="absolute -bottom-6 left-10 w-48 h-48 rounded-full bg-fuchsia-900/30" />
+        </div>
+
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+          {/* Edit / Save / Cancel buttons */}
+          <div className="flex justify-end mb-6 gap-2">
+            {isOwner && !editMode && (
+              <button onClick={enterEditMode}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white text-sm font-semibold transition-all duration-200 backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+                Edit Profile
+              </button>
+            )}
+            {editMode && (
+              <>
+                <button onClick={cancelEdit}
+                  className="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white text-sm font-medium transition-all duration-200">
+                  Cancel
+                </button>
+                <button onClick={handleSave} disabled={saving}
+                  className="flex items-center gap-2 px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 text-white text-sm font-semibold transition-colors shadow-lg">
+                  {saving ? (
+                    <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                  {saving ? "Saving…" : "Save Changes"}
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Profile identity row */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            {/* Avatar */}
+            <div className="relative flex-shrink-0">
+              {displayProfilePhoto ? (
+                <img src={displayProfilePhoto} alt={designer.name}
+                  className="w-24 h-24 rounded-2xl object-cover border-4 border-white/30 shadow-xl" />
+              ) : (
+                <div className="w-24 h-24 rounded-2xl bg-white/20 border-4 border-white/30 shadow-xl flex items-center justify-center text-white text-4xl font-extrabold backdrop-blur-sm">
+                  {designer.name?.charAt(0).toUpperCase()}
+                </div>
+              )}
+              {/* Verified badge */}
+              <div className="absolute -bottom-2 -right-2 w-7 h-7 bg-emerald-400 rounded-full border-2 border-white flex items-center justify-center shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24"
+                  fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              {editMode && (
+                <>
+                  <button onClick={() => profilePhotoRef.current.click()} disabled={uploadingPhoto}
+                    className="absolute inset-0 w-24 h-24 rounded-2xl bg-black/50 flex items-center justify-center text-white text-xs font-semibold hover:bg-black/70 transition-colors">
+                    {uploadingPhoto ? "Uploading…" : "Change"}
+                  </button>
+                  <input ref={profilePhotoRef} type="file" accept="image/*" className="hidden"
+                    onChange={handleProfilePhotoChange} />
+                </>
+              )}
+            </div>
+
+            {/* Name, role, rating */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                {editMode ? (
+                  <input type="text" value={draftName} onChange={(e) => setDraftName(e.target.value)}
+                    className="text-gray-900 text-2xl font-extrabold leading-tight px-3 py-1 rounded-xl focus:outline-none focus:ring-2 focus:ring-fuchsia-400 w-full max-w-sm bg-white"
+                    placeholder="Your Name"
+                  />
+                ) : (
+                  <h1 className="text-white text-3xl font-extrabold leading-tight">
+                    {displayName}
+                  </h1>
+                )}
+                <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold bg-white/15 text-white border border-white/25 backdrop-blur-sm">
+                  ✦ Master Designer
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4 mt-2">
+                {/* Rating */}
+                <div className="flex items-center gap-1.5 bg-white/10 rounded-full px-3 py-1 border border-white/20">
+                  <StarIcon size={14} filled />
+                  <span className="text-yellow-300 font-bold text-sm">{designer.rating?.toFixed(1)}</span>
+                  <span className="text-fuchsia-200 text-xs">/ 5.0</span>
+                </div>
+                {/* Reviews count */}
+                <div className="flex items-center gap-1.5 text-fuchsia-200 text-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width={13} height={13} viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                  <span>{reviews.length} reviews</span>
+                </div>
+                {/* Location placeholder */}
+                <div className="flex items-center gap-1.5 text-fuchsia-200 text-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width={13} height={13} viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  {editMode ? (
+                    <input type="text" value={draftLocation} onChange={(e) => setDraftLocation(e.target.value)}
+                      className="text-sm px-2 py-0.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 bg-white rounded w-48"
+                      placeholder="e.g. Colombo, Sri Lanka"
+                    />
+                  ) : (
+                    <span>{displayLocation}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Page body ─────────────────────────────────────────────────────────── */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-6">
+
+          {/* ══════════════════════════════════════════════════════════
+              LEFT COLUMN
+          ══════════════════════════════════════════════════════════ */}
+          <div className="flex-1 flex flex-col gap-6 min-w-0">
+
+            {/* ── Bio card ── */}
+            <div className="bg-white rounded-2xl border border-fuchsia-100 shadow-sm p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-7 h-7 rounded-lg bg-fuchsia-100 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
+                    fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <h2 className="text-gray-800 font-bold text-sm">About Me</h2>
+              </div>
+              {editMode ? (
+                <textarea
+                  className="w-full text-gray-700 text-base leading-relaxed resize-none border border-fuchsia-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 bg-fuchsia-50/40"
+                  rows={4}
+                  value={draftBio}
+                  onChange={(e) => setDraftBio(e.target.value)}
+                  placeholder="Share the story behind your fashion designing journey…"
+                />
+              ) : (
+                <p className="text-gray-700 text-base leading-relaxed">{displayBio}</p>
+              )}
+            </div>
+
+            {/* ── Portfolio gallery ── */}
+            <PortfolioGallery
+              images={displayPortfolioImages}
+              editMode={editMode}
+              onAddImages={handleAddPortfolioImages}
+              onDeleteImage={handleDeletePortfolioImage}
+            />
+
+            {/* ── Reviews section ── */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-7 h-7 rounded-lg bg-yellow-100 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width={13} height={13} viewBox="0 0 24 24"
+                    fill="#f59e0b" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                </div>
+                <h2 className="text-gray-800 font-bold text-sm">Customer Reviews</h2>
+                <div className="flex items-center gap-1.5 ml-1 px-2.5 py-0.5 rounded-full bg-yellow-50 border border-yellow-100">
+                  <StarIcon size={10} filled />
+                  <span className="text-yellow-600 font-bold text-xs">{designer?.rating?.toFixed(1) || "5.0"}</span>
+                  <span className="text-yellow-500 text-xs">· {reviews.length} reviews</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {reviews.map((review, idx) => (
+                  <ReviewCard key={review.id ?? idx} review={review} />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ══════════════════════════════════════════════════════════
+              RIGHT COLUMN — Quick Info Sidebar
+          ══════════════════════════════════════════════════════════ */}
+          <div className="w-full lg:w-72 flex-shrink-0">
+            <div className="bg-white rounded-2xl border border-fuchsia-100 shadow-sm overflow-hidden sticky top-24">
+
+              {/* Top accent band */}
+              <div className="h-2 bg-gradient-to-r from-fuchsia-500 via-purple-500 to-violet-500" />
+
+              <div className="p-6 flex flex-col gap-5">
+                {/* Hourly Rate */}
+                <div className="pb-4 border-b border-gray-100">
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Hourly Rate</p>
+                  {editMode ? (
+                    <input
+                      type="number"
+                      value={draftRate}
+                      onChange={(e) => setDraftRate(e.target.value)}
+                      className="border border-fuchsia-200 rounded-xl px-3 py-2 text-fuchsia-700 font-extrabold text-2xl focus:outline-none focus:ring-2 focus:ring-fuchsia-400 w-full bg-fuchsia-50/40"
+                    />
+                  ) : (
+                    <p className="text-fuchsia-700 font-extrabold text-2xl">
+                      LKR {Number(displayRate).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+
+                {/* Design Services */}
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-5 h-5 rounded-md bg-fuchsia-100 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width={10} height={10} viewBox="0 0 24 24"
+                        fill="none" stroke="#d946ef" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m18 16 4-4-4-4" />
+                        <path d="m6 8-4 4 4 4" />
+                        <path d="m14.5 4-5 16" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-700 font-bold text-sm">Design Services</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {displayServices.map((s, i) => (
+                      <Tag key={i} label={s} editMode={editMode} colorScheme="purple"
+                        onRemove={() => setDraftServices((prev) => prev.filter((_, idx) => idx !== i))} />
+                    ))}
+                  </div>
+                  {editMode && (
+                    <div className="flex gap-2 mt-2">
+                      <input type="text" value={newServiceInput}
+                        onChange={(e) => setNewServiceInput(e.target.value)}
+                        placeholder="Add service…"
+                        className="flex-1 border border-fuchsia-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-fuchsia-400 bg-fuchsia-50/40"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && newServiceInput.trim()) {
+                            setDraftServices((prev) => [...prev, newServiceInput.trim()]);
+                            setNewServiceInput("");
+                          }
+                        }} />
+                      <button onClick={() => {
+                        if (newServiceInput.trim()) {
+                          setDraftServices((prev) => [...prev, newServiceInput.trim()]);
+                          setNewServiceInput("");
+                        }
+                      }}
+                        className="px-3 py-1.5 rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white text-sm font-bold transition-colors">
+                        +
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Aesthetics / Style Traits */}
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-5 h-5 rounded-md bg-indigo-100 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width={10} height={10} viewBox="0 0 24 24"
+                        fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="12" r="6"/>
+                        <circle cx="12" cy="12" r="2"/>
+                      </svg>
+                    </div>
+                    <p className="text-gray-700 font-bold text-sm">Aesthetics</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {displayAesthetics.map((a, i) => (
+                      <Tag key={i} label={a} editMode={editMode} colorScheme="indigo"
+                        onRemove={() => setDraftAesthetics((prev) => prev.filter((_, idx) => idx !== i))} />
+                    ))}
+                  </div>
+                  {editMode && (
+                    <div className="flex gap-2 mt-2">
+                      <input type="text" value={newAestheticInput}
+                        onChange={(e) => setNewAestheticInput(e.target.value)}
+                        placeholder="Add aesthetic…"
+                        className="flex-1 border border-indigo-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400 bg-indigo-50/40"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && newAestheticInput.trim()) {
+                            setDraftAesthetics((prev) => [...prev, newAestheticInput.trim()]);
+                            setNewAestheticInput("");
+                          }
+                        }} />
+                      <button onClick={() => {
+                        if (newAestheticInput.trim()) {
+                          setDraftAesthetics((prev) => [...prev, newAestheticInput.trim()]);
+                          setNewAestheticInput("");
+                        }
+                      }}
+                        className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold transition-colors">
+                        +
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Divider */}
+                <hr className="border-gray-100" />
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col gap-2.5">
+                  {/* Contact Me — primary */}
+                  <button onClick={() => alert("Redirecting to Consultation form...")} className="w-full py-3 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200">
+                    Consultation Request
+                  </button>
+
+                  <div className="flex gap-2">
+                    <button onClick={() => alert("Initiating Hire Request...")} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-fuchsia-200 text-fuchsia-700 text-xs font-semibold hover:bg-fuchsia-50 hover:border-fuchsia-300 transition-colors">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
+                      Hire Now
+                    </button>
+                    <button onClick={() => setIsSaved(!isSaved)} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-fuchsia-200 text-fuchsia-700 text-xs font-semibold hover:bg-fuchsia-50 hover:border-fuchsia-300 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24" 
+                        fill={isSaved ? "#ef4444" : "none"} stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                      </svg>
+                      {isSaved ? "Saved" : "Save"}
+                    </button>
+                  </div>
+
+                  {/* Share Profile */}
+                  <button onClick={handleShare}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-gray-500 text-sm font-medium hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                    <ShareIcon size={14} />
+                    Share Profile
+                  </button>
+                </div>
+
+                {/* Trust badge */}
+                <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
+                    fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                  </svg>
+                  <p className="text-emerald-700 text-xs font-medium">Verified ClothStreet Designer</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
