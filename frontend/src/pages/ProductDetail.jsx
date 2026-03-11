@@ -258,7 +258,7 @@ export default function ProductDetail() {
   const fabric = FABRICS.find((f) => f.id === fabricId);
 
   // FIX 2 & 3: Removed unused selectedColor/setSelectedColor and unit/setUnit states
-  const [qty, setQty] = useState(fabric?.minOrder ?? 1);
+  const [qty] = useState(fabric?.minOrder ?? 1);
   const [activeImg, setActiveImg] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
 
