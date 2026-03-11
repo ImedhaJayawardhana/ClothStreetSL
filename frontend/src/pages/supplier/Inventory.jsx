@@ -643,14 +643,12 @@ export default function Inventory() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {filtered.map((item) => {
                             const ss = stockStatusConfig[item.stockStatus] || stockStatusConfig.in;
-                            const bd = item.badge ? badgeConfig[item.badge] : null;
                             const isHidden = !!item.hidden;
                             return (
                                 <div
                                     key={item.id}
-                                    className={`bg-white rounded-2xl border shadow-sm hover:shadow-md transition-all overflow-hidden group relative ${
-                                        isHidden ? "border-amber-200 opacity-70" : "border-gray-100"
-                                    }`}
+                                    className={`bg-white rounded-2xl border shadow-sm hover:shadow-md transition-all overflow-hidden group relative ${isHidden ? "border-amber-200 opacity-70" : "border-gray-100"
+                                        }`}
                                 >
                                     {/* Image */}
                                     <div className="relative h-44 overflow-hidden bg-gradient-to-br from-purple-50 to-gray-100">
@@ -658,9 +656,8 @@ export default function Inventory() {
                                             <img
                                                 src={item.image}
                                                 alt={item.name}
-                                                className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${
-                                                    isHidden ? "grayscale brightness-75" : ""
-                                                }`}
+                                                className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isHidden ? "grayscale brightness-75" : ""
+                                                    }`}
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center">
@@ -691,9 +688,8 @@ export default function Inventory() {
                                     {/* Body */}
                                     <div className="p-4">
                                         <div className="flex items-start justify-between gap-2 mb-1">
-                                            <h3 className={`font-bold text-sm leading-tight ${
-                                                isHidden ? "text-gray-400" : "text-gray-900"
-                                            }`}>{item.name}</h3>
+                                            <h3 className={`font-bold text-sm leading-tight ${isHidden ? "text-gray-400" : "text-gray-900"
+                                                }`}>{item.name}</h3>
                                             <div className="flex items-center gap-1 shrink-0">
                                                 <svg className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 24 24">
                                                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -744,11 +740,10 @@ export default function Inventory() {
                                                 <button
                                                     onClick={() => handleToggleHide(item.id)}
                                                     title={isHidden ? "Show listing" : "Hide listing"}
-                                                    className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${
-                                                        isHidden
-                                                            ? "bg-amber-50 hover:bg-amber-100 text-amber-600"
-                                                            : "bg-gray-100 hover:bg-gray-200 text-gray-500"
-                                                    }`}
+                                                    className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${isHidden
+                                                        ? "bg-amber-50 hover:bg-amber-100 text-amber-600"
+                                                        : "bg-gray-100 hover:bg-gray-200 text-gray-500"
+                                                        }`}
                                                 >
                                                     {isHidden ? (
                                                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -846,11 +841,10 @@ export default function Inventory() {
                                                     <button
                                                         onClick={() => handleToggleHide(item.id)}
                                                         title={isHidden ? "Show listing" : "Hide listing"}
-                                                        className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${
-                                                            isHidden
-                                                                ? "bg-amber-50 hover:bg-amber-100 text-amber-600"
-                                                                : "bg-gray-100 hover:bg-gray-200 text-gray-500"
-                                                        }`}
+                                                        className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${isHidden
+                                                            ? "bg-amber-50 hover:bg-amber-100 text-amber-600"
+                                                            : "bg-gray-100 hover:bg-gray-200 text-gray-500"
+                                                            }`}
                                                     >
                                                         {isHidden ? (
                                                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
