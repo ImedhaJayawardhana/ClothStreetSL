@@ -682,11 +682,7 @@ export default function Inventory() {
                                                 </span>
                                             </div>
                                         )}
-                                        {bd && !isHidden && (
-                                            <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-lg text-xs font-bold ${bd.bg} ${bd.text} capitalize`}>
-                                                {bd.label}
-                                            </span>
-                                        )}
+
                                         <span className={`absolute top-3 right-3 px-2.5 py-1 rounded-lg text-xs font-bold ${ss.bg} ${ss.text}`}>
                                             {ss.label}
                                         </span>

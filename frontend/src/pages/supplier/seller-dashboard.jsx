@@ -62,7 +62,7 @@ const quickActions = [
   {
     label: "AI Smart Match",
     desc: "Get personalised recommendations",
-    route: "/ai-match",
+    route: "/match",
     iconBg: "bg-purple-50",
     icon: (
       <svg className="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -342,7 +342,7 @@ export default function SellerDashboard() {
                 <p className="text-purple-200 text-sm mb-4 leading-snug">
                   Get AI-powered fabric and tailor recommendations for your project.
                 </p>
-                <button onClick={() => navigate("/ai-match")}
+                <button onClick={() => navigate("/match")}
                   className="w-full bg-white text-purple-600 font-bold py-2.5 rounded-xl text-sm hover:bg-purple-50 transition-colors flex items-center justify-center gap-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeWidth="2" d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
