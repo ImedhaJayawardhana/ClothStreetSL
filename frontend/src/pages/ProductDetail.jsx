@@ -261,11 +261,45 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(fabric?.minOrder ?? 1);
   const [unit, setUnit] = useState("Meters");
   const [activeImg, setActiveImg] = useState(0);
+  const [activeTab, setActiveTab] = useState("description");
+
+  // Reviews state
+  const [reviewsList, setReviewsList] = useState([
+    { id: 1, name: "Ayesh Perera", initial: "A", rating: 5, date: "2 days ago", title: "Excellent quality fabric", text: "The drape on this material is phenomenal. Ordered 50 meters for a boutique collection and my clients absolutely love the feel. Will definitely reorder from this supplier.", bg: C.purpleMuted, color: C.purpleDark, border: false },
+    { id: 2, name: "Samadhi W.", initial: "S", rating: 4, date: "1 week ago", title: "Very good, colour slightly darker", text: `Great texture. The color is slightly darker in person than on my screen, but still beautiful. Delivery was very fast.`, bg: C.bgCardAlt, color: C.text, border: true }
+  ]);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ name: "", rating: 5, title: "", text: "" });
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      alert("Product link copied to clipboard!");
+    });
+  };
+
+  // Zoom state
+  const [zoomStyle, setZoomStyle] = useState({ display: "none" });
+
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomStyle({
+      display: "block",
+      backgroundPosition: `${x}% ${y}%`,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setZoomStyle({ display: "none" });
+  };
 
   if (!fabric) {
     return (
-      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center",
-        background: C.bgPage, color: C.text, flexDirection: "column", gap: 16 }}>
+      <div style={{
+        minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center",
+        background: C.bgPage, color: C.text, flexDirection: "column", gap: 16
+      }}>
         <p style={{ fontSize: "1.3rem", fontWeight: 700 }}>Fabric not found</p>
         <Link to="/shop" style={{ color: C.purple, textDecoration: "none" }}>← Back to Shop</Link>
       </div>
@@ -319,63 +353,78 @@ export default function ProductDetail() {
       >
 
         {/* ═══════════ LEFT — Image Gallery ═══════════ */}
-        <div>
-          {/* Main image */}
-          <div style={{
-            borderRadius: 16, overflow: "hidden", position: "relative",
-            height: 360, background: thumbs[activeImg],
-            border: `1px solid ${C.border}`,
-          }}>
-            {/* In-stock badge */}
-            {fabric.inStock && (
-              <span style={{
-                position: "absolute", top: 14, left: 14,
-                background: C.greenBg, border: `1px solid ${C.greenBorder}`,
-                color: C.green, fontSize: "0.7rem", fontWeight: 700,
-                padding: "4px 10px", borderRadius: 999,
-                textTransform: "uppercase", letterSpacing: "0.06em",
-              }}>● IN STOCK</span>
-            )}
-            {/* Wishlist */}
-            <button style={{
-              position: "absolute", top: 14, right: 14,
-              width: 36, height: 36, borderRadius: "50%",
-              background: "rgba(255,255,255,0.9)",
-              border: `1px solid ${C.border}`, cursor: "pointer", color: C.textMuted,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-            }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-              </svg>
-            </button>
-            {/* Slide counter */}
-            <span style={{
-              position: "absolute", bottom: 14, right: 14, fontSize: "0.75rem",
-              color: "#374151", background: "rgba(255,255,255,0.85)", padding: "3px 10px",
-              borderRadius: 999,
-            }}>{activeImg + 1} / {thumbs.length}</span>
-          </div>
+        <div style={{ position: "sticky", top: "2rem" }}>
 
-          {/* Thumbnails */}
-          <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-            {thumbs.map((bg, i) => (
-              <button key={i} onClick={() => setActiveImg(i)}
-                style={{
-                  flex: 1, height: 80, borderRadius: 10, background: bg,
-                  border: i === activeImg ? `2px solid ${C.purple}` : `1px solid ${C.border}`,
-                  cursor: "pointer", overflow: "hidden",
-                  boxShadow: i === activeImg ? `0 0 0 3px rgba(124,58,237,0.25)` : "none",
-                  transition: "border 0.2s",
-                }}
-              />
-            ))}
+          <div style={{ display: "flex", gap: 16 }}>
+            {/* Thumbnails (Vertical) */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, width: 80 }}>
+              {thumbs.map((bg, i) => (
+                <button key={i} onClick={() => setActiveImg(i)}
+                  style={{
+                    width: "100%", height: 80, borderRadius: 10, background: bg,
+                    border: i === activeImg ? `2px solid ${C.purple}` : `1px solid ${C.border}`,
+                    cursor: "pointer", overflow: "hidden",
+                    boxShadow: i === activeImg ? `0 0 0 3px rgba(124,58,237,0.15)` : "none",
+                    transition: "border 0.2s, transform 0.2s",
+                    transform: i === activeImg ? "scale(1.02)" : "scale(1)",
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Main image */}
+            <div
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{
+                flex: 1, borderRadius: 16, overflow: "hidden", position: "relative",
+                height: 480, background: thumbs[activeImg],
+                border: `1px solid ${C.border}`, cursor: "crosshair",
+              }}
+            >
+              {/* Zoom overlay */}
+              <div style={{
+                ...zoomStyle,
+                position: "absolute", inset: 0, pointerEvents: "none",
+                backgroundImage: `url(${thumbs[activeImg]})`, // Assuming thumbs eventually hold real images
+                backgroundColor: thumbs[activeImg], // Fallback for color block testing
+                backgroundSize: "200%", // Zoom factor
+                zIndex: 10,
+              }} />
+
+              {/* In-stock badge */}
+              {fabric.inStock && (
+                <span style={{
+                  position: "absolute", top: 14, left: 14, zIndex: 20,
+                  background: C.greenBg, border: `1px solid ${C.greenBorder}`,
+                  color: C.green, fontSize: "0.7rem", fontWeight: 700,
+                  padding: "4px 10px", borderRadius: 999,
+                  textTransform: "uppercase", letterSpacing: "0.06em",
+                }}>● IN STOCK</span>
+              )}
+              {/* Wishlist */}
+              <button style={{
+                position: "absolute", top: 14, right: 14, zIndex: 20,
+                width: 36, height: 36, borderRadius: "50%",
+                background: "rgba(255,255,255,0.9)",
+                border: `1px solid ${C.border}`, cursor: "pointer", color: C.textMuted,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.1)", transition: "color 0.2s",
+              }}
+                onMouseEnter={e => e.currentTarget.style.color = "#ef4444"}
+                onMouseLeave={e => e.currentTarget.style.color = C.textMuted}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                  strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Trust badges */}
           <div style={{
-            display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginTop: 16,
+            display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, marginTop: 24,
           }}>
             {[
               { icon: "🛡️", label: "Quality Assured", sub: "Lab tested" },
@@ -384,12 +433,12 @@ export default function ProductDetail() {
             ].map((b) => (
               <div key={b.label} style={{
                 background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: 10,
-                padding: "12px 8px", textAlign: "center",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+                padding: "16px 8px", textAlign: "center",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.02)",
               }}>
-                <div style={{ fontSize: "1.1rem", marginBottom: 4 }}>{b.icon}</div>
-                <div style={{ fontSize: "0.72rem", fontWeight: 700, color: C.text }}>{b.label}</div>
-                <div style={{ fontSize: "0.65rem", color: C.textMuted }}>{b.sub}</div>
+                <div style={{ fontSize: "1.2rem", marginBottom: 6 }}>{b.icon}</div>
+                <div style={{ fontSize: "0.75rem", fontWeight: 700, color: C.text }}>{b.label}</div>
+                <div style={{ fontSize: "0.65rem", color: C.textMuted, marginTop: 2 }}>{b.sub}</div>
               </div>
             ))}
           </div>
@@ -409,8 +458,10 @@ export default function ProductDetail() {
           </div>
 
           {/* Name */}
-          <h1 style={{ margin: 0, fontSize: "clamp(1.6rem, 3vw, 2.1rem)", fontWeight: 800,
-            letterSpacing: "-0.02em", color: C.text, lineHeight: 1.2 }}>
+          <h1 style={{
+            margin: 0, fontSize: "clamp(1.6rem, 3vw, 2.1rem)", fontWeight: 800,
+            letterSpacing: "-0.02em", color: C.text, lineHeight: 1.2
+          }}>
             {fabric.name}
           </h1>
 
@@ -427,16 +478,22 @@ export default function ProductDetail() {
             padding: "1rem 1.25rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end",
           }}>
             <div>
-              <div style={{ fontSize: "0.65rem", color: C.textFaint, textTransform: "uppercase",
-                letterSpacing: "0.08em", marginBottom: 4 }}>Price Per Meter</div>
-              <div style={{ fontSize: "1.8rem", fontWeight: 800, color: C.purple,
-                letterSpacing: "-0.02em" }}>
+              <div style={{
+                fontSize: "0.65rem", color: C.textFaint, textTransform: "uppercase",
+                letterSpacing: "0.08em", marginBottom: 4
+              }}>Price Per Meter</div>
+              <div style={{
+                fontSize: "1.8rem", fontWeight: 800, color: C.purple,
+                letterSpacing: "-0.02em"
+              }}>
                 LKR {fabric.price.toLocaleString()}
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: "0.65rem", color: C.textFaint, textTransform: "uppercase",
-                letterSpacing: "0.08em", marginBottom: 4 }}>Min. Order</div>
+              <div style={{
+                fontSize: "0.65rem", color: C.textFaint, textTransform: "uppercase",
+                letterSpacing: "0.08em", marginBottom: 4
+              }}>Min. Order</div>
               <div style={{ fontSize: "1.1rem", fontWeight: 700, color: C.text }}>{fabric.minOrder} m</div>
             </div>
           </div>
@@ -473,128 +530,44 @@ export default function ProductDetail() {
             }}>View Store</button>
           </div>
 
-          {/* Description */}
-          <p style={{ margin: 0, fontSize: "0.88rem", color: C.textMuted, lineHeight: 1.75 }}>
-            {fabric.description}
-          </p>
-
-          {/* Colour selector */}
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <span style={{ fontSize: "0.82rem", fontWeight: 700, color: C.text }}>Select Colour</span>
-              <span style={{ fontSize: "0.82rem", color: C.purple }}>{selectedColor?.name}</span>
-            </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              {fabric.colors.map((c) => (
-                <button key={c.hex} onClick={() => setSelectedColor(c)}
-                  title={c.name}
-                  style={{
-                    width: 30, height: 30, borderRadius: "50%", background: c.hex, border: "none",
-                    cursor: "pointer", outline: selectedColor?.hex === c.hex
-                      ? `3px solid ${C.purple}` : `2px solid ${C.border}`,
-                    outlineOffset: 2, transition: "outline 0.15s, transform 0.15s",
-                    transform: selectedColor?.hex === c.hex ? "scale(1.15)" : "scale(1)",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Spec grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            {[
-              { label: "Material", value: fabric.material },
-              { label: "Weight", value: fabric.weight },
-              { label: "Width", value: fabric.width },
-              { label: "Origin", value: fabric.origin },
-            ].map((s) => (
-              <div key={s.label} style={{
-                background: C.bgCardAlt, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 14px",
-              }}>
-                <div style={{ fontSize: "0.65rem", color: C.textFaint, textTransform: "uppercase",
-                  letterSpacing: "0.07em", marginBottom: 4 }}>{s.label}</div>
-                <div style={{ fontSize: "0.88rem", fontWeight: 600, color: C.text }}>{s.value}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Quantity + Unit selector */}
-          <div style={{
-            background: C.bgCardAlt, border: `1px solid ${C.border}`, borderRadius: 12, padding: "1rem 1.1rem",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-              {/* Decrement */}
-              <button onClick={decreaseQty} style={{
-                width: 36, height: 36, borderRadius: 8, border: `1px solid ${C.border}`,
-                background: C.bgCard, color: C.text, cursor: "pointer",
-                fontSize: "1.2rem", display: "flex", alignItems: "center", justifyContent: "center",
-              }}>−</button>
-              <span style={{ minWidth: 40, textAlign: "center", fontSize: "1.1rem", fontWeight: 700, color: C.text }}>{qty}</span>
-              <button onClick={increaseQty} style={{
-                width: 36, height: 36, borderRadius: 8, border: `1px solid ${C.border}`,
-                background: C.bgCard, color: C.text, cursor: "pointer",
-                fontSize: "1.2rem", display: "flex", alignItems: "center", justifyContent: "center",
-              }}>+</button>
-
-              {/* Unit toggle */}
-              {["Meters", "Yards"].map((u) => (
-                <button key={u} onClick={() => setUnit(u)} style={{
-                  padding: "6px 18px", borderRadius: 8, border: `1px solid ${C.border}`,
-                  background: unit === u ? `linear-gradient(135deg,${C.purple},${C.purpleDark})` : C.bgCard,
-                  color: unit === u ? "#fff" : C.textMuted, cursor: "pointer", fontWeight: 600, fontSize: "0.82rem",
-                  transition: "background 0.2s",
-                }}>{u}</button>
-              ))}
-
-              {/* Total */}
-              <div style={{ marginLeft: "auto", textAlign: "right" }}>
-                <div style={{ fontSize: "0.65rem", color: C.textFaint, textTransform: "uppercase",
-                  letterSpacing: "0.07em" }}>Total</div>
-                <div style={{ fontSize: "1.1rem", fontWeight: 800, color: C.purple }}>
-                  LKR {total}
-                </div>
-              </div>
-            </div>
-            <div style={{ fontSize: "0.72rem", color: C.textFaint }}>
-              Min. order: {fabric.minOrder} meters · Price is per meter
-            </div>
-          </div>
-
-          {/* CTA buttons */}
-          <button
-            disabled={!fabric.inStock}
-            onClick={handleAddToCart}
-            style={{
-              width: "100%", padding: "1rem", borderRadius: 12,
-              background: fabric.inStock
-                ? `linear-gradient(135deg, ${C.purple}, ${C.purpleDark})`
-                : "#d1d5db",
-              color: C.white, border: "none", cursor: fabric.inStock ? "pointer" : "not-allowed",
-              fontWeight: 700, fontSize: "1rem",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              boxShadow: fabric.inStock ? "0 4px 24px rgba(124,58,237,0.4)" : "none",
-              transition: "opacity 0.2s, transform 0.15s",
-            }}
-            onMouseEnter={e => { if (fabric.inStock) e.currentTarget.style.opacity = "0.9"; }}
-            onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-              strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
-              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-            </svg>
-            {fabric.inStock ? `Add to Cart · LKR ${total}` : "Out of Stock"}
-          </button>
-
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <button style={{
-              width: 46, height: 46, borderRadius: 10,
+          {/* CTA Buttons */}
+          <div style={{ display: "flex", gap: 12 }}>
+            <button
+              disabled={!fabric.inStock}
+              onClick={handleAddToCart}
+              style={{
+                flex: 1, padding: "1rem", borderRadius: 12,
+                background: fabric.inStock
+                  ? `linear-gradient(135deg, ${C.purple}, ${C.purpleDark})`
+                  : "#d1d5db",
+                color: C.white, border: "none", cursor: fabric.inStock ? "pointer" : "not-allowed",
+                fontWeight: 700, fontSize: "1rem",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                boxShadow: fabric.inStock ? "0 4px 24px rgba(124,58,237,0.4)" : "none",
+                transition: "opacity 0.2s, transform 0.15s",
+              }}
+              onMouseEnter={e => { if (fabric.inStock) e.currentTarget.style.opacity = "0.9"; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
+                <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+              </svg>
+              {fabric.inStock ? `Add to Cart · LKR ${total}` : "Out of Stock"}
+            </button>
+            <button onClick={handleShare} style={{
+              width: 56, height: 56, borderRadius: 12,
               background: C.bgCard, border: `1px solid ${C.border}`,
               color: C.textMuted, cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
-              flexShrink: 0,
-            }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+              flexShrink: 0, transition: "color 0.2s, border 0.2s",
+            }}
+              title="Share Product"
+              onMouseEnter={e => { e.currentTarget.style.color = C.purple; e.currentTarget.style.borderColor = C.purpleMuted; }}
+              onMouseLeave={e => { e.currentTarget.style.color = C.textMuted; e.currentTarget.style.borderColor = C.border; }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
                 strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
                 <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
@@ -602,23 +575,248 @@ export default function ProductDetail() {
             </button>
           </div>
 
-          {/* Care instructions */}
-          <div style={{
-            background: C.bgCardAlt, border: `1px solid ${C.border}`, borderRadius: 10,
-            padding: "10px 14px", display: "flex", alignItems: "center", gap: 10,
-          }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.purple} strokeWidth="2"
-              strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10-4.5 10-10 10z" />
-              <path d="M12 8v4l3 3" />
-            </svg>
-            <div>
-              <div style={{ fontSize: "0.65rem", color: C.textFaint, textTransform: "uppercase",
-                letterSpacing: "0.07em" }}>Care Instructions</div>
-              <div style={{ fontSize: "0.82rem", color: C.text, marginTop: 2 }}>{fabric.careInstructions}</div>
+          <hr style={{ border: 0, height: 1, background: C.border, margin: "1rem 0" }} />
+
+          {/* ─── TABS ─── */}
+          <div>
+            <div style={{ display: "flex", gap: 24, borderBottom: `1px solid ${C.border}`, marginBottom: 20 }}>
+              {[
+                { id: "description", label: "Description" },
+                { id: "specs", label: "Specifications" },
+                { id: "reviews", label: `Reviews (${fabric.reviewCount})` }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  style={{
+                    padding: "0 0 12px 0", background: "none", border: "none",
+                    fontWeight: activeTab === tab.id ? 700 : 600,
+                    fontSize: "0.9rem", cursor: "pointer",
+                    color: activeTab === tab.id ? C.purpleDark : C.textMuted,
+                    borderBottom: activeTab === tab.id ? `3px solid ${C.purple}` : "3px solid transparent",
+                    transition: "all 0.2s",
+                  }}
+                >{tab.label}</button>
+              ))}
+            </div>
+
+            {/* TAB CONTENT */}
+            <div style={{ minHeight: 200 }}>
+
+              {/* Description Tab */}
+              {activeTab === "description" && (
+                <div style={{ animation: "fadeIn 0.3s ease" }}>
+                  <p style={{ margin: 0, fontSize: "0.95rem", color: C.text, lineHeight: 1.7 }}>{fabric.description}</p>
+                  <ul style={{ marginTop: 16, paddingLeft: 20, color: C.textMuted, fontSize: "0.9rem", lineHeight: 1.8 }}>
+                    <li>Premium quality {fabric.type.toLowerCase()} directly from {fabric.supplierLocation}</li>
+                    <li>Ideal for high-end tailoring and boutique collections</li>
+                    <li>Sustainably sourced and rigorously tested for durability</li>
+                  </ul>
+                </div>
+              )}
+
+              {/* Specs Tab */}
+              {activeTab === "specs" && (
+                <div style={{ animation: "fadeIn 0.3s ease" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                    {[
+                      { label: "Material Composition", value: fabric.material },
+                      { label: "Fabric Weight", value: fabric.weight },
+                      { label: "Roll Width", value: fabric.width },
+                      { label: "Country of Origin", value: fabric.origin },
+                      { label: "Care Instructions", value: fabric.careInstructions },
+                      { label: "Minimum Order", value: `${fabric.minOrder} Meters` },
+                    ].map((s) => (
+                      <div key={s.label} style={{
+                        background: C.bgCardAlt, border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 16px",
+                      }}>
+                        <div style={{
+                          fontSize: "0.7rem", color: C.textFaint, textTransform: "uppercase",
+                          letterSpacing: "0.05em", marginBottom: 6
+                        }}>{s.label}</div>
+                        <div style={{ fontSize: "0.95rem", fontWeight: 600, color: C.text }}>{s.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Reviews Tab */}
+              {activeTab === "reviews" && (
+                <div style={{ animation: "fadeIn 0.3s ease", display: "flex", flexDirection: "column", gap: 24 }}>
+                  {/* Reviews Summary */}
+                  <div style={{ display: "flex", gap: 32, alignItems: "center", background: C.bgCardAlt, padding: 24, borderRadius: 16, border: `1px solid ${C.border}` }}>
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ fontSize: "3rem", fontWeight: 800, color: C.text, lineHeight: 1 }}>{fabric.rating}</div>
+                      <div style={{ display: "flex", justifyContent: "center", margin: "8px 0" }}><Stars rating={fabric.rating} /></div>
+                      <div style={{ fontSize: "0.8rem", color: C.textMuted }}>Based on {fabric.reviewCount} reviews</div>
+                    </div>
+                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+                      {/* Ratings bars mock */}
+                      {[5, 4, 3, 2, 1].map(star => {
+                        const pct = star === 5 ? 70 : star === 4 ? 20 : star === 3 ? 5 : star === 2 ? 3 : 2;
+                        return (
+                          <div key={star} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: "0.8rem", color: C.textMuted }}>
+                            <span style={{ width: 12 }}>{star}</span>
+                            <span style={{ color: C.yellow }}>★</span>
+                            <div style={{ flex: 1, height: 6, background: C.border, borderRadius: 3, overflow: "hidden" }}>
+                              <div style={{ width: `${pct}%`, height: "100%", background: C.yellow, borderRadius: 3 }} />
+                            </div>
+                            <span style={{ width: 24, textAlign: "right" }}>{pct}%</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <div>
+                      <button onClick={() => setShowReviewForm(!showReviewForm)} style={{
+                        padding: "10px 20px", borderRadius: 8, background: C.text, color: C.white,
+                        border: "none", fontWeight: 600, cursor: "pointer"
+                      }}>
+                        {showReviewForm ? "Cancel Review" : "Write a Review"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Review Form */}
+                  {showReviewForm && (
+                    <div style={{ background: C.bgCardAlt, padding: 24, borderRadius: 16, border: `1px solid ${C.border}`, animation: "fadeIn 0.3s ease" }}>
+                      <h3 style={{ margin: "0 0 16px", fontSize: "1.1rem" }}>Write your review</h3>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Your Name</label>
+                            <input
+                              type="text"
+                              value={reviewForm.name}
+                              onChange={e => setReviewForm({ ...reviewForm, name: e.target.value })}
+                              placeholder="John Doe"
+                              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${C.border}`, fontSize: "0.9rem", outline: "none", boxSizing: "border-box" }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Rating</label>
+                            <select
+                              value={reviewForm.rating}
+                              onChange={e => setReviewForm({ ...reviewForm, rating: Number(e.target.value) })}
+                              style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${C.border}`, fontSize: "0.9rem", outline: "none", background: C.bgCard, boxSizing: "border-box" }}
+                            >
+                              <option value="5">5 Stars - Excellent</option>
+                              <option value="4">4 Stars - Very Good</option>
+                              <option value="3">3 Stars - Average</option>
+                              <option value="2">2 Stars - Poor</option>
+                              <option value="1">1 Star - Terrible</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div>
+                          <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Review Title</label>
+                          <input
+                            type="text"
+                            value={reviewForm.title}
+                            onChange={e => setReviewForm({ ...reviewForm, title: e.target.value })}
+                            placeholder="Summary of your experience"
+                            style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${C.border}`, fontSize: "0.9rem", outline: "none", boxSizing: "border-box" }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Review Content</label>
+                          <textarea
+                            value={reviewForm.text}
+                            onChange={e => setReviewForm({ ...reviewForm, text: e.target.value })}
+                            placeholder="What did you like or dislike?"
+                            rows="4"
+                            style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: `1px solid ${C.border}`, fontSize: "0.9rem", outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }}
+                          />
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                          <button
+                            onClick={() => {
+                              if (!reviewForm.name || !reviewForm.text) { alert("Please fill in your name and review content."); return; }
+                              const newReview = {
+                                id: Date.now(),
+                                name: reviewForm.name,
+                                initial: reviewForm.name.charAt(0).toUpperCase(),
+                                rating: reviewForm.rating,
+                                date: "Just now",
+                                title: reviewForm.title || "User Review",
+                                text: reviewForm.text,
+                                bg: C.purpleMuted, color: C.purpleDark, border: false
+                              };
+                              setReviewsList([newReview, ...reviewsList]);
+                              setReviewForm({ name: "", rating: 5, title: "", text: "" });
+                              setShowReviewForm(false);
+                            }}
+                            style={{
+                              padding: "10px 24px", borderRadius: 8, background: C.purple, color: C.white,
+                              border: "none", fontWeight: 700, cursor: "pointer", boxShadow: "0 2px 8px rgba(124,58,237,0.3)"
+                            }}>Submit Review</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sample Reviews */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    <h3 style={{ fontSize: "1.1rem", margin: "0 0 8px" }}>Recent Customer Reviews</h3>
+                    {reviewsList.map(review => (
+                      <div key={review.id} style={{ borderBottom: `1px solid ${C.border}`, paddingBottom: 16 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <div style={{ width: 36, height: 36, borderRadius: "50%", background: review.bg, border: review.border ? `1px solid ${C.border}` : 'none', color: review.color, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{review.initial}</div>
+                            <div>
+                              <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>{review.name}</div>
+                              <div style={{ fontSize: "0.75rem", color: C.green }}>✓ Verified Buyer</div>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "0.8rem", color: C.textFaint }}>{review.date}</span>
+                        </div>
+                        <Stars rating={review.rating} />
+                        <div style={{ fontWeight: 700, fontSize: "0.95rem", marginTop: 8 }}>{review.title}</div>
+                        <p style={{ margin: "4px 0 0", fontSize: "0.9rem", color: C.textMuted, lineHeight: 1.6 }}>{review.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
+        </div>
+      </div>
 
+      {/* ── Related Products (You May Also Like) ── */}
+      <div style={{ maxWidth: 1100, margin: "0 auto 4rem", padding: "0 1.5rem" }}>
+        <h2 style={{ fontSize: "1.4rem", fontWeight: 800, color: C.text, marginBottom: 24 }}>You May Also Like</h2>
+        <div style={{
+          display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 20,
+        }}>
+          {FABRICS.filter(f => f.id !== fabric.id).slice(0, 4).map(rel => (
+            <Link key={rel.id} to={`/shop/${rel.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+              <div style={{
+                background: C.bgCard, borderRadius: 12, border: `1px solid ${C.border}`,
+                overflow: "hidden", transition: "transform 0.2s, box-shadow 0.2s", cursor: "pointer",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.05)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
+              >
+                <div style={{ height: 160, background: rel.bgColor, position: "relative" }}>
+                  {rel.inStock && (
+                    <span style={{
+                      position: "absolute", top: 10, left: 10, background: C.greenBg, border: `1px solid ${C.greenBorder}`,
+                      color: C.green, fontSize: "0.6rem", fontWeight: 700, padding: "2px 8px", borderRadius: 999,
+                    }}>IN STOCK</span>
+                  )}
+                </div>
+                <div style={{ padding: 16 }}>
+                  <div style={{ fontSize: "0.7rem", color: C.purple, fontWeight: 700, marginBottom: 4, letterSpacing: "0.05em", textTransform: "uppercase" }}>{rel.type}</div>
+                  <div style={{ fontWeight: 700, fontSize: "0.95rem", color: C.text, marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{rel.name}</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ fontWeight: 800, color: C.text, fontSize: "1.1rem" }}>LKR {rel.price}</div>
+                    <div style={{ display: "flex", gap: 2 }}><Stars rating={rel.rating} /></div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
 
