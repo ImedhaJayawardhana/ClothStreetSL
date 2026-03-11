@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import "./BrowseMaterials.css";
 
@@ -142,6 +142,7 @@ const LOCATIONS = [
 /* ─── Component ───────────────────────────────────────────── */
 export default function BrowseMaterials() {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   // Search
   const [searchQuery, setSearchQuery] = useState("");
@@ -401,7 +402,13 @@ export default function BrowseMaterials() {
 
           <div className="bm-grid">
             {filteredFabrics.map((fab) => (
-              <div className="bm-card" key={fab.id} id={`card-${fab.id}`}>
+              <div
+                className="bm-card"
+                key={fab.id}
+                id={`card-${fab.id}`}
+                onClick={() => navigate(`/shop/${fab.id}`)}
+                style={{ cursor: "pointer" }}
+              >
                 {/* Image */}
                 <div className="bm-card-image-wrap">
                   <div
@@ -518,7 +525,7 @@ export default function BrowseMaterials() {
                   <button
                     className="bm-add-cart-btn"
                     disabled={!fab.inStock}
-                    onClick={() => handleAddToCart(fab)}
+                    onClick={(e) => { e.stopPropagation(); handleAddToCart(fab); }}
                     id={`add-cart-${fab.id}`}
                   >
                     <svg

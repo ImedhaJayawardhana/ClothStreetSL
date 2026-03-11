@@ -18,6 +18,7 @@ import Inventory from "./pages/supplier/Inventory";
 import TailorProfile from "./pages/Tailor/TailorProfile";
 import DesignerProfile from "./pages/designer/DesignerProfile";
 import DesignerDashboard from "./pages/DesignerDashboard";
+import ProductDetail from "./pages/ProductDetail";
 
 
 function PrivateRoute({ children }) {
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/cart" element={<Cart />} />
 
           <Route path="/shop" element={<BrowseMaterials />} />
+          <Route path="/shop/:fabricId" element={<ProductDetail />} />
           <Route path="/fabrics" element={<BrowseMaterials />} />
           <Route path="/dashboard" element={<SellerDashboard />} />
           <Route path="/tailor-dashboard" element={<TailorDashboard />} />
