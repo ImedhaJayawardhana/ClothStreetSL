@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import { db, storage } from "../../../firebase/firebase";
-import { useAuth } from "../../../context/AuthContext";
+import { db, storage } from "../../firebase/firebase";
+import { useAuth } from "../../context/AuthContext";
 
 // ─── Default / placeholder designer data ───────────────────────────────────────
 const DEFAULT_DESIGNER = {
   uid: "",
   name: "New Designer",
+  location: "Colombo, Sri Lanka",
   bio: "I create stunning, bespoke fashion pieces that reflect unique aesthetic visions.",
   profilePhoto: "",
   hourlyRate: 5000,
@@ -200,6 +201,8 @@ export default function DesignerProfile() {
   const [saving, setSaving] = useState(false);
 
   // Draft state
+  const [draftName, setDraftName] = useState("");
+  const [draftLocation, setDraftLocation] = useState("");
   const [draftBio, setDraftBio] = useState("");
   const [draftRate, setDraftRate] = useState(0);
   const [draftServices, setDraftServices] = useState([]);
@@ -209,6 +212,7 @@ export default function DesignerProfile() {
   const [newServiceInput, setNewServiceInput] = useState("");
   const [newAestheticInput, setNewAestheticInput] = useState("");
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [isSaved, setIsSaved] = useState(false); // Bookmarked state
 
   const profilePhotoRef = useRef();
 
@@ -242,6 +246,8 @@ export default function DesignerProfile() {
   }, [resolvedDesignerId]);
 
   const enterEditMode = () => {
+    setDraftName(designer.name || "");
+    setDraftLocation(designer.location || "");
     setDraftBio(designer.bio || "");
     setDraftRate(designer.hourlyRate || 0);
     setDraftServices([...(designer.services || [])]);
@@ -296,7 +302,8 @@ export default function DesignerProfile() {
     try {
       const updatedData = {
         uid: resolvedDesignerId,
-        name: designer.name || authUser?.displayName || "Designer",
+        name: draftName || authUser?.displayName || "Designer",
+        location: draftLocation,
         bio: draftBio,
         profilePhoto: draftProfilePhoto,
         hourlyRate: Number(draftRate),
@@ -351,6 +358,8 @@ export default function DesignerProfile() {
   const displayRate = editMode ? draftRate : designer.hourlyRate;
   const displayProfilePhoto = editMode ? draftProfilePhoto : designer.profilePhoto;
   const displayBio = editMode ? draftBio : designer.bio;
+  const displayName = editMode ? draftName : designer.name;
+  const displayLocation = editMode ? draftLocation : designer.location || "Sri Lanka";
   const displayPortfolioImages = editMode ? draftPortfolioImages : designer.portfolioImages || [];
   const reviews = designer.reviews || DEFAULT_DESIGNER.reviews;
 
@@ -439,9 +448,16 @@ export default function DesignerProfile() {
             {/* Name, role, rating */}
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-1">
-                <h1 className="text-white text-3xl font-extrabold leading-tight">
-                  {designer.name}
-                </h1>
+                {editMode ? (
+                  <input type="text" value={draftName} onChange={(e) => setDraftName(e.target.value)}
+                    className="text-gray-900 text-2xl font-extrabold leading-tight px-3 py-1 rounded-xl focus:outline-none focus:ring-2 focus:ring-fuchsia-400 w-full max-w-sm bg-white"
+                    placeholder="Your Name"
+                  />
+                ) : (
+                  <h1 className="text-white text-3xl font-extrabold leading-tight">
+                    {displayName}
+                  </h1>
+                )}
                 <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold bg-white/15 text-white border border-white/25 backdrop-blur-sm">
                   ✦ Master Designer
                 </span>
@@ -469,7 +485,14 @@ export default function DesignerProfile() {
                     <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                     <circle cx="12" cy="10" r="3" />
                   </svg>
-                  <span>Sri Lanka</span>
+                  {editMode ? (
+                    <input type="text" value={draftLocation} onChange={(e) => setDraftLocation(e.target.value)}
+                      className="text-sm px-2 py-0.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 bg-white rounded w-48"
+                      placeholder="e.g. Colombo, Sri Lanka"
+                    />
+                  ) : (
+                    <span>{displayLocation}</span>
+                  )}
                 </div>
               </div>
             </div>
@@ -664,18 +687,21 @@ export default function DesignerProfile() {
                 {/* CTA Buttons */}
                 <div className="flex flex-col gap-2.5">
                   {/* Contact Me — primary */}
-                  <button className="w-full py-3 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200">
+                  <button onClick={() => alert("Redirecting to Consultation form...")} className="w-full py-3 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200">
                     Consultation Request
                   </button>
 
                   <div className="flex gap-2">
-                    <button className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-fuchsia-200 text-fuchsia-700 text-xs font-semibold hover:bg-fuchsia-50 hover:border-fuchsia-300 transition-colors">
+                    <button onClick={() => alert("Initiating Hire Request...")} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-fuchsia-200 text-fuchsia-700 text-xs font-semibold hover:bg-fuchsia-50 hover:border-fuchsia-300 transition-colors">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
                       Hire Now
                     </button>
-                    <button className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-fuchsia-200 text-fuchsia-700 text-xs font-semibold hover:bg-fuchsia-50 hover:border-fuchsia-300 transition-colors">
-                      <span className="text-red-500 text-sm leading-none">♥</span>
-                      Save
+                    <button onClick={() => setIsSaved(!isSaved)} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-fuchsia-200 text-fuchsia-700 text-xs font-semibold hover:bg-fuchsia-50 hover:border-fuchsia-300 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24" 
+                        fill={isSaved ? "#ef4444" : "none"} stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                      </svg>
+                      {isSaved ? "Saved" : "Save"}
                     </button>
                   </div>
 
