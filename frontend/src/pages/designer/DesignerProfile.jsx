@@ -78,6 +78,80 @@ function Skeleton({ className }) {
   return <div className={`bg-purple-100 animate-pulse rounded-xl ${className}`} />;
 }
 
+// ─── Portfolio Gallery ────────────────────────────────────────────────────────
+function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage }) {
+  const fileRef = useRef();
+
+  return (
+    <div className="bg-white rounded-2xl border border-fuchsia-100 shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 pt-5 pb-3">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-fuchsia-100 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+              fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+              <circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+            </svg>
+          </div>
+          <span className="font-bold text-gray-800 text-sm">Portfolio Gallery</span>
+          {images.length > 0 && (
+            <span className="text-xs text-fuchsia-600 bg-fuchsia-50 px-2 py-0.5 rounded-full font-medium">
+              {images.length} photos
+            </span>
+          )}
+        </div>
+        {editMode && (
+          <>
+            <button
+              onClick={() => fileRef.current.click()}
+              className="flex items-center gap-1.5 text-xs text-fuchsia-600 border border-fuchsia-200 rounded-lg px-3 py-1.5 hover:bg-fuchsia-50 transition-colors font-medium"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Add Photos
+            </button>
+            <input ref={fileRef} type="file" accept="image/*" multiple className="hidden"
+              onChange={(e) => onAddImages(Array.from(e.target.files))} />
+          </>
+        )}
+      </div>
+
+      {/* Scrollable row */}
+      <div className="flex gap-3 overflow-x-auto px-5 pb-5 pt-1"
+        style={{ scrollbarWidth: "none" }}>
+        {images.length === 0 ? (
+          <div className="w-full flex flex-col items-center justify-center py-10 text-gray-400 gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+              fill="none" stroke="#fbcfe8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+              <circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+            </svg>
+            <p className="text-sm">No portfolio photos yet</p>
+          </div>
+        ) : (
+          images.map((img, idx) => (
+            <div key={idx} className="relative flex-shrink-0 group">
+              <img src={img} alt={`Portfolio ${idx + 1}`}
+                className="w-40 h-40 object-cover rounded-xl shadow-sm border border-fuchsia-50 group-hover:shadow-md transition-shadow duration-200" />
+              {editMode && (
+                <button onClick={() => onDeleteImage(idx, img)}
+                  className="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                  ✕
+                </button>
+              )}
+              {/* Hover overlay */}
+              <div className="absolute inset-0 rounded-xl bg-black/0 group-hover:bg-black/10 transition-colors duration-200" />
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function DesignerProfile() {
   const { designerId } = useParams();
   const { user: authUser } = useAuth();
@@ -239,6 +313,8 @@ export default function DesignerProfile() {
   const displayAesthetics = editMode ? draftAesthetics : designer.aesthetics || [];
   const displayRate = editMode ? draftRate : designer.hourlyRate;
   const displayProfilePhoto = editMode ? draftProfilePhoto : designer.profilePhoto;
+  const displayBio = editMode ? draftBio : designer.bio;
+  const displayPortfolioImages = editMode ? draftPortfolioImages : designer.portfolioImages || [];
   const reviews = designer.reviews || DEFAULT_DESIGNER.reviews;
 
   return (
@@ -372,17 +448,47 @@ export default function DesignerProfile() {
               LEFT COLUMN
           ══════════════════════════════════════════════════════════ */}
           <div className="flex-1 flex flex-col gap-6 min-w-0">
-             <div className="bg-white rounded-2xl border border-fuchsia-100 shadow-sm p-10 flex flex-col items-center justify-center text-center">
-                <div className="w-16 h-16 bg-fuchsia-50 rounded-full flex items-center justify-center mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+
+            {/* ── Bio card ── */}
+            <div className="bg-white rounded-2xl border border-fuchsia-100 shadow-sm p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-7 h-7 rounded-lg bg-fuchsia-100 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
+                    fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
                   </svg>
                 </div>
-                <h3 className="text-gray-800 font-bold text-lg mb-2">Main Content Pending</h3>
-                <p className="text-gray-500 text-sm max-w-sm">
-                  The Bio, Awards, and Enhanced Portfolio modules will be implemented in Step 4. Reviews will be implemented in Step 5.
-                </p>
-             </div>
+                <h2 className="text-gray-800 font-bold text-sm">About Me</h2>
+              </div>
+              {editMode ? (
+                <textarea
+                  className="w-full text-gray-700 text-base leading-relaxed resize-none border border-fuchsia-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 bg-fuchsia-50/40"
+                  rows={4}
+                  value={draftBio}
+                  onChange={(e) => setDraftBio(e.target.value)}
+                  placeholder="Share the story behind your fashion designing journey…"
+                />
+              ) : (
+                <p className="text-gray-700 text-base leading-relaxed">{displayBio}</p>
+              )}
+            </div>
+
+            {/* ── Portfolio gallery ── */}
+            <PortfolioGallery
+              images={displayPortfolioImages}
+              editMode={editMode}
+              onAddImages={handleAddPortfolioImages}
+              onDeleteImage={handleDeletePortfolioImage}
+            />
+
+            {/* ── Temporary Placeholder for Reviews ── */}
+            <div className="bg-white rounded-2xl border border-fuchsia-100 shadow-sm p-8 flex flex-col items-center justify-center text-center">
+              <h3 className="text-gray-800 font-bold text-lg mb-2">Reviews Pending</h3>
+              <p className="text-gray-500 text-sm max-w-sm">
+                Reviews section will be implemented in Step 5.
+              </p>
+            </div>
           </div>
 
           {/* ══════════════════════════════════════════════════════════
