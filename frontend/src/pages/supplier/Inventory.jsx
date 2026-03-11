@@ -94,10 +94,6 @@ const stockStatusConfig = {
     low: { label: "Low Stock", bg: "bg-amber-100", text: "text-amber-700" },
     out: { label: "Out of Stock", bg: "bg-red-100", text: "text-red-600" },
 };
-const badgeConfig = {
-    varient: { label: "Varient", bg: "bg-purple-600", text: "text-white" },
-    hidden: { label: "Hidden", bg: "bg-amber-500", text: "text-white" },
-};
 /* ─── Preset colour swatches for the palette ────────────────── */
 const PALETTE_SWATCHES = [
     "#000000", "#374151", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb",
