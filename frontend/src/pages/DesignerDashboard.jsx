@@ -49,7 +49,6 @@ export default function DesignerDashboard() {
     const [reviews, setReviews] = useState([]);
     const [stats, setStats] = useState({ active: 0, inProgress: 0, readyToDeliver: 0, completed: 0 });
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     // Redirect non-designers away
     useEffect(() => {
@@ -159,17 +158,6 @@ export default function DesignerDashboard() {
             <div className="flex flex-col items-center gap-3">
                 <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
                 <p className="text-sm text-gray-500 font-medium">Loading your dashboard…</p>
-            </div>
-        </div>
-    );
-    if (error) return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="bg-white rounded-2xl p-8 shadow text-center max-w-sm">
-                <p className="text-red-500 font-semibold mb-3">⚠️ {error}</p>
-                <button onClick={() => window.location.reload()}
-                    className="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-purple-700">
-                    Retry
-                </button>
             </div>
         </div>
     );
