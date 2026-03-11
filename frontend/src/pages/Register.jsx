@@ -24,7 +24,15 @@ export default function SignIn() {
         setLoading(true);
         try {
             await register(name, email, password, role);
-            navigate('/');
+            if (role === 'designer') {
+                navigate('/designer-dashboard');
+            } else if (role === 'seller') {
+                navigate('/dashboard');
+            } else if (role === 'tailor') {
+                navigate('/tailor-dashboard');
+            } else {
+                navigate('/');
+            }
         } catch {
             setError('Failed to create account. Please try again.');
         }

@@ -17,6 +17,7 @@ import AIMatch from "./pages/AIMatch";
 import Inventory from "./pages/supplier/Inventory";
 import TailorProfile from "./pages/Tailor/TailorProfile";
 import DesignerProfile from "./pages/designer/DesignerProfile";
+import DesignerDashboard from "./pages/DesignerDashboard";
 
 
 function PrivateRoute({ children }) {
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/fabrics" element={<BrowseMaterials />} />
           <Route path="/dashboard" element={<SellerDashboard />} />
           <Route path="/tailor-dashboard" element={<TailorDashboard />} />
+          <Route path="/designer-dashboard" element={<PrivateRoute><DesignerDashboard /></PrivateRoute>} />
           <Route path="/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><CustomerProfile /></PrivateRoute>} />
           <Route path="/tailor-profile" element={<PrivateRoute><TailorProfile /></PrivateRoute>} />
