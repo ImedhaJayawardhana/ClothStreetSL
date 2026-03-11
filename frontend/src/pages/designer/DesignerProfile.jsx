@@ -16,7 +16,20 @@ const DEFAULT_DESIGNER = {
   services: ["Fashion Illustration", "Bespoke Design", "Consultation"],
   aesthetics: ["Minimalist", "Avant-garde", "Streetwear"],
   portfolioImages: [],
-  reviews: [],
+  reviews: [
+    {
+      id: 1,
+      text: "An absolute visionary! The custom dress exceeded all my expectations.",
+      rating: 5,
+      reviewer: "Amaya Silva",
+    },
+    {
+      id: 2,
+      text: "Highly professional and the attention to detail is unmatched. I love the streetwear collection.",
+      rating: 5,
+      reviewer: "Kaveen Fernando",
+    },
+  ],
 };
 
 // ─── Icons & Helpers ──────────────────────────────────────────────────────────
@@ -70,6 +83,30 @@ function Tag({ label, onRemove, editMode, colorScheme = "purple" }) {
         </button>
       )}
     </span>
+  );
+}
+
+// ─── Review Card ─────────────────────────────────────────────────────────────
+function ReviewCard({ review }) {
+  return (
+    <div className="bg-white border border-fuchsia-100 rounded-2xl p-5 shadow-sm flex flex-col gap-3 hover:shadow-md hover:border-fuchsia-200 transition-all duration-200">
+      <StarRow count={review.rating} size={14} />
+      <p className="text-gray-700 text-sm leading-relaxed font-medium flex-1">
+        &ldquo;{review.text}&rdquo;
+      </p>
+      <div className="flex items-center gap-2.5 pt-1 border-t border-gray-50">
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-fuchsia-400 to-purple-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+          {review.reviewer?.charAt(0).toUpperCase() || "U"}
+        </div>
+        <div>
+          <p className="text-gray-800 font-semibold text-sm">{review.reviewer}</p>
+          <div className="flex items-center gap-1">
+            <StarIcon size={10} filled />
+            <span className="text-yellow-500 text-xs font-bold">{review.rating}.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -482,12 +519,27 @@ export default function DesignerProfile() {
               onDeleteImage={handleDeletePortfolioImage}
             />
 
-            {/* ── Temporary Placeholder for Reviews ── */}
-            <div className="bg-white rounded-2xl border border-fuchsia-100 shadow-sm p-8 flex flex-col items-center justify-center text-center">
-              <h3 className="text-gray-800 font-bold text-lg mb-2">Reviews Pending</h3>
-              <p className="text-gray-500 text-sm max-w-sm">
-                Reviews section will be implemented in Step 5.
-              </p>
+            {/* ── Reviews section ── */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-7 h-7 rounded-lg bg-yellow-100 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width={13} height={13} viewBox="0 0 24 24"
+                    fill="#f59e0b" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                </div>
+                <h2 className="text-gray-800 font-bold text-sm">Customer Reviews</h2>
+                <div className="flex items-center gap-1.5 ml-1 px-2.5 py-0.5 rounded-full bg-yellow-50 border border-yellow-100">
+                  <StarIcon size={10} filled />
+                  <span className="text-yellow-600 font-bold text-xs">{designer?.rating?.toFixed(1) || "5.0"}</span>
+                  <span className="text-yellow-500 text-xs">· {reviews.length} reviews</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {reviews.map((review, idx) => (
+                  <ReviewCard key={review.id ?? idx} review={review} />
+                ))}
+              </div>
             </div>
           </div>
 
