@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 /* ─── Sample inventory data (replace with Firestore fetch later) ── */
@@ -98,18 +98,66 @@ const badgeConfig = {
     varient: { label: "Varient", bg: "bg-purple-600", text: "text-white" },
     hidden: { label: "Hidden", bg: "bg-amber-500", text: "text-white" },
 };
+/* ─── Preset colour swatches for the palette ────────────────── */
+const PALETTE_SWATCHES = [
+    "#000000", "#374151", "#6b7280", "#9ca3af", "#d1d5db", "#f9fafb",
+    "#7f1d1d", "#991b1b", "#dc2626", "#ef4444", "#f87171", "#fca5a5",
+    "#78350f", "#92400e", "#d97706", "#f59e0b", "#fcd34d", "#fef08a",
+    "#14532d", "#166534", "#16a34a", "#22c55e", "#86efac", "#bbf7d0",
+    "#1e3a5f", "#1d4ed8", "#2563eb", "#3b82f6", "#93c5fd", "#bfdbfe",
+    "#4c1d95", "#6d28d9", "#7c3aed", "#a855f7", "#c084fc", "#e9d5ff",
+    "#831843", "#be185d", "#ec4899", "#f472b6",
+];
 /* ─── Add/Edit Modal ─────────────────────────────────────────── */
 function ItemModal({ item, onClose, onSave }) {
     const [form, setForm] = useState(
-        item || { name: "", type: "", category: "", price: "", stock: "", colors: [], stockStatus: "in" }
+        item
+            ? { ...item, colors: item.colors ? [...item.colors] : [] }
+            : { name: "", type: "", category: "", price: "", stock: "", colors: [], stockStatus: "in", image: null }
     );
+    /* image tab: "upload" | "url" */
+    const [imageTab, setImageTab] = useState("upload");
+    const [imageUrlInput, setImageUrlInput] = useState(item?.image || "");
+    const [dragOver, setDragOver] = useState(false);
+    const fileInputRef = useRef(null);
+
     function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
+
+    /* ── Image helpers ── */
+    function applyFile(file) {
+        if (!file || !file.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => setForm((f) => ({ ...f, image: ev.target.result }));
+        reader.readAsDataURL(file);
+    }
+    function handleFileChange(e) { applyFile(e.target.files[0]); }
+    function handleDrop(e) {
+        e.preventDefault(); setDragOver(false);
+        applyFile(e.dataTransfer.files[0]);
+    }
+    function handleApplyUrl() {
+        if (imageUrlInput.trim()) setForm((f) => ({ ...f, image: imageUrlInput.trim() }));
+    }
+    function clearImage() { setForm((f) => ({ ...f, image: null })); setImageUrlInput(""); }
+
+    /* ── Colour helpers ── */
+    function toggleColor(hex) {
+        setForm((f) => {
+            const already = f.colors.includes(hex);
+            return { ...f, colors: already ? f.colors.filter((c) => c !== hex) : [...f.colors, hex] };
+        });
+    }
+    function addCustomColor(hex) {
+        if (!form.colors.includes(hex)) setForm((f) => ({ ...f, colors: [...f.colors, hex] }));
+    }
+
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] flex flex-col">
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
                     <h3 className="font-bold text-gray-900 text-lg">{item ? "Edit Item" : "Add New Item"}</h3>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -117,10 +165,13 @@ function ItemModal({ item, onClose, onSave }) {
                         </svg>
                     </button>
                 </div>
-                <div className="px-6 py-5 space-y-4">
+
+                {/* Scrollable body */}
+                <div className="overflow-y-auto px-6 py-5 space-y-5 flex-1">
+                    {/* Basic fields */}
                     {[
                         { label: "Name", name: "name", placeholder: "e.g. Premium Cotton Twill" },
-                        { label: "Type / Category", name: "type", placeholder: "e.g. Cotton" },
+                        { label: "Type / Fabric", name: "type", placeholder: "e.g. Cotton" },
                         { label: "Location", name: "category", placeholder: "e.g. Colombo" },
                         { label: "Price (Rs)", name: "price", placeholder: "e.g. 1500", type: "number" },
                         { label: "Stock (meters)", name: "stock", placeholder: "e.g. 50", type: "number" },
@@ -137,6 +188,8 @@ function ItemModal({ item, onClose, onSave }) {
                             />
                         </div>
                     ))}
+
+                    {/* Stock Status */}
                     <div>
                         <label className="block text-xs font-semibold text-gray-600 mb-1">Stock Status</label>
                         <select
@@ -150,8 +203,159 @@ function ItemModal({ item, onClose, onSave }) {
                             <option value="out">Out of Stock</option>
                         </select>
                     </div>
+
+                    {/* ── Image Section ── */}
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-600 mb-2">Product Image</label>
+
+                        {/* Tab toggle */}
+                        <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-3">
+                            {[
+                                { id: "upload", label: "Upload from Device" },
+                                { id: "url", label: "Paste Image URL" },
+                            ].map((t) => (
+                                <button
+                                    key={t.id}
+                                    type="button"
+                                    onClick={() => setImageTab(t.id)}
+                                    className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all ${imageTab === t.id ? "bg-purple-600 text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
+                                >
+                                    {t.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {imageTab === "upload" ? (
+                            /* Drag & drop zone */
+                            <div
+                                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                                onDragLeave={() => setDragOver(false)}
+                                onDrop={handleDrop}
+                                onClick={() => fileInputRef.current?.click()}
+                                className={`relative border-2 border-dashed rounded-xl cursor-pointer transition-all flex flex-col items-center justify-center gap-2 py-5 ${dragOver ? "border-purple-400 bg-purple-50" : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/40"}`}
+                            >
+                                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                                {form.image && imageTab === "upload" && !imageUrlInput ? (
+                                    <img src={form.image} alt="preview" className="h-28 object-contain rounded-lg" />
+                                ) : (
+                                    <>
+                                        <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeWidth="1.5" d="M3 16l4-4 4 4 4-5 4 5M3 20h18M3 4h18" />
+                                        </svg>
+                                        <p className="text-xs text-gray-400 font-medium">Drag & drop or <span className="text-purple-600 font-semibold">browse</span></p>
+                                        <p className="text-[11px] text-gray-300">PNG, JPG, WEBP up to 10 MB</p>
+                                    </>
+                                )}
+                            </div>
+                        ) : (
+                            /* URL input */
+                            <div className="flex gap-2">
+                                <input
+                                    type="url"
+                                    value={imageUrlInput}
+                                    onChange={(e) => setImageUrlInput(e.target.value)}
+                                    placeholder="https://example.com/fabric.jpg"
+                                    className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleApplyUrl}
+                                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-xl transition-colors"
+                                >
+                                    Apply
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Preview strip + clear button (visible when image is set) */}
+                        {form.image && (
+                            <div className="mt-2 flex items-center gap-3 bg-gray-50 rounded-xl p-2">
+                                <img src={form.image} alt="preview" className="h-14 w-14 object-cover rounded-lg border border-gray-200" />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-semibold text-gray-700 truncate">Image selected</p>
+                                    <p className="text-[11px] text-gray-400 truncate">{form.image.startsWith("data:") ? "Local file" : form.image}</p>
+                                </div>
+                                <button type="button" onClick={clearImage} className="text-red-400 hover:text-red-600 transition-colors shrink-0">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeWidth="2" d="M18 6 6 18M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ── Colour Palette ── */}
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-600 mb-2">
+                            Available Colours
+                            {form.colors.length > 0 && (
+                                <span className="ml-2 text-purple-600">{form.colors.length} selected</span>
+                            )}
+                        </label>
+
+                        {/* Swatch grid */}
+                        <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100 mb-3">
+                            {PALETTE_SWATCHES.map((hex) => {
+                                const selected = form.colors.includes(hex);
+                                return (
+                                    <button
+                                        key={hex}
+                                        type="button"
+                                        title={hex}
+                                        onClick={() => toggleColor(hex)}
+                                        className={`w-7 h-7 rounded-full border-2 transition-all hover:scale-110 focus:outline-none ${selected ? "border-purple-600 ring-2 ring-purple-300 scale-110" : "border-white ring-1 ring-gray-200"}`}
+                                        style={{ backgroundColor: hex }}
+                                    />
+                                );
+                            })}
+                        </div>
+
+                        {/* Custom colour picker row */}
+                        <div className="flex items-center gap-2">
+                            <label className="text-xs text-gray-500 font-medium shrink-0">Custom:</label>
+                            <input
+                                type="color"
+                                defaultValue="#7c3aed"
+                                onChange={(e) => addCustomColor(e.target.value)}
+                                className="w-10 h-8 rounded-lg border border-gray-200 cursor-pointer p-0.5 bg-white"
+                                title="Pick a custom colour"
+                            />
+                            <span className="text-xs text-gray-400">Click to open colour picker</span>
+                        </div>
+
+                        {/* Selected colours as removable chips */}
+                        {form.colors.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-3">
+                                {form.colors.map((c) => (
+                                    <span
+                                        key={c}
+                                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border border-gray-200 bg-white shadow-sm"
+                                    >
+                                        <span className="w-3.5 h-3.5 rounded-full inline-block border border-gray-300" style={{ backgroundColor: c }} />
+                                        {c}
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleColor(c)}
+                                            className="text-gray-400 hover:text-red-500 transition-colors leading-none"
+                                        >
+                                            ×
+                                        </button>
+                                    </span>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => setForm((f) => ({ ...f, colors: [] }))}
+                                    className="text-xs text-gray-400 hover:text-red-500 transition-colors px-2 py-1"
+                                >
+                                    Clear all
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+
+                {/* Footer */}
+                <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 shrink-0">
                     <button onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors">
                         Cancel
                     </button>
