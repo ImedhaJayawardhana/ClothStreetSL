@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function DesignerCard({ designer }) {
     const [showContactModal, setShowContactModal] = useState(false);
@@ -136,8 +137,8 @@ export default function DesignerCard({ designer }) {
                             <span className="text-sm font-bold text-gray-900">{designer.priceRange}</span>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
-                            <button
-                                onClick={() => setShowPortfolioModal(true)}
+                            <Link
+                                to={`/designer/${designer.id}`}
                                 className="w-full py-2.5 px-3 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm shadow-rose-200 flex items-center justify-center gap-1.5"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +146,7 @@ export default function DesignerCard({ designer }) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
                                 View Portfolio
-                            </button>
+                            </Link>
                             <button
                                 onClick={() => setShowContactModal(true)}
                                 className="w-full py-2.5 px-3 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-xl transition-colors shadow-sm flex items-center justify-center gap-1.5"

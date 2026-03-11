@@ -270,6 +270,7 @@ export default function DesignerProfile() {
       setDraftProfilePhoto(url);
     } catch (err) {
       console.error("Photo upload failed:", err);
+      alert("Photo upload failed: " + err.message);
     } finally {
       setUploadingPhoto(false);
     }
@@ -284,6 +285,7 @@ export default function DesignerProfile() {
         setDraftPortfolioImages((prev) => [...prev, url]);
       } catch (err) {
         console.error("Portfolio upload failed:", err);
+        alert("Portfolio upload failed: " + err.message);
       }
     }
   };
