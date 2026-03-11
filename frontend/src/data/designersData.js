@@ -11,7 +11,10 @@ const designersData = [
         projects: "234+",
         experience: "10 yrs",
         priceRange: "Rs 15,000 – 80,000",
-        image: "https://picsum.photos/seed/designer1/600/400"
+        image: "https://picsum.photos/seed/designer1/600/400",
+        email: "ishara.mendis@clothstreet.lk",
+        phone: "+94771234567",
+        whatsapp: "+94771234567"
     },
     {
         id: 2,
@@ -25,7 +28,10 @@ const designersData = [
         projects: "189+",
         experience: "14 yrs",
         priceRange: "Rs 8,000 – 40,000",
-        image: "https://picsum.photos/seed/designer2/600/400"
+        image: "https://picsum.photos/seed/designer2/600/400",
+        email: "ruvini.cooray@clothstreet.lk",
+        phone: "+94772345678",
+        whatsapp: "+94772345678"
     },
     {
         id: 3,
@@ -39,7 +45,10 @@ const designersData = [
         projects: "312+",
         experience: "7 yrs",
         priceRange: "Rs 5,000 – 25,000",
-        image: "https://picsum.photos/seed/designer3/600/400"
+        image: "https://picsum.photos/seed/designer3/600/400",
+        email: "senaka.w@clothstreet.lk",
+        phone: "+94773456789",
+        whatsapp: "+94773456789"
     },
     {
         id: 4,
@@ -53,7 +62,10 @@ const designersData = [
         projects: "156+",
         experience: "9 yrs",
         priceRange: "Rs 10,000 – 50,000",
-        image: "https://picsum.photos/seed/designer4/600/400"
+        image: "https://picsum.photos/seed/designer4/600/400",
+        email: "tharindi.alwis@clothstreet.lk",
+        phone: "+94774567890",
+        whatsapp: "+94774567890"
     },
     {
         id: 5,
@@ -67,7 +79,10 @@ const designersData = [
         projects: "421+",
         experience: "12 yrs",
         priceRange: "Rs 6,000 – 30,000",
-        image: "https://picsum.photos/seed/designer5/600/400"
+        image: "https://picsum.photos/seed/designer5/600/400",
+        email: "nadeesh.peiris@clothstreet.lk",
+        phone: "+94775678901",
+        whatsapp: "+94775678901"
     },
     {
         id: 6,
@@ -81,7 +96,10 @@ const designersData = [
         projects: "278+",
         experience: "6 yrs",
         priceRange: "Rs 3,000 – 15,000",
-        image: "https://picsum.photos/seed/designer6/600/400"
+        image: "https://picsum.photos/seed/designer6/600/400",
+        email: "kavisha.r@clothstreet.lk",
+        phone: "+94776789012",
+        whatsapp: "+94776789012"
     }
 ];
 
