@@ -421,9 +421,9 @@ export default function Inventory() {
                     id: `inv_${Date.now()}`,
                     rating: 5.0,
                     sales: 0,
-                    colors: [],
+                    colors: form.colors || [],
                     badge: null,
-                    image: null,
+                    hidden: false,
                     price: Number(form.price) || 0,
                     stock: Number(form.stock) || 0,
                 },
@@ -432,6 +432,9 @@ export default function Inventory() {
             setItems((prev) => prev.map((i) => (i.id === form.id ? { ...i, ...form } : i)));
         }
         setModal(null);
+    }
+    function handleToggleHide(id) {
+        setItems((prev) => prev.map((i) => i.id === id ? { ...i, hidden: !i.hidden } : i));
     }
     const formatValue = (v) => {
         if (v >= 1_000_000) return `Rs${(v / 1_000_000).toFixed(1)}M`;
@@ -641,10 +644,13 @@ export default function Inventory() {
                         {filtered.map((item) => {
                             const ss = stockStatusConfig[item.stockStatus] || stockStatusConfig.in;
                             const bd = item.badge ? badgeConfig[item.badge] : null;
+                            const isHidden = !!item.hidden;
                             return (
                                 <div
                                     key={item.id}
-                                    className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden group"
+                                    className={`bg-white rounded-2xl border shadow-sm hover:shadow-md transition-all overflow-hidden group relative ${
+                                        isHidden ? "border-amber-200 opacity-70" : "border-gray-100"
+                                    }`}
                                 >
                                     {/* Image */}
                                     <div className="relative h-44 overflow-hidden bg-gradient-to-br from-purple-50 to-gray-100">
@@ -652,7 +658,9 @@ export default function Inventory() {
                                             <img
                                                 src={item.image}
                                                 alt={item.name}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${
+                                                    isHidden ? "grayscale brightness-75" : ""
+                                                }`}
                                             />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center">
@@ -662,7 +670,19 @@ export default function Inventory() {
                                                 </svg>
                                             </div>
                                         )}
-                                        {bd && (
+                                        {/* Hidden overlay banner */}
+                                        {isHidden && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                                <span className="flex items-center gap-1.5 bg-amber-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeWidth="2" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                                        <line x1="1" y1="1" x2="23" y2="23" strokeWidth="2" />
+                                                    </svg>
+                                                    Hidden from customers
+                                                </span>
+                                            </div>
+                                        )}
+                                        {bd && !isHidden && (
                                             <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-lg text-xs font-bold ${bd.bg} ${bd.text} capitalize`}>
                                                 {bd.label}
                                             </span>
@@ -675,7 +695,9 @@ export default function Inventory() {
                                     {/* Body */}
                                     <div className="p-4">
                                         <div className="flex items-start justify-between gap-2 mb-1">
-                                            <h3 className="font-bold text-gray-900 text-sm leading-tight">{item.name}</h3>
+                                            <h3 className={`font-bold text-sm leading-tight ${
+                                                isHidden ? "text-gray-400" : "text-gray-900"
+                                            }`}>{item.name}</h3>
                                             <div className="flex items-center gap-1 shrink-0">
                                                 <svg className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 24 24">
                                                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -720,15 +742,42 @@ export default function Inventory() {
                                                 </span>
                                                 <span className="text-xs text-gray-400"> /m</span>
                                             </div>
-                                            <button
-                                                onClick={() => setModal({ mode: "edit", item })}
-                                                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl transition-colors"
-                                            >
-                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
-                                                Edit
-                                            </button>
+                                            {/* Action buttons */}
+                                            <div className="flex items-center gap-2">
+                                                {/* Hide toggle */}
+                                                <button
+                                                    onClick={() => handleToggleHide(item.id)}
+                                                    title={isHidden ? "Show listing" : "Hide listing"}
+                                                    className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${
+                                                        isHidden
+                                                            ? "bg-amber-50 hover:bg-amber-100 text-amber-600"
+                                                            : "bg-gray-100 hover:bg-gray-200 text-gray-500"
+                                                    }`}
+                                                >
+                                                    {isHidden ? (
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeWidth="2" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                                            <line x1="1" y1="1" x2="23" y2="23" strokeWidth="2" />
+                                                        </svg>
+                                                    ) : (
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeWidth="2" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                            <circle cx="12" cy="12" r="3" strokeWidth="2" />
+                                                        </svg>
+                                                    )}
+                                                    {isHidden ? "Show" : "Hide"}
+                                                </button>
+                                                {/* Edit */}
+                                                <button
+                                                    onClick={() => setModal({ mode: "edit", item })}
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl transition-colors"
+                                                >
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                    Edit
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -757,18 +806,33 @@ export default function Inventory() {
                             <thead className="bg-gray-50 border-b border-gray-100">
                                 <tr>
                                     {["Item", "Category", "Stock", "Price", "Sales", "Actions"].map((h) => (
-                                        <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500">{h}</th>
+                                        <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 whitespace-nowrap">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
                                 {filtered.map((item) => {
                                     const ss = stockStatusConfig[item.stockStatus] || stockStatusConfig.in;
+                                    const isHidden = !!item.hidden;
                                     return (
-                                        <tr key={item.id} className="hover:bg-purple-50/20 transition-colors">
+                                        <tr
+                                            key={item.id}
+                                            className={`transition-colors ${isHidden ? "bg-amber-50/40 hover:bg-amber-50/60" : "hover:bg-purple-50/20"}`}
+                                        >
                                             <td className="px-5 py-3.5">
                                                 <div>
-                                                    <p className="font-semibold text-gray-900">{item.name}</p>
+                                                    <div className="flex items-center gap-2">
+                                                        <p className={`font-semibold ${isHidden ? "text-gray-400" : "text-gray-900"}`}>{item.name}</p>
+                                                        {isHidden && (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-full">
+                                                                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeWidth="2" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                                                    <line x1="1" y1="1" x2="23" y2="23" strokeWidth="2" />
+                                                                </svg>
+                                                                Hidden
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                     <p className="text-xs text-gray-400">{item.type}</p>
                                                 </div>
                                             </td>
@@ -781,19 +845,46 @@ export default function Inventory() {
                                             <td className="px-5 py-3.5 font-bold text-gray-900">Rs {item.price.toLocaleString()}</td>
                                             <td className="px-5 py-3.5 text-gray-600">{item.sales}</td>
                                             <td className="px-5 py-3.5">
-                                                <button
-                                                    onClick={() => setModal({ mode: "edit", item })}
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl transition-colors"
-                                                >
-                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                    </svg>
-                                                    Edit
-                                                </button>
+                                                <div className="flex items-center gap-2">
+                                                    {/* Hide toggle */}
+                                                    <button
+                                                        onClick={() => handleToggleHide(item.id)}
+                                                        title={isHidden ? "Show listing" : "Hide listing"}
+                                                        className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${
+                                                            isHidden
+                                                                ? "bg-amber-50 hover:bg-amber-100 text-amber-600"
+                                                                : "bg-gray-100 hover:bg-gray-200 text-gray-500"
+                                                        }`}
+                                                    >
+                                                        {isHidden ? (
+                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeWidth="2" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                                                <line x1="1" y1="1" x2="23" y2="23" strokeWidth="2" />
+                                                            </svg>
+                                                        ) : (
+                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeWidth="2" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                                <circle cx="12" cy="12" r="3" strokeWidth="2" />
+                                                            </svg>
+                                                        )}
+                                                        {isHidden ? "Show" : "Hide"}
+                                                    </button>
+                                                    {/* Edit */}
+                                                    <button
+                                                        onClick={() => setModal({ mode: "edit", item })}
+                                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl transition-colors"
+                                                    >
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                        Edit
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     );
                                 })}
+
                             </tbody>
                         </table>
                     </div>
