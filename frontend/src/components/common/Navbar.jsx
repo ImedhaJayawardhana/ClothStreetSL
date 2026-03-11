@@ -56,7 +56,7 @@ export default function Navbar() {
     // Links for Supplier, Tailor, Designer Role
     const businessLinks = (
         <>
-            <Link to={user?.role === "tailor" ? "/tailor-dashboard" : "/dashboard"} className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
+            <Link to={user?.role === "tailor" ? "/tailor-dashboard" : user?.role === "designer" ? "/designer-dashboard" : "/dashboard"} className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
                 Dashboard
             </Link>
             <Link to="/shop" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">

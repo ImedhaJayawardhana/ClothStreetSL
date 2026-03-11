@@ -17,8 +17,20 @@ export default function Login() {
         setError('');
         setLoading(true);
         try {
-            await login(email, password);
-            navigate('/');
+            const res = await login(email, password);
+            const { doc, getDoc } = await import('firebase/firestore');
+            const { db } = await import('../firebase/firebase');
+            const userDoc = await getDoc(doc(db, "users", res.user.uid));
+            const role = userDoc.exists() ? userDoc.data().role : null;
+            if (role === 'designer') {
+                navigate('/designer-dashboard');
+            } else if (role === 'seller') {
+                navigate('/dashboard');
+            } else if (role === 'tailor') {
+                navigate('/tailor-dashboard');
+            } else {
+                navigate('/');
+            }
         } catch {
             setError('Failed to login. Check your email and password.');
         }
