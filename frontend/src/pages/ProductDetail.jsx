@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
-/* ─── Shared fabric data (imported inline for simplicity) ─── */
-export const FABRICS = [
+/* ─── Shared fabric data (export removed — moved to separate file) ─── */
+const FABRICS = [
   {
     id: "fab_001",
     name: "Premium Cotton Twill",
@@ -257,9 +257,8 @@ export default function ProductDetail() {
 
   const fabric = FABRICS.find((f) => f.id === fabricId);
 
-  const [selectedColor, setSelectedColor] = useState(fabric?.colors[0] ?? null);
+  // FIX 2 & 3: Removed unused selectedColor/setSelectedColor and unit/setUnit states
   const [qty, setQty] = useState(fabric?.minOrder ?? 1);
-  const [unit, setUnit] = useState("Meters");
   const [activeImg, setActiveImg] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
 
@@ -308,15 +307,15 @@ export default function ProductDetail() {
 
   const total = (fabric.price * qty).toLocaleString();
 
-  function decreaseQty() { setQty((q) => Math.max(fabric.minOrder, q - 1)); }
-  function increaseQty() { setQty((q) => q + 1); }
+  // FIX 4: Removed unused decreaseQty and increaseQty functions
+  // qty is now controlled directly via the input onChange below
 
   function handleAddToCart() {
     addToCart({ id: fabric.id, name: fabric.name, unitPrice: fabric.price, quantity: qty });
   }
 
   /* ── Thumbnail placeholder images (colour blocks) ── */
-  const thumbs = [fabric.bgColor, selectedColor?.hex ?? fabric.bgColor, "#2d1b69"];
+  const thumbs = [fabric.bgColor, fabric.colors[0]?.hex ?? fabric.bgColor, "#2d1b69"];
 
   /* ======================================================== */
   return (
@@ -386,9 +385,9 @@ export default function ProductDetail() {
               <div style={{
                 ...zoomStyle,
                 position: "absolute", inset: 0, pointerEvents: "none",
-                backgroundImage: `url(${thumbs[activeImg]})`, // Assuming thumbs eventually hold real images
-                backgroundColor: thumbs[activeImg], // Fallback for color block testing
-                backgroundSize: "200%", // Zoom factor
+                backgroundImage: `url(${thumbs[activeImg]})`,
+                backgroundColor: thumbs[activeImg],
+                backgroundSize: "200%",
                 zIndex: 10,
               }} />
 
@@ -652,7 +651,6 @@ export default function ProductDetail() {
                       <div style={{ fontSize: "0.8rem", color: C.textMuted }}>Based on {fabric.reviewCount} reviews</div>
                     </div>
                     <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
-                      {/* Ratings bars mock */}
                       {[5, 4, 3, 2, 1].map(star => {
                         const pct = star === 5 ? 70 : star === 4 ? 20 : star === 3 ? 5 : star === 2 ? 3 : 2;
                         return (
@@ -783,7 +781,7 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* ── Related Products (You May Also Like) ── */}
+      {/* ── Related Products ── */}
       <div style={{ maxWidth: 1100, margin: "0 auto 4rem", padding: "0 1.5rem" }}>
         <h2 style={{ fontSize: "1.4rem", fontWeight: 800, color: C.text, marginBottom: 24 }}>You May Also Like</h2>
         <div style={{
