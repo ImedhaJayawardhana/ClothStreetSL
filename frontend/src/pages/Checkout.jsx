@@ -545,25 +545,25 @@ export default function Checkout() {
 
             {/* Shipping Info Box */}
             <div className="checkout-confirm-shipping-box">
-              <div className="checkout-confirm-shipping-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="checkout-confirm-shipping-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
+                <h4>Shipping to</h4>
               </div>
               <div className="checkout-confirm-shipping-info">
-                <h4>Shipping to</h4>
                 {deliveryMethod === "home" ? (
-                  <p>
+                  <>
                     {form.fullName}<br />
                     {form.streetAddress}, {form.city}, {form.district}
-                  </p>
+                  </>
                 ) : (
-                  <p>
+                  <>
                     <strong>Tailor Delivery</strong><br />
                     {tailors.find(t => t.id === selectedTailor)?.name || "Selected Tailor"}<br />
                     {tailors.find(t => t.id === selectedTailor)?.location}
-                  </p>
+                  </>
                 )}
               </div>
             </div>
@@ -584,11 +584,13 @@ export default function Checkout() {
                     )}
                   </div>
                   <div className="checkout-confirm-item-info">
-                    <p className="checkout-confirm-item-name">{item.name}</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <p className="checkout-confirm-item-name">{item.name}</p>
+                      <div className="checkout-confirm-item-price">
+                        Rs {(item.unitPrice * item.quantity).toLocaleString()}
+                      </div>
+                    </div>
                     <p className="checkout-confirm-item-meta">{item.quantity} {item.unit || "m"}</p>
-                  </div>
-                  <div className="checkout-confirm-item-price">
-                    Rs {(item.unitPrice * item.quantity).toLocaleString()}
                   </div>
                 </div>
               ))}
@@ -604,11 +606,12 @@ export default function Checkout() {
             </div>
 
             {/* Actions */}
-            <div className="checkout-nav-row" style={{ marginTop: "0" }}>
-              <button className="checkout-back-btn" onClick={handleBack}>
-                ← Back
+            <div className="checkout-confirm-actions">
+              <button className="checkout-action-back-btn" onClick={handleBack}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                Back
               </button>
-              <button className="checkout-place-order-btn" onClick={handlePlaceOrder} style={{ width: "auto", flex: 1, marginLeft: "16px" }}>
+              <button className="checkout-place-order-btn" onClick={handlePlaceOrder}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                   <polyline points="22 4 12 14.01 9 11.01" />

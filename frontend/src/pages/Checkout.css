@@ -769,38 +769,37 @@
 
 /* Shipping summary box */
 .checkout-confirm-shipping-box {
-  background: #fafafa;
+  background: #f8f9fa;
   border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  gap: 16px;
+  padding: 20px;
   margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.checkout-confirm-shipping-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: #e0e7ff;
-  color: #4f46e5;
+.checkout-confirm-shipping-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  gap: 8px;
 }
 
-.checkout-confirm-shipping-info h4 {
+.checkout-confirm-shipping-header svg {
+  color: #52525b;
+}
+
+.checkout-confirm-shipping-header h4 {
   font-size: 0.95rem;
   font-weight: 700;
   color: #18181b;
-  margin: 0 0 4px;
+  margin: 0;
 }
 
-.checkout-confirm-shipping-info p {
+.checkout-confirm-shipping-info {
+  padding-left: 26px;
   font-size: 0.9rem;
   color: #52525b;
-  margin: 0;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* Items List */
@@ -867,30 +866,60 @@
 
 /* Payment Badge */
 .checkout-confirm-payment-badge {
-  display: inline-flex;
+  display: flex;
+  width: 100%;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: #eef2ff;
   color: #4f46e5;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 0.95rem;
   font-weight: 600;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
-/* Place Order Button */
+/* Place Order Action Row */
+.checkout-confirm-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.checkout-action-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  color: #18181b;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 14px 24px;
+  border-radius: 50px;
+  transition: all 0.2s;
+  min-width: 110px;
+}
+
+.checkout-action-back-btn:hover {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+}
+
 .checkout-place-order-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: 100%;
+  flex: 1;
   padding: 14px 24px;
   background: #059669;
   color: #fff;
   border: none;
-  border-radius: 12px;
+  border-radius: 50px;
   font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
