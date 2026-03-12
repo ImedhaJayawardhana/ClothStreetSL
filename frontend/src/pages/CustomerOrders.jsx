@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 // ── Mock Order Data (Sri Lankan fabric/tailoring orders) ──
@@ -91,8 +95,35 @@ const mockOrders = [
 ];
 
 export default function CustomerOrders() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("All");
+  const [quotations, setQuotations] = useState([]);
+  const [quotationsLoading, setQuotationsLoading] = useState(true);
+
+  // Fetch quotations from Firestore
+  useEffect(() => {
+    if (!user?.uid) return;
+    const fetchQuotations = async () => {
+      try {
+        const q = query(
+          collection(db, "quotations"),
+          where("customerId", "==", user.uid)
+        );
+        const snap = await getDocs(q);
+        const data = snap.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        setQuotations(data);
+      } catch (err) {
+        console.error("Error fetching quotations:", err);
+      } finally {
+        setQuotationsLoading(false);
+      }
+    };
+    fetchQuotations();
+  }, [user]);
 
   // ── Tab filtering ──
   const filteredOrders = mockOrders.filter((order) => {
@@ -275,7 +306,7 @@ export default function CustomerOrders() {
 
           {/* Tab Pills */}
           <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
-            {["All", "Active", "Completed"].map((tab) => (
+            {["All", "Active", "Completed", "Quotations"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -286,12 +317,138 @@ export default function CustomerOrders() {
                 }`}
               >
                 {tab}
+                {tab === "Quotations" && quotations.length > 0 && (
+                  <span className={`ml-1.5 text-xs ${activeTab === tab ? "text-indigo-200" : "text-gray-400"}`}>
+                    ({quotations.length})
+                  </span>
+                )}
               </button>
             ))}
           </div>
         </div>
 
-        {/* ── Order Cards Grid ── */}
+        {/* ── Order Cards Grid / Quotations ── */}
+        {activeTab === "Quotations" ? (
+          /* ── QUOTATIONS TAB ── */
+          quotationsLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 animate-pulse">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gray-200 rounded-xl" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-1/3" />
+                      <div className="h-3 bg-gray-200 rounded w-1/4" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : quotations.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {quotations.map((q) => {
+                const statusColors = {
+                  pending: { bg: "bg-amber-100", text: "text-amber-700", border: "#f59e0b" },
+                  quoted: { bg: "bg-blue-100", text: "text-blue-700", border: "#3b82f6" },
+                  accepted: { bg: "bg-emerald-100", text: "text-emerald-700", border: "#16a34a" },
+                  rejected: { bg: "bg-red-100", text: "text-red-700", border: "#dc2626" },
+                };
+                const sc = statusColors[q.status] || statusColors.pending;
+
+                return (
+                  <div
+                    key={q.id}
+                    className="bg-white border border-gray-200 rounded-2xl p-6 relative overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all"
+                    style={{ borderLeft: `4px solid ${sc.border}` }}
+                  >
+                    {/* Header */}
+                    <div className="flex items-start gap-3.5 mb-3">
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-lg shrink-0 ${
+                        q.providerType === "designer"
+                          ? "bg-gradient-to-br from-rose-500 to-pink-600"
+                          : "bg-gradient-to-br from-violet-500 to-purple-600"
+                      }`}>
+                        {q.providerName?.charAt(0) || "?"}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-bold text-gray-900 truncate">{q.providerName || "Provider"}</h3>
+                        <p className="text-xs text-gray-500 mt-0.5 capitalize">{q.providerType || "—"}</p>
+                        <span className={`inline-flex items-center mt-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${sc.bg} ${sc.text}`}>
+                          {q.status}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Requirements preview */}
+                    <p className="text-sm text-gray-500 mb-3 leading-relaxed line-clamp-2">
+                      {q.requirements || "No description"}
+                    </p>
+
+                    {/* Details */}
+                    <div className="grid grid-cols-2 gap-2.5 mb-4">
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <rect width="18" height="18" x="3" y="4" rx="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" />
+                        </svg>
+                        <span className="text-gray-400">Expected:</span>
+                        <span className="font-semibold text-gray-800">{q.expectedDate || "—"}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs">
+                        <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                        </svg>
+                        <span className="text-gray-400">Items:</span>
+                        <span className="font-semibold text-gray-800">{q.items?.length || 0}</span>
+                      </div>
+                      {q.grandTotal && (
+                        <div className="flex items-center gap-1.5 text-xs col-span-2">
+                          <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                          </svg>
+                          <span className="text-gray-400">Quoted Amount:</span>
+                          <span className="font-bold text-violet-600">Rs {q.grandTotal.toLocaleString()}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-2.5">
+                      {q.status === "quoted" ? (
+                        <button
+                          onClick={() => navigate(`/quotation-review/${q.id}`, { state: { quotation: q } })}
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path d="m9 12 2 2 4-4" /><circle cx="12" cy="12" r="10" />
+                          </svg>
+                          Review & Respond
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => navigate(`/quotation-review/${q.id}`, { state: { quotation: q } })}
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        >
+                          View Details
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="col-span-full text-center py-16">
+              <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4 text-gray-400">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-700 mb-1">No quotations yet</h3>
+              <p className="text-sm text-gray-400">Request a quote from a tailor or designer during checkout.</p>
+            </div>
+          )
+        ) : (
+        /* ── Regular Order Cards Grid ── */
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {filteredOrders.length > 0 ? (
             filteredOrders.map((order) => (
@@ -398,7 +555,7 @@ export default function CustomerOrders() {
                 {/* Action Buttons */}
                 <div className="flex gap-2.5 mt-4">
                   <button
-                    onClick={() => toast(`Viewing details for ${order.id}`, { icon: "📋" })}
+                    onClick={() => navigate(`/order-tracking/${order.id}`, { state: { order } })}
                     className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow-md transition-all cursor-pointer"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -409,7 +566,7 @@ export default function CustomerOrders() {
 
                   {["Shipped", "In Progress", "Confirmed"].includes(order.status) && (
                     <button
-                      onClick={() => toast(`Tracking ${order.id}...`, { icon: "🚚" })}
+                      onClick={() => navigate(`/order-tracking/${order.id}`, { state: { order } })}
                       className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50 transition-all cursor-pointer"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -446,6 +603,7 @@ export default function CustomerOrders() {
             </div>
           )}
         </div>
+        )}
 
       </div>
     </div>

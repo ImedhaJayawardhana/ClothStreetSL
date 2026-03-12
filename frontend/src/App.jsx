@@ -25,6 +25,12 @@ import Portfolio from "./pages/supplier/Portfolio";
 import Store from "./pages/Store";
 import CustomerOrders from "./pages/CustomerOrders";
 import ForgotPassword from "./pages/ForgotPassword";
+import FindTailorDesigner from "./pages/FindTailorDesigner";
+import RequestQuote from "./pages/RequestQuote";
+import QuotationInbox from "./pages/QuotationInbox";
+import QuotationResponse from "./pages/QuotationResponse";
+import QuotationReview from "./pages/QuotationReview";
+import OrderTracking from "./pages/OrderTracking";
 
 
 function PrivateRoute({ children }) {
@@ -47,6 +53,12 @@ export default function App() {
           <Route path="/match" element={<AIMatch />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/find-tailor-designer" element={<FindTailorDesigner />} />
+          <Route path="/request-quote/:providerId" element={<RequestQuote />} />
+          <Route path="/quotation-inbox" element={<QuotationInbox />} />
+          <Route path="/quotation-response/:quotationId" element={<QuotationResponse />} />
+          <Route path="/quotation-review/:quotationId" element={<QuotationReview />} />
+          <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
 
           <Route path="/shop" element={<BrowseMaterials />} />
           <Route path="/shop/:fabricId" element={<ProductDetail />} />

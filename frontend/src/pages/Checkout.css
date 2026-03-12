@@ -364,6 +364,22 @@
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
 }
 
+/* Highlighted "Find a Tailor / Designer" option */
+.checkout-delivery-option-highlight {
+  border: 2px solid transparent;
+  background: linear-gradient(#fff, #fff) padding-box,
+              linear-gradient(135deg, #7c3aed 0%, #db2777 100%) border-box;
+  position: relative;
+}
+
+.checkout-delivery-option-highlight:hover {
+  background: linear-gradient(#faf5ff, #fdf2f8) padding-box,
+              linear-gradient(135deg, #7c3aed 0%, #db2777 100%) border-box;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.15),
+              0 2px 8px rgba(219, 39, 119, 0.1);
+  transform: translateY(-1px);
+}
+
 .checkout-delivery-option-icon {
   width: 40px;
   height: 40px;
