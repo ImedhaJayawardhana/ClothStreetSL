@@ -92,9 +92,24 @@ export default function Checkout() {
     toast.success("Payment details saved! Confirm step coming soon.");
   };
 
+  const handlePlaceOrder = () => {
+    toast.success("Order Placed Successfully!");
+    setCurrentStep(5);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleBack = () => {
     setCurrentStep((prev) => Math.max(1, prev - 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const getPaymentMethodDisplay = () => {
+    switch (paymentMethod) {
+      case "card": return "Credit / Debit Card";
+      case "koko": return "Koko (BNPL)";
+      case "bank": return "Bank Transfer";
+      default: return paymentMethod;
+    }
   };
 
   return (
@@ -516,6 +531,89 @@ export default function Checkout() {
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
                 </svg>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ══════════════ STEP 4: Confirm ══════════════ */}
+        {currentStep === 4 && (
+          <div className="checkout-confirm-card">
+            <h2 className="checkout-confirm-title">
+              Review Your Order
+            </h2>
+
+            {/* Shipping Info Box */}
+            <div className="checkout-confirm-shipping-box">
+              <div className="checkout-confirm-shipping-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </div>
+              <div className="checkout-confirm-shipping-info">
+                <h4>Shipping to</h4>
+                {deliveryMethod === "home" ? (
+                  <p>
+                    {form.fullName}<br />
+                    {form.streetAddress}, {form.city}, {form.district}
+                  </p>
+                ) : (
+                  <p>
+                    <strong>Tailor Delivery</strong><br />
+                    {tailors.find(t => t.id === selectedTailor)?.name || "Selected Tailor"}<br />
+                    {tailors.find(t => t.id === selectedTailor)?.location}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Items List */}
+            <div className="checkout-confirm-items">
+              {cartItems.map((item) => (
+                <div className="checkout-confirm-item" key={item.id}>
+                  <div className="checkout-confirm-item-img">
+                    {item.image ? (
+                      <img src={item.image} alt={item.name} />
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="checkout-confirm-item-info">
+                    <p className="checkout-confirm-item-name">{item.name}</p>
+                    <p className="checkout-confirm-item-meta">{item.quantity} {item.unit || "m"}</p>
+                  </div>
+                  <div className="checkout-confirm-item-price">
+                    Rs {(item.unitPrice * item.quantity).toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Payment Badge */}
+            <div className="checkout-confirm-payment-badge">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <line x1="2" y1="10" x2="22" y2="10" />
+              </svg>
+              {getPaymentMethodDisplay()}
+            </div>
+
+            {/* Actions */}
+            <div className="checkout-nav-row" style={{ marginTop: "0" }}>
+              <button className="checkout-back-btn" onClick={handleBack}>
+                ← Back
+              </button>
+              <button className="checkout-place-order-btn" onClick={handlePlaceOrder} style={{ width: "auto", flex: 1, marginLeft: "16px" }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                Place Order · Rs {total.toLocaleString()}
               </button>
             </div>
           </div>
