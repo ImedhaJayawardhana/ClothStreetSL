@@ -25,6 +25,7 @@ import Portfolio from "./pages/supplier/Portfolio";
 import Store from "./pages/Store";
 import CustomerOrders from "./pages/CustomerOrders";
 import ForgotPassword from "./pages/ForgotPassword";
+import FindTailorDesigner from "./pages/FindTailorDesigner";
 
 
 function PrivateRoute({ children }) {
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="/match" element={<AIMatch />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/find-tailor-designer" element={<FindTailorDesigner />} />
 
           <Route path="/shop" element={<BrowseMaterials />} />
           <Route path="/shop/:fabricId" element={<ProductDetail />} />

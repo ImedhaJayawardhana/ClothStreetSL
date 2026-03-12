@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useCart } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import "./Checkout.css";
 
@@ -9,6 +10,7 @@ const STEPS = ["Shipping", "Delivery", "Payment", "Confirm", "Complete"];
 
 export default function Checkout() {
   const { cartItems, cartSubtotal, clearCart } = useCart();
+  const navigate = useNavigate();
 
   const SHIPPING_COST = 2500;
   const total = cartSubtotal + SHIPPING_COST;
@@ -300,6 +302,40 @@ export default function Checkout() {
                 </div>
                 <div className="checkout-delivery-option-radio">
                   <div className="checkout-delivery-option-radio-dot" />
+                </div>
+              </div>
+
+              {/* Find a Tailor / Designer */}
+              <div
+                className="checkout-delivery-option checkout-delivery-option-highlight"
+                onClick={() => {
+                  // Store cart context for the quote request flow
+                  sessionStorage.setItem(
+                    "clothstreet_checkout_cart",
+                    JSON.stringify(cartItems)
+                  );
+                  navigate("/find-tailor-designer");
+                }}
+              >
+                <div className="checkout-delivery-option-icon" style={{ background: "linear-gradient(135deg, #ede9fe 0%, #fce7f3 100%)" }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#7c3aed" }}>
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                </div>
+                <div className="checkout-delivery-option-info">
+                  <p className="checkout-delivery-option-name">
+                    Find a Tailor / Designer
+                    <span style={{ marginLeft: "8px", fontSize: "0.7rem", fontWeight: 700, padding: "2px 8px", borderRadius: "6px", background: "linear-gradient(135deg, #7c3aed, #db2777)", color: "#fff", verticalAlign: "middle" }}>NEW</span>
+                  </p>
+                  <p className="checkout-delivery-option-desc">Get custom tailoring or design work for your fabrics</p>
+                </div>
+                <div className="checkout-delivery-option-radio" style={{ borderColor: "#c4b5fd" }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+                  </svg>
                 </div>
               </div>
             </div>
