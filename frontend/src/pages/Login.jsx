@@ -135,9 +135,9 @@ export default function Login() {
                                 <label className="text-xs font-semibold text-white/50 uppercase tracking-wider">
                                     Password
                                 </label>
-                                <a href="#" className="text-xs text-violet-400 hover:text-violet-300 transition-colors duration-200">
+                                <Link to="/forgot-password" className="text-xs text-violet-400 hover:text-violet-300 transition-colors duration-200">
                                     Forgot password?
-                                </a>
+                                </Link>
                             </div>
                             <div className="relative">
                                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-violet-400 transition-colors duration-200">

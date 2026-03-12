@@ -24,6 +24,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Portfolio from "./pages/supplier/Portfolio";
 import Store from "./pages/Store";
 import CustomerOrders from "./pages/CustomerOrders";
+import ForgotPassword from "./pages/ForgotPassword";
 
 
 function PrivateRoute({ children }) {
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/tailors" element={<BrowseTailors />} />
           <Route path="/designers" element={<BrowseDesigners />} />
           <Route path="/match" element={<AIMatch />} />
