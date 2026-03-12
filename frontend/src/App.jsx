@@ -29,6 +29,7 @@ import FindTailorDesigner from "./pages/FindTailorDesigner";
 import RequestQuote from "./pages/RequestQuote";
 import QuotationInbox from "./pages/QuotationInbox";
 import QuotationResponse from "./pages/QuotationResponse";
+import QuotationReview from "./pages/QuotationReview";
 
 
 function PrivateRoute({ children }) {
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="/request-quote/:providerId" element={<RequestQuote />} />
           <Route path="/quotation-inbox" element={<QuotationInbox />} />
           <Route path="/quotation-response/:quotationId" element={<QuotationResponse />} />
+          <Route path="/quotation-review/:quotationId" element={<QuotationReview />} />
 
           <Route path="/shop" element={<BrowseMaterials />} />
           <Route path="/shop/:fabricId" element={<ProductDetail />} />
