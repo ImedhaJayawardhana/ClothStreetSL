@@ -30,6 +30,7 @@ import RequestQuote from "./pages/RequestQuote";
 import QuotationInbox from "./pages/QuotationInbox";
 import QuotationResponse from "./pages/QuotationResponse";
 import QuotationReview from "./pages/QuotationReview";
+import OrderTracking from "./pages/OrderTracking";
 
 
 function PrivateRoute({ children }) {
@@ -57,6 +58,7 @@ export default function App() {
           <Route path="/quotation-inbox" element={<QuotationInbox />} />
           <Route path="/quotation-response/:quotationId" element={<QuotationResponse />} />
           <Route path="/quotation-review/:quotationId" element={<QuotationReview />} />
+          <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
 
           <Route path="/shop" element={<BrowseMaterials />} />
           <Route path="/shop/:fabricId" element={<ProductDetail />} />
