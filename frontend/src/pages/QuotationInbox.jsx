@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const STATUS_MAP = {
-  pending:   { label: "Pending",  bg: "bg-amber-100",   text: "text-amber-700",  dot: "bg-amber-500" },
-  quoted:    { label: "Quoted",   bg: "bg-blue-100",    text: "text-blue-700",   dot: "bg-blue-500" },
-  accepted:  { label: "Accepted", bg: "bg-emerald-100", text: "text-emerald-700", dot: "bg-emerald-500" },
-  rejected:  { label: "Rejected", bg: "bg-red-100",     text: "text-red-700",    dot: "bg-red-500" },
+  pending: { label: "Pending", bg: "bg-amber-100", text: "text-amber-700", dot: "bg-amber-500" },
+  quoted: { label: "Quoted", bg: "bg-blue-100", text: "text-blue-700", dot: "bg-blue-500" },
+  accepted: { label: "Accepted", bg: "bg-emerald-100", text: "text-emerald-700", dot: "bg-emerald-500" },
+  rejected: { label: "Rejected", bg: "bg-red-100", text: "text-red-700", dot: "bg-red-500" },
 };
 
 export default function QuotationInbox() {
@@ -104,11 +104,10 @@ export default function QuotationInbox() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                activeTab === tab
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all cursor-pointer ${activeTab === tab
                   ? "bg-violet-600 text-white shadow-md shadow-violet-200"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-              }`}
+                }`}
             >
               {tab}
               {tab !== "All" && (

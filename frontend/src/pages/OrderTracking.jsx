@@ -182,19 +182,18 @@ export default function OrderTracking() {
               {legs.map((leg, idx) => {
                 const isCompleted = idx < currentIdx;
                 const isCurrent = idx === currentIdx;
-                const isFuture = idx > currentIdx;
+                //const isFuture = idx > currentIdx;
 
                 return (
                   <div key={leg.key} className="flex flex-col items-center" style={{ width: `${100 / legs.length}%` }}>
                     {/* Circle */}
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-lg border-2 transition-all z-10 ${
-                        isCompleted
+                      className={`w-10 h-10 rounded-full flex items-center justify-center text-lg border-2 transition-all z-10 ${isCompleted
                           ? "bg-violet-600 border-violet-600 text-white shadow-md shadow-violet-200"
                           : isCurrent
                             ? "bg-white border-violet-500 shadow-lg shadow-violet-100 ring-4 ring-violet-100"
                             : "bg-gray-100 border-gray-200 text-gray-400"
-                      }`}
+                        }`}
                     >
                       {isCompleted ? (
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
@@ -205,9 +204,8 @@ export default function OrderTracking() {
                       )}
                     </div>
                     {/* Label */}
-                    <p className={`text-[11px] font-semibold text-center mt-2 leading-tight max-w-[80px] ${
-                      isCompleted ? "text-violet-600" : isCurrent ? "text-gray-900" : "text-gray-400"
-                    }`}>
+                    <p className={`text-[11px] font-semibold text-center mt-2 leading-tight max-w-[80px] ${isCompleted ? "text-violet-600" : isCurrent ? "text-gray-900" : "text-gray-400"
+                      }`}>
                       {leg.label}
                     </p>
                   </div>
@@ -228,13 +226,12 @@ export default function OrderTracking() {
                   {/* Vertical line + circle */}
                   <div className="flex flex-col items-center">
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm border-2 shrink-0 z-10 ${
-                        isCompleted
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm border-2 shrink-0 z-10 ${isCompleted
                           ? "bg-violet-600 border-violet-600 text-white"
                           : isCurrent
                             ? "bg-white border-violet-500 ring-4 ring-violet-100"
                             : "bg-gray-100 border-gray-200"
-                      }`}
+                        }`}
                     >
                       {isCompleted ? (
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
@@ -250,9 +247,8 @@ export default function OrderTracking() {
                   </div>
                   {/* Label */}
                   <div className="pb-4">
-                    <p className={`text-sm font-semibold ${
-                      isCompleted ? "text-violet-600" : isCurrent ? "text-gray-900" : "text-gray-400"
-                    }`}>
+                    <p className={`text-sm font-semibold ${isCompleted ? "text-violet-600" : isCurrent ? "text-gray-900" : "text-gray-400"
+                      }`}>
                       {leg.label}
                     </p>
                     {isCurrent && (
@@ -286,9 +282,8 @@ export default function OrderTracking() {
                   <div key={idx} className="flex gap-4">
                     {/* Timeline dot + line */}
                     <div className="flex flex-col items-center">
-                      <div className={`w-3 h-3 rounded-full shrink-0 z-10 ${
-                        isLatest ? "bg-violet-600 ring-4 ring-violet-100" : "bg-gray-300"
-                      }`} />
+                      <div className={`w-3 h-3 rounded-full shrink-0 z-10 ${isLatest ? "bg-violet-600 ring-4 ring-violet-100" : "bg-gray-300"
+                        }`} />
                       {idx < timeline.length - 1 && (
                         <div className="w-0.5 flex-1 min-h-[40px] bg-gray-200" />
                       )}
