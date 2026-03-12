@@ -522,11 +522,13 @@ export default function ProductDetail() {
               background: C.greenBg, border: `1px solid ${C.greenBorder}`,
               color: C.green, padding: "3px 10px", borderRadius: 999,
             }}>★ Premium Partner</span>
-            <button style={{
-              padding: "6px 14px", borderRadius: 8, fontSize: "0.75rem", fontWeight: 600,
-              background: C.purpleMuted, border: `1px solid ${C.borderPurple}`,
-              color: C.purple, cursor: "pointer", whiteSpace: "nowrap",
-            }}>View Store</button>
+            <button 
+              onClick={() => navigate(`/store/${encodeURIComponent(fabric.supplier)}`)}
+              style={{
+                padding: "6px 14px", borderRadius: 8, fontSize: "0.75rem", fontWeight: 600,
+                background: C.purpleMuted, border: `1px solid ${C.borderPurple}`,
+                color: C.purple, cursor: "pointer", whiteSpace: "nowrap",
+              }}>View Store</button>
           </div>
 
           {/* CTA Buttons */}
