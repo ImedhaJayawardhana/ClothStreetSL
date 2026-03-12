@@ -8,11 +8,11 @@ import { useNavigate } from "react-router-dom";
 // Status colours for badges
 // ─────────────────────────────────────────────────────────────
 const STATUS_STYLES = {
-    "In Progress":  { bg: "rgba(251, 146, 60, 0.15)", color: "#fb923c", dot: "#fb923c" },
-    "In Review":    { bg: "rgba(96, 165, 250, 0.15)", color: "#60a5fa", dot: "#60a5fa" },
-    "Pending":      { bg: "rgba(251, 191, 36, 0.15)", color: "#fbbf24", dot: "#fbbf24" },
-    "Completed":    { bg: "rgba(52, 211, 153, 0.15)", color: "#34d399", dot: "#34d399" },
-    "Cancelled":    { bg: "rgba(239, 68, 68, 0.15)", color: "#ef4444", dot: "#ef4444" },
+    "In Progress":  { bg: "bg-orange-100", text: "text-orange-600", dot: "bg-orange-500" },
+    "In Review":    { bg: "bg-blue-100", text: "text-blue-600", dot: "bg-blue-500" },
+    "Pending":      { bg: "bg-gray-100", text: "text-gray-600", dot: "bg-gray-500" },
+    "Completed":    { bg: "bg-green-100", text: "text-green-600", dot: "bg-green-500" },
+    "Cancelled":    { bg: "bg-red-100", text: "text-red-600", dot: "bg-red-500" },
 };
 
 const STATUS_OPTIONS = ["Pending", "In Progress", "In Review", "Completed", "Cancelled"];
@@ -222,46 +222,30 @@ export default function DesignerOrders() {
         },
     ];
 
+    // ── Helper ──
+    const displayName = user?.name || user?.email || "Designer";
+    const avatarLetter = displayName.charAt(0).toUpperCase();
+
     // ── Loading state ──
     if (loading) {
         return (
-            <div style={{
-                minHeight: "100vh",
-                background: "linear-gradient(135deg, #0f0a1e 0%, #1a1145 50%, #0d1b2a 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-            }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
-                    <div style={{
-                        width: "40px", height: "40px",
-                        border: "4px solid #7c3aed",
-                        borderTopColor: "transparent",
-                        borderRadius: "50%",
-                        animation: "spin 1s linear infinite",
-                    }} />
-                    <p style={{ color: "#94a3b8", fontSize: "14px", fontWeight: 500 }}>Loading your projects…</p>
-                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-sm text-gray-500 font-medium">Loading your projects…</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div style={{
-            minHeight: "100vh",
-            background: "linear-gradient(135deg, #0f0a1e 0%, #1a1145 50%, #0d1b2a 100%)",
-            fontFamily: "'Inter', 'Segoe UI', sans-serif",
-            display: "flex",
-            flexDirection: "column",
-        }}>
-            {/* Responsive + animation styles */}
+        <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
+            {/* Added a custom animation for the cards */}
             <style>{`
                 @keyframes fadeSlideUp {
                     from { opacity: 0; transform: translateY(16px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
-                @keyframes spin { to { transform: rotate(360deg); } }
                 .do-card { animation: fadeSlideUp 0.4s ease both; }
                 .do-card:nth-child(1) { animation-delay: 0.0s; }
                 .do-card:nth-child(2) { animation-delay: 0.06s; }
@@ -269,280 +253,91 @@ export default function DesignerOrders() {
                 .do-card:nth-child(4) { animation-delay: 0.18s; }
                 .do-card:nth-child(5) { animation-delay: 0.24s; }
                 .do-card:nth-child(6) { animation-delay: 0.30s; }
-                @media (max-width: 860px) {
-                    .do-grid { grid-template-columns: 1fr !important; }
-                    .do-header { flex-direction: column !important; align-items: flex-start !important; }
-                    .do-page-pad { padding-left: 16px !important; padding-right: 16px !important; }
-                    .do-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
-                }
-                @media (max-width: 500px) {
-                    .do-stats-grid { grid-template-columns: 1fr !important; }
-                    .do-search-row { flex-direction: column !important; }
-                }
             `}</style>
 
-            {/* ── Page Header ── */}
-            <div className="do-page-pad" style={{ padding: "32px 32px 0 32px" }}>
-                <div className="do-header" style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    gap: "16px",
-                }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        <div style={{
-                            width: "40px", height: "40px",
-                            borderRadius: "12px",
-                            background: "linear-gradient(135deg, #34d399, #059669)",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            boxShadow: "0 4px 12px rgba(52, 211, 153, 0.3)",
-                        }}>
-                            <svg width="20" height="20" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24">
-                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h1 style={{
-                                color: "#ffffff",
-                                fontSize: "28px",
-                                fontWeight: 800,
-                                margin: 0,
-                                letterSpacing: "-0.5px",
-                            }}>
-                                My Design Projects
-                            </h1>
-                            <p style={{
-                                color: "#94a3b8",
-                                fontSize: "14px",
-                                margin: "4px 0 0 0",
-                            }}>
-                                Manage and track all your creative commissions
-                            </p>
-                        </div>
+            {/* ── Purple Header Bar ── */}
+            <div className="bg-purple-600 px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-xl shadow-lg shrink-0">
+                        {avatarLetter}
                     </div>
-
-                    {/* Filter & Export buttons */}
-                    <div style={{ display: "flex", gap: "10px" }}>
-                        <button style={{
-                            display: "flex", alignItems: "center", gap: "6px",
-                            padding: "10px 18px",
-                            borderRadius: "10px",
-                            border: "1px solid rgba(139, 92, 246, 0.4)",
-                            background: "rgba(139, 92, 246, 0.15)",
-                            color: "#a78bfa",
-                            fontSize: "13px",
-                            fontWeight: 600,
-                            cursor: "pointer",
-                            transition: "all 0.2s",
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(139, 92, 246, 0.25)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(139, 92, 246, 0.15)"; }}
-                        >
-                            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
-                            </svg>
-                            Filter
-                        </button>
-                        <button style={{
-                            display: "flex", alignItems: "center", gap: "6px",
-                            padding: "10px 18px",
-                            borderRadius: "10px",
-                            border: "none",
-                            background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
-                            color: "#ffffff",
-                            fontSize: "13px",
-                            fontWeight: 600,
-                            cursor: "pointer",
-                            boxShadow: "0 4px 12px rgba(124, 58, 237, 0.3)",
-                            transition: "all 0.2s",
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; }}
-                        >
-                            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                            </svg>
-                            Export
-                        </button>
+                    <div>
+                        <p className="text-white font-bold text-xl leading-tight">My Design Projects</p>
+                        <div className="flex items-center gap-2 mt-1">
+                            <span className="inline-block text-xs bg-purple-500 text-white px-2.5 py-0.5 rounded-full font-medium">
+                                Active Workspace
+                            </span>
+                            <span className="text-purple-200 text-sm">
+                                Manage and track your design orders
+                            </span>
+                        </div>
                     </div>
                 </div>
+                {/* Export Button */}
+                <button className="flex items-center gap-2 bg-white text-purple-700 hover:bg-purple-50 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-all hover:shadow-md border border-purple-100 hover:-translate-y-0.5 w-full sm:w-auto justify-center">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    Export
+                </button>
             </div>
 
-            {/* ── Stat Cards ── */}
-            <div className="do-page-pad" style={{ padding: "24px 32px 0 32px" }}>
-                <div className="do-stats-grid" style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                    gap: "16px",
-                }}>
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6 flex-1 w-full">
+                
+                {/* ── Stat Cards ── */}
+                <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {statsData.map((stat) => (
-                        <div key={stat.label} style={{
-                            background: "rgba(255, 255, 255, 0.04)",
-                            border: "1px solid rgba(255, 255, 255, 0.08)",
-                            borderRadius: "16px",
-                            padding: "20px",
-                            transition: "all 0.3s ease",
-                            cursor: "default",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background = "rgba(255, 255, 255, 0.07)";
-                            e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.3)";
-                            e.currentTarget.style.transform = "translateY(-2px)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background = "rgba(255, 255, 255, 0.04)";
-                            e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)";
-                            e.currentTarget.style.transform = "translateY(0)";
-                        }}
-                        >
-                            <div style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                marginBottom: "12px",
-                            }}>
-                                <span style={{ color: "#94a3b8", fontSize: "13px", fontWeight: 500 }}>
-                                    {stat.label}
-                                </span>
-                                <div style={{
-                                    width: "32px", height: "32px",
-                                    borderRadius: "10px",
-                                    background: stat.iconBg,
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                }}>
+                        <div key={stat.label} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-sm font-medium text-gray-500">{stat.label}</span>
+                                <div className="w-8 h-8 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center">
+                                    {/* Re-using the SVG children but styling the container */}
                                     {stat.icon}
                                 </div>
                             </div>
-                            <p style={{
-                                color: "#ffffff",
-                                fontSize: "28px",
-                                fontWeight: 800,
-                                margin: 0,
-                                letterSpacing: "-0.5px",
-                            }}>
+                            <p className="text-3xl font-bold text-gray-900 leading-tight">
                                 {typeof stat.value === "number" ? stat.value : stat.value}
                             </p>
-                            <p style={{
-                                color: "#64748b",
-                                fontSize: "12px",
-                                margin: "4px 0 0 0",
-                            }}>
-                                {stat.sub}
-                            </p>
+                            <p className="text-xs text-gray-400 mt-1">{stat.sub}</p>
                         </div>
                     ))}
-                </div>
-            </div>
+                </section>
 
-            {/* ── Search Bar + Filter Tabs ── */}
-            <div className="do-page-pad" style={{ padding: "24px 32px 0 32px" }}>
-                <div className="do-search-row" style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    gap: "16px",
-                }}>
+                {/* ── Search Bar + Filter Tabs ── */}
+                <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
                     {/* Search Input */}
-                    <div style={{
-                        position: "relative",
-                        flex: "1 1 300px",
-                        maxWidth: "500px",
-                    }}>
-                        <svg
-                            width="16" height="16" fill="none" stroke="#64748b" strokeWidth="2" viewBox="0 0 24 24"
-                            style={{
-                                position: "absolute",
-                                left: "14px",
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                                pointerEvents: "none",
-                            }}
-                        >
-                            <circle cx="11" cy="11" r="8" />
-                            <path d="M21 21l-4.35-4.35" />
+                    <div className="relative w-full md:max-w-md">
+                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                         <input
                             type="text"
                             placeholder="Search projects..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            style={{
-                                width: "100%",
-                                padding: "12px 16px 12px 42px",
-                                borderRadius: "12px",
-                                border: "1px solid rgba(255, 255, 255, 0.08)",
-                                background: "rgba(255, 255, 255, 0.04)",
-                                color: "#e2e8f0",
-                                fontSize: "14px",
-                                outline: "none",
-                                transition: "all 0.2s",
-                                boxSizing: "border-box",
-                            }}
-                            onFocus={(e) => {
-                                e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.5)";
-                                e.currentTarget.style.background = "rgba(255, 255, 255, 0.06)";
-                                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(139, 92, 246, 0.1)";
-                            }}
-                            onBlur={(e) => {
-                                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)";
-                                e.currentTarget.style.background = "rgba(255, 255, 255, 0.04)";
-                                e.currentTarget.style.boxShadow = "none";
-                            }}
+                            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all placeholder:text-gray-400"
                         />
                     </div>
 
                     {/* Filter Tabs */}
-                    <div style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                        background: "rgba(255, 255, 255, 0.04)",
-                        borderRadius: "12px",
-                        padding: "4px",
-                        border: "1px solid rgba(255, 255, 255, 0.06)",
-                    }}>
+                    <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-xl border border-gray-100 w-full md:w-auto overflow-x-auto scrollbar-hide">
                         {["All", "Active", "Completed"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                style={{
-                                    padding: "8px 20px",
-                                    borderRadius: "9px",
-                                    border: "none",
-                                    background: activeTab === tab
-                                        ? "linear-gradient(135deg, #7c3aed, #6d28d9)"
-                                        : "transparent",
-                                    color: activeTab === tab ? "#ffffff" : "#94a3b8",
-                                    fontSize: "13px",
-                                    fontWeight: activeTab === tab ? 700 : 500,
-                                    cursor: "pointer",
-                                    transition: "all 0.2s ease",
-                                    boxShadow: activeTab === tab ? "0 2px 8px rgba(124, 58, 237, 0.3)" : "none",
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (activeTab !== tab) {
-                                        e.currentTarget.style.color = "#e2e8f0";
-                                        e.currentTarget.style.background = "rgba(255, 255, 255, 0.06)";
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (activeTab !== tab) {
-                                        e.currentTarget.style.color = "#94a3b8";
-                                        e.currentTarget.style.background = "transparent";
-                                    }
-                                }}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                                    activeTab === tab
+                                        ? "bg-white text-gray-900 shadow-sm border border-gray-200"
+                                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                                }`}
                             >
                                 {tab}
                             </button>
                         ))}
                     </div>
                 </div>
-            </div>
 
-            {/* ── Project Cards Grid ── */}
-            <div className="do-page-pad" style={{ padding: "24px 32px 32px 32px", flex: 1 }}>
+                {/* ── Project Cards Grid ── */}
                 {(() => {
                     // Filter by tab
                     let filtered = orders;
@@ -572,21 +367,15 @@ export default function DesignerOrders() {
 
                     if (filtered.length === 0) {
                         return (
-                            <div style={{
-                                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                                padding: "60px 20px",
-                                background: "rgba(255, 255, 255, 0.03)",
-                                borderRadius: "16px",
-                                border: "1px solid rgba(255, 255, 255, 0.06)",
-                            }}>
-                                <svg width="48" height="48" fill="none" stroke="#4b5563" strokeWidth="1.5" viewBox="0 0 24 24">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" />
-                                    <path d="M3 9h18M9 21V9" />
-                                </svg>
-                                <p style={{ color: "#64748b", fontSize: "16px", fontWeight: 600, marginTop: "16px" }}>
-                                    No projects found
-                                </p>
-                                <p style={{ color: "#475569", fontSize: "13px", marginTop: "4px" }}>
+                            <div className="flex flex-col items-center justify-center py-16 px-5 bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm mt-4">
+                                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                                        <path d="M3 9h18M9 21V9" />
+                                    </svg>
+                                </div>
+                                <p className="text-gray-900 text-lg font-bold">No projects found</p>
+                                <p className="text-gray-500 text-sm mt-1 text-center max-w-sm">
                                     {searchTerm ? "Try adjusting your search terms" : "No projects match the selected filter"}
                                 </p>
                             </div>
@@ -596,109 +385,53 @@ export default function DesignerOrders() {
                     return (
                         <>
                             {/* Results count */}
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-                                <p style={{ color: "#64748b", fontSize: "13px", margin: 0 }}>
-                                    Showing <span style={{ color: "#e2e8f0", fontWeight: 600 }}>{(safePage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(safePage * ITEMS_PER_PAGE, totalFiltered)}</span> of <span style={{ color: "#e2e8f0", fontWeight: 600 }}>{totalFiltered}</span> projects
+                            <div className="flex items-center justify-between mb-4 px-1">
+                                <p className="text-sm text-gray-500">
+                                    Showing <span className="font-semibold text-gray-900">{(safePage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(safePage * ITEMS_PER_PAGE, totalFiltered)}</span> of <span className="font-semibold text-gray-900">{totalFiltered}</span> projects
                                 </p>
                             </div>
 
-                            <div className="do-grid" style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))",
-                                gap: "20px",
-                            }}>
-                            {filtered.map((project) => {
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {paginatedItems.map((project) => {
                                 const statusStyle = STATUS_STYLES[project.status] || STATUS_STYLES["Pending"];
-                                const progressColor = project.progress >= 100 ? "#34d399" : project.progress >= 60 ? "#7c3aed" : "#60a5fa";
+                                const progressColor = project.progress >= 100 ? "bg-green-500" : project.progress >= 60 ? "bg-purple-500" : "bg-blue-500";
                                 const formattedValue = project.value >= 1000 ? `Rs ${(project.value / 1000).toFixed(0)}K` : `Rs ${(project.value || 0).toLocaleString()}`;
 
                                 return (
-                                    <div key={project.id} className="do-card" style={{
-                                        background: "rgba(255, 255, 255, 0.04)",
-                                        border: "1px solid rgba(255, 255, 255, 0.08)",
-                                        borderRadius: "16px",
-                                        padding: "20px",
-                                        transition: "all 0.3s ease",
-                                        cursor: "default",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.background = "rgba(255, 255, 255, 0.06)";
-                                        e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.25)";
-                                        e.currentTarget.style.transform = "translateY(-2px)";
-                                        e.currentTarget.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.2)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.background = "rgba(255, 255, 255, 0.04)";
-                                        e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)";
-                                        e.currentTarget.style.transform = "translateY(0)";
-                                        e.currentTarget.style.boxShadow = "none";
-                                    }}
-                                    >
+                                    <div key={project.id} className="do-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+                                        
                                         {/* Card Header: Thumbnail + Title + Menu */}
-                                        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
+                                        <div className="flex items-start gap-3 mb-4">
                                             <img
                                                 src={project.thumbnail}
                                                 alt={project.name}
-                                                style={{
-                                                    width: "44px", height: "44px",
-                                                    borderRadius: "10px",
-                                                    objectFit: "cover",
-                                                    border: "1px solid rgba(255, 255, 255, 0.1)",
-                                                    flexShrink: 0,
-                                                }}
+                                                className="w-12 h-12 rounded-xl object-cover border border-gray-100 shrink-0"
                                             />
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <h3 style={{
-                                                    color: "#f1f5f9",
-                                                    fontSize: "15px",
-                                                    fontWeight: 700,
-                                                    margin: 0,
-                                                    whiteSpace: "nowrap",
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis",
-                                                }}>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-gray-900 text-base font-bold truncate">
                                                     {project.name}
                                                 </h3>
-                                                <p style={{ color: "#94a3b8", fontSize: "12px", margin: "2px 0 0 0" }}>
+                                                <p className="text-gray-500 text-sm truncate mt-0.5">
                                                     {project.client || project.customerName}
                                                 </p>
                                             </div>
                                             {/* 3-dot menu + Status dropdown */}
-                                            <div style={{ position: "relative", flexShrink: 0 }}>
+                                            <div className="relative shrink-0">
                                                 <button
                                                     onClick={() => setStatusDropdown(statusDropdown === project.id ? null : project.id)}
-                                                    style={{
-                                                        background: statusDropdown === project.id ? "rgba(255,255,255,0.1)" : "none",
-                                                        border: "none", cursor: "pointer",
-                                                        color: statusDropdown === project.id ? "#e2e8f0" : "#64748b",
-                                                        padding: "4px", borderRadius: "6px",
-                                                        transition: "all 0.2s",
-                                                    }}
-                                                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#e2e8f0"; }}
-                                                    onMouseLeave={(e) => { if (statusDropdown !== project.id) { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#64748b"; } }}
+                                                    className={`p-1.5 rounded-lg transition-colors ${statusDropdown === project.id ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
                                                 >
-                                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                                         <circle cx="12" cy="5" r="1.5" />
                                                         <circle cx="12" cy="12" r="1.5" />
                                                         <circle cx="12" cy="19" r="1.5" />
                                                     </svg>
                                                 </button>
+
                                                 {/* Status dropdown */}
                                                 {statusDropdown === project.id && (
-                                                    <div style={{
-                                                        position: "absolute",
-                                                        top: "100%",
-                                                        right: 0,
-                                                        marginTop: "4px",
-                                                        background: "#1e1b4b",
-                                                        border: "1px solid rgba(139, 92, 246, 0.3)",
-                                                        borderRadius: "12px",
-                                                        padding: "6px",
-                                                        minWidth: "160px",
-                                                        boxShadow: "0 12px 32px rgba(0, 0, 0, 0.5)",
-                                                        zIndex: 50,
-                                                    }}>
-                                                        <p style={{ color: "#94a3b8", fontSize: "11px", fontWeight: 600, padding: "6px 10px 4px", margin: 0, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                                    <div className="absolute top-full right-0 mt-1 bg-white border border-gray-100 rounded-xl p-1.5 min-w-[160px] shadow-lg z-50">
+                                                        <p className="text-gray-400 text-[10px] font-bold px-2.5 py-1.5 uppercase tracking-wider">
                                                             Update Status
                                                         </p>
                                                         {STATUS_OPTIONS.map((opt) => {
@@ -708,33 +441,15 @@ export default function DesignerOrders() {
                                                                 <button
                                                                     key={opt}
                                                                     onClick={() => handleStatusUpdate(project.id, opt)}
-                                                                    style={{
-                                                                        display: "flex", alignItems: "center", gap: "8px",
-                                                                        width: "100%",
-                                                                        padding: "8px 10px",
-                                                                        borderRadius: "8px",
-                                                                        border: "none",
-                                                                        background: isActive ? "rgba(139, 92, 246, 0.15)" : "transparent",
-                                                                        color: isActive ? "#e2e8f0" : "#cbd5e1",
-                                                                        fontSize: "12px",
-                                                                        fontWeight: isActive ? 700 : 500,
-                                                                        cursor: "pointer",
-                                                                        transition: "all 0.15s",
-                                                                        textAlign: "left",
-                                                                    }}
-                                                                    onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
-                                                                    onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+                                                                    className={`flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-sm transition-colors text-left ${
+                                                                        isActive ? `${optStyle.bg} ${optStyle.text} font-bold` : "text-gray-600 font-medium hover:bg-gray-50"
+                                                                    }`}
                                                                 >
-                                                                    <span style={{
-                                                                        width: "7px", height: "7px",
-                                                                        borderRadius: "50%",
-                                                                        background: optStyle.dot,
-                                                                        flexShrink: 0,
-                                                                    }} />
+                                                                    <span className={`w-2 h-2 rounded-full shrink-0 ${optStyle.dot}`} />
                                                                     {opt}
                                                                     {isActive && (
-                                                                        <svg width="12" height="12" fill="none" stroke="#a78bfa" strokeWidth="2.5" viewBox="0 0 24 24" style={{ marginLeft: "auto" }}>
-                                                                            <path d="M20 6L9 17l-5-5" />
+                                                                        <svg className={`w-4 h-4 ml-auto ${optStyle.text}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M20 6L9 17l-5-5" />
                                                                         </svg>
                                                                     )}
                                                                 </button>
@@ -746,163 +461,89 @@ export default function DesignerOrders() {
                                         </div>
 
                                         {/* Order ID + Category badge */}
-                                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                                            <span style={{ color: "#64748b", fontSize: "11px", fontWeight: 500 }}>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <span className="text-gray-500 text-xs font-medium">
                                                 {project.id}
                                             </span>
-                                            <span style={{ color: "#475569", fontSize: "11px" }}>•</span>
-                                            <span style={{
-                                                fontSize: "11px", fontWeight: 600,
-                                                color: "#a78bfa",
-                                                background: "rgba(139, 92, 246, 0.12)",
-                                                padding: "2px 8px",
-                                                borderRadius: "6px",
-                                            }}>
+                                            <span className="text-gray-300 text-xs">•</span>
+                                            <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full">
                                                 {project.category}
                                             </span>
                                         </div>
 
                                         {/* Description */}
-                                        <p style={{
-                                            color: "#94a3b8",
-                                            fontSize: "13px",
-                                            margin: "0 0 14px 0",
-                                            lineHeight: 1.4,
-                                        }}>
+                                        <p className="text-gray-600 text-sm line-clamp-2 mb-5 h-10">
                                             {project.description}
                                         </p>
 
                                         {/* Progress bar */}
-                                        <div style={{ marginBottom: "14px" }}>
-                                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                                                <span style={{ color: "#94a3b8", fontSize: "12px", fontWeight: 500 }}>Progress</span>
-                                                <span style={{ color: progressColor, fontSize: "12px", fontWeight: 700 }}>{project.progress}%</span>
+                                        <div className="mb-5 bg-gray-50 p-3 rounded-xl border border-gray-100/50">
+                                            <div className="flex justify-between mb-2 items-center">
+                                                <span className="text-gray-600 text-xs font-medium">Progress</span>
+                                                <span className={`text-xs font-bold ${progressColor.replace('bg-', 'text-')}`}>{project.progress}%</span>
                                             </div>
-                                            <div style={{
-                                                width: "100%", height: "6px",
-                                                background: "rgba(255, 255, 255, 0.06)",
-                                                borderRadius: "99px",
-                                                overflow: "hidden",
-                                            }}>
-                                                <div style={{
-                                                    width: `${project.progress}%`,
-                                                    height: "100%",
-                                                    background: `linear-gradient(90deg, ${progressColor}, ${progressColor}dd)`,
-                                                    borderRadius: "99px",
-                                                    transition: "width 0.6s ease",
-                                                }} />
+                                            <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                                <div 
+                                                    className={`h-full rounded-full transition-all duration-700 ${progressColor}`}
+                                                    style={{ width: `${project.progress}%` }} 
+                                                />
                                             </div>
                                         </div>
 
                                         {/* Stats row: Designs, Value */}
-                                        <div style={{ display: "flex", gap: "20px", marginBottom: "10px" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                                <svg width="13" height="13" fill="none" stroke="#a78bfa" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                        <div className="flex items-center gap-5 mb-5 px-1">
+                                            <div className="flex items-center gap-1.5">
+                                                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
                                                 </svg>
-                                                <span style={{ color: "#94a3b8", fontSize: "12px" }}>Designs:</span>
-                                                <span style={{ color: "#e2e8f0", fontSize: "12px", fontWeight: 700 }}>{project.designs}</span>
+                                                <span className="text-gray-500 text-xs">Designs:</span>
+                                                <span className="text-gray-900 text-xs font-bold">{project.designs}</span>
                                             </div>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                                <svg width="13" height="13" fill="none" stroke="#34d399" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <line x1="12" y1="1" x2="12" y2="23" />
-                                                    <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                                            <div className="flex items-center gap-1.5">
+                                                <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                    <line x1="12" y1="1" x2="12" y2="23" strokeLinecap="round" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
                                                 </svg>
-                                                <span style={{ color: "#94a3b8", fontSize: "12px" }}>Value:</span>
-                                                <span style={{ color: "#e2e8f0", fontSize: "12px", fontWeight: 700 }}>{formattedValue}</span>
+                                                <span className="text-gray-500 text-xs">Value:</span>
+                                                <span className="text-gray-900 text-xs font-bold">{formattedValue}</span>
                                             </div>
                                         </div>
 
                                         {/* Due date + Status badge */}
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                                                <svg width="12" height="12" fill="none" stroke="#64748b" strokeWidth="2" viewBox="0 0 24 24">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-1.5 text-gray-500">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                                     <rect x="3" y="4" width="18" height="18" rx="2" />
                                                     <line x1="16" y1="2" x2="16" y2="6" />
                                                     <line x1="8" y1="2" x2="8" y2="6" />
                                                     <line x1="3" y1="10" x2="21" y2="10" />
                                                 </svg>
-                                                <span style={{ color: "#94a3b8", fontSize: "12px" }}>Due:</span>
-                                                <span style={{ color: "#e2e8f0", fontSize: "12px", fontWeight: 600 }}>{project.due}</span>
+                                                <span className="text-xs font-medium">Due: <span className="text-gray-900 font-bold">{project.due}</span></span>
                                             </div>
-                                            <div style={{
-                                                display: "flex", alignItems: "center", gap: "6px",
-                                                padding: "4px 10px",
-                                                borderRadius: "8px",
-                                                background: statusStyle.bg,
-                                            }}>
-                                                <span style={{
-                                                    width: "6px", height: "6px",
-                                                    borderRadius: "50%",
-                                                    background: statusStyle.dot,
-                                                    flexShrink: 0,
-                                                }} />
-                                                <span style={{ color: statusStyle.color, fontSize: "12px", fontWeight: 600 }}>
+                                            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${statusStyle.bg}`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
+                                                <span className={`text-[11px] font-bold ${statusStyle.text}`}>
                                                     {project.status}
                                                 </span>
                                             </div>
                                         </div>
 
                                         {/* Action buttons */}
-                                        <div style={{ display: "flex", gap: "10px" }}>
-                                            <button style={{
-                                                flex: 2,
-                                                display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
-                                                padding: "10px",
-                                                borderRadius: "10px",
-                                                border: "none",
-                                                background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
-                                                color: "#ffffff",
-                                                fontSize: "13px",
-                                                fontWeight: 600,
-                                                cursor: "pointer",
-                                                transition: "all 0.2s",
-                                                boxShadow: "0 2px 8px rgba(124, 58, 237, 0.25)",
-                                            }}
-                                            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(124, 58, 237, 0.4)"; }}
-                                            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(124, 58, 237, 0.25)"; }}
-                                            >
-                                                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                                    <circle cx="12" cy="12" r="3" />
+                                        <div className="flex gap-2">
+                                            <button className="flex-1 flex justify-center items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white font-semibold py-2.5 px-3 rounded-xl text-sm transition-all shadow-sm hover:shadow-md">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                 </svg>
                                                 View Project
                                             </button>
-                                            <button style={{
-                                                flex: 1,
-                                                display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
-                                                padding: "10px",
-                                                borderRadius: "10px",
-                                                border: "1px solid rgba(255, 255, 255, 0.1)",
-                                                background: "rgba(255, 255, 255, 0.04)",
-                                                color: "#cbd5e1",
-                                                fontSize: "13px",
-                                                fontWeight: 600,
-                                                cursor: "pointer",
-                                                transition: "all 0.2s",
-                                            }}
-                                            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)"; e.currentTarget.style.color = "#f1f5f9"; }}
-                                            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255, 255, 255, 0.04)"; e.currentTarget.style.color = "#cbd5e1"; }}
-                                            >
-                                                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                                                    <circle cx="9" cy="7" r="4" />
-                                                    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                                            <button className="flex justify-center items-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-semibold py-2.5 px-4 rounded-xl text-sm transition-all border border-gray-200">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                                 </svg>
-                                                Contact
+                                                Message
                                             </button>
                                         </div>
-
-                                        {/* Click-away listener for dropdown */}
-                                        {statusDropdown === project.id && (
-                                            <div
-                                                onClick={() => setStatusDropdown(null)}
-                                                style={{
-                                                    position: "fixed", inset: 0, zIndex: 40,
-                                                    background: "transparent",
-                                                }}
-                                            />
-                                        )}
                                     </div>
                                 );
                             })}
@@ -910,81 +551,50 @@ export default function DesignerOrders() {
 
                             {/* Pagination Controls */}
                             {totalPages > 1 && (
-                                <div style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    gap: "6px",
-                                    marginTop: "28px",
-                                    paddingBottom: "8px",
-                                }}>
-                                    {/* Prev button */}
+                                <div className="flex items-center justify-center gap-2 mt-10">
                                     <button
                                         onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                        disabled={safePage <= 1}
-                                        style={{
-                                            display: "flex", alignItems: "center", justifyContent: "center",
-                                            width: "36px", height: "36px",
-                                            borderRadius: "10px",
-                                            border: "1px solid rgba(255,255,255,0.08)",
-                                            background: "rgba(255,255,255,0.04)",
-                                            color: safePage <= 1 ? "#334155" : "#cbd5e1",
-                                            cursor: safePage <= 1 ? "not-allowed" : "pointer",
-                                            transition: "all 0.2s",
-                                        }}
-                                        onMouseEnter={(e) => { if (safePage > 1) e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                                        disabled={safePage === 1}
+                                        className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                                            safePage === 1
+                                                ? "text-gray-300 bg-gray-50 cursor-not-allowed"
+                                                : "text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm"
+                                        }`}
                                     >
-                                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                            <path d="M15 18l-6-6 6-6" />
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                                         </svg>
+                                        Prev
                                     </button>
+                                    
+                                    <div className="flex gap-1.5">
+                                        {Array.from({ length: totalPages }).map((_, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => setCurrentPage(i + 1)}
+                                                className={`w-9 h-9 rounded-xl text-sm font-bold transition-all flex items-center justify-center ${
+                                                    safePage === i + 1
+                                                        ? "bg-purple-600 text-white shadow-md shadow-purple-600/20"
+                                                        : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50 hover:text-gray-700"
+                                                }`}
+                                            >
+                                                {i + 1}
+                                            </button>
+                                        ))}
+                                    </div>
 
-                                    {/* Page numbers */}
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                        <button
-                                            key={page}
-                                            onClick={() => setCurrentPage(page)}
-                                            style={{
-                                                width: "36px", height: "36px",
-                                                borderRadius: "10px",
-                                                border: page === safePage ? "none" : "1px solid rgba(255,255,255,0.08)",
-                                                background: page === safePage
-                                                    ? "linear-gradient(135deg, #7c3aed, #6d28d9)"
-                                                    : "rgba(255,255,255,0.04)",
-                                                color: page === safePage ? "#ffffff" : "#94a3b8",
-                                                fontSize: "13px",
-                                                fontWeight: page === safePage ? 700 : 500,
-                                                cursor: "pointer",
-                                                transition: "all 0.2s",
-                                                boxShadow: page === safePage ? "0 2px 8px rgba(124, 58, 237, 0.3)" : "none",
-                                            }}
-                                            onMouseEnter={(e) => { if (page !== safePage) e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
-                                            onMouseLeave={(e) => { if (page !== safePage) e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
-                                        >
-                                            {page}
-                                        </button>
-                                    ))}
-
-                                    {/* Next button */}
                                     <button
                                         onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                                        disabled={safePage >= totalPages}
-                                        style={{
-                                            display: "flex", alignItems: "center", justifyContent: "center",
-                                            width: "36px", height: "36px",
-                                            borderRadius: "10px",
-                                            border: "1px solid rgba(255,255,255,0.08)",
-                                            background: "rgba(255,255,255,0.04)",
-                                            color: safePage >= totalPages ? "#334155" : "#cbd5e1",
-                                            cursor: safePage >= totalPages ? "not-allowed" : "pointer",
-                                            transition: "all 0.2s",
-                                        }}
-                                        onMouseEnter={(e) => { if (safePage < totalPages) e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                                        disabled={safePage === totalPages}
+                                        className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                                            safePage === totalPages
+                                                ? "text-gray-300 bg-gray-50 cursor-not-allowed"
+                                                : "text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm"
+                                        }`}
                                     >
-                                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                            <path d="M9 18l6-6-6-6" />
+                                        Next
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                                         </svg>
                                     </button>
                                 </div>
@@ -992,7 +602,7 @@ export default function DesignerOrders() {
                         </>
                     );
                 })()}
-            </div>
+            </main>
         </div>
     );
 }
