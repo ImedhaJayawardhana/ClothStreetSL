@@ -17,6 +17,8 @@ const STATUS_STYLES = {
 
 const STATUS_OPTIONS = ["Pending", "In Progress", "In Review", "Completed", "Cancelled"];
 
+const ITEMS_PER_PAGE = 6;
+
 // ─────────────────────────────────────────────────────────────
 // Mock / fallback project data (matches screenshot)
 // ─────────────────────────────────────────────────────────────
@@ -86,7 +88,11 @@ export default function DesignerOrders() {
     const [orders, setOrders] = useState([]);
     const [activeTab, setActiveTab] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
-    const [statusDropdown, setStatusDropdown] = useState(null); // tracks which project's dropdown is open
+    const [statusDropdown, setStatusDropdown] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // Reset page when filter/search changes
+    useEffect(() => { setCurrentPage(1); }, [activeTab, searchTerm]);
 
     // Redirect non-designers away
     useEffect(() => {
@@ -249,10 +255,35 @@ export default function DesignerOrders() {
             display: "flex",
             flexDirection: "column",
         }}>
+            {/* Responsive + animation styles */}
+            <style>{`
+                @keyframes fadeSlideUp {
+                    from { opacity: 0; transform: translateY(16px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes spin { to { transform: rotate(360deg); } }
+                .do-card { animation: fadeSlideUp 0.4s ease both; }
+                .do-card:nth-child(1) { animation-delay: 0.0s; }
+                .do-card:nth-child(2) { animation-delay: 0.06s; }
+                .do-card:nth-child(3) { animation-delay: 0.12s; }
+                .do-card:nth-child(4) { animation-delay: 0.18s; }
+                .do-card:nth-child(5) { animation-delay: 0.24s; }
+                .do-card:nth-child(6) { animation-delay: 0.30s; }
+                @media (max-width: 860px) {
+                    .do-grid { grid-template-columns: 1fr !important; }
+                    .do-header { flex-direction: column !important; align-items: flex-start !important; }
+                    .do-page-pad { padding-left: 16px !important; padding-right: 16px !important; }
+                    .do-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+                }
+                @media (max-width: 500px) {
+                    .do-stats-grid { grid-template-columns: 1fr !important; }
+                    .do-search-row { flex-direction: column !important; }
+                }
+            `}</style>
 
             {/* ── Page Header ── */}
-            <div style={{ padding: "32px 32px 0 32px" }}>
-                <div style={{
+            <div className="do-page-pad" style={{ padding: "32px 32px 0 32px" }}>
+                <div className="do-header" style={{
                     display: "flex",
                     alignItems: "flex-start",
                     justifyContent: "space-between",
@@ -339,8 +370,8 @@ export default function DesignerOrders() {
             </div>
 
             {/* ── Stat Cards ── */}
-            <div style={{ padding: "24px 32px 0 32px" }}>
-                <div style={{
+            <div className="do-page-pad" style={{ padding: "24px 32px 0 32px" }}>
+                <div className="do-stats-grid" style={{
                     display: "grid",
                     gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                     gap: "16px",
@@ -405,8 +436,8 @@ export default function DesignerOrders() {
             </div>
 
             {/* ── Search Bar + Filter Tabs ── */}
-            <div style={{ padding: "24px 32px 0 32px" }}>
-                <div style={{
+            <div className="do-page-pad" style={{ padding: "24px 32px 0 32px" }}>
+                <div className="do-search-row" style={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
@@ -511,7 +542,7 @@ export default function DesignerOrders() {
             </div>
 
             {/* ── Project Cards Grid ── */}
-            <div style={{ padding: "24px 32px 32px 32px", flex: 1 }}>
+            <div className="do-page-pad" style={{ padding: "24px 32px 32px 32px", flex: 1 }}>
                 {(() => {
                     // Filter by tab
                     let filtered = orders;
@@ -533,6 +564,11 @@ export default function DesignerOrders() {
                             (o.id || "").toLowerCase().includes(q)
                         );
                     }
+
+                    const totalFiltered = filtered.length;
+                    const totalPages = Math.max(1, Math.ceil(totalFiltered / ITEMS_PER_PAGE));
+                    const safePage = Math.min(currentPage, totalPages);
+                    const paginatedItems = filtered.slice((safePage - 1) * ITEMS_PER_PAGE, safePage * ITEMS_PER_PAGE);
 
                     if (filtered.length === 0) {
                         return (
@@ -558,18 +594,26 @@ export default function DesignerOrders() {
                     }
 
                     return (
-                        <div style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))",
-                            gap: "20px",
-                        }}>
+                        <>
+                            {/* Results count */}
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+                                <p style={{ color: "#64748b", fontSize: "13px", margin: 0 }}>
+                                    Showing <span style={{ color: "#e2e8f0", fontWeight: 600 }}>{(safePage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(safePage * ITEMS_PER_PAGE, totalFiltered)}</span> of <span style={{ color: "#e2e8f0", fontWeight: 600 }}>{totalFiltered}</span> projects
+                                </p>
+                            </div>
+
+                            <div className="do-grid" style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))",
+                                gap: "20px",
+                            }}>
                             {filtered.map((project) => {
                                 const statusStyle = STATUS_STYLES[project.status] || STATUS_STYLES["Pending"];
                                 const progressColor = project.progress >= 100 ? "#34d399" : project.progress >= 60 ? "#7c3aed" : "#60a5fa";
                                 const formattedValue = project.value >= 1000 ? `Rs ${(project.value / 1000).toFixed(0)}K` : `Rs ${(project.value || 0).toLocaleString()}`;
 
                                 return (
-                                    <div key={project.id} style={{
+                                    <div key={project.id} className="do-card" style={{
                                         background: "rgba(255, 255, 255, 0.04)",
                                         border: "1px solid rgba(255, 255, 255, 0.08)",
                                         borderRadius: "16px",
@@ -862,7 +906,90 @@ export default function DesignerOrders() {
                                     </div>
                                 );
                             })}
-                        </div>
+                            </div>
+
+                            {/* Pagination Controls */}
+                            {totalPages > 1 && (
+                                <div style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "6px",
+                                    marginTop: "28px",
+                                    paddingBottom: "8px",
+                                }}>
+                                    {/* Prev button */}
+                                    <button
+                                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                        disabled={safePage <= 1}
+                                        style={{
+                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                            width: "36px", height: "36px",
+                                            borderRadius: "10px",
+                                            border: "1px solid rgba(255,255,255,0.08)",
+                                            background: "rgba(255,255,255,0.04)",
+                                            color: safePage <= 1 ? "#334155" : "#cbd5e1",
+                                            cursor: safePage <= 1 ? "not-allowed" : "pointer",
+                                            transition: "all 0.2s",
+                                        }}
+                                        onMouseEnter={(e) => { if (safePage > 1) e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                                    >
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                            <path d="M15 18l-6-6 6-6" />
+                                        </svg>
+                                    </button>
+
+                                    {/* Page numbers */}
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                        <button
+                                            key={page}
+                                            onClick={() => setCurrentPage(page)}
+                                            style={{
+                                                width: "36px", height: "36px",
+                                                borderRadius: "10px",
+                                                border: page === safePage ? "none" : "1px solid rgba(255,255,255,0.08)",
+                                                background: page === safePage
+                                                    ? "linear-gradient(135deg, #7c3aed, #6d28d9)"
+                                                    : "rgba(255,255,255,0.04)",
+                                                color: page === safePage ? "#ffffff" : "#94a3b8",
+                                                fontSize: "13px",
+                                                fontWeight: page === safePage ? 700 : 500,
+                                                cursor: "pointer",
+                                                transition: "all 0.2s",
+                                                boxShadow: page === safePage ? "0 2px 8px rgba(124, 58, 237, 0.3)" : "none",
+                                            }}
+                                            onMouseEnter={(e) => { if (page !== safePage) e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
+                                            onMouseLeave={(e) => { if (page !== safePage) e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                                        >
+                                            {page}
+                                        </button>
+                                    ))}
+
+                                    {/* Next button */}
+                                    <button
+                                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                        disabled={safePage >= totalPages}
+                                        style={{
+                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                            width: "36px", height: "36px",
+                                            borderRadius: "10px",
+                                            border: "1px solid rgba(255,255,255,0.08)",
+                                            background: "rgba(255,255,255,0.04)",
+                                            color: safePage >= totalPages ? "#334155" : "#cbd5e1",
+                                            cursor: safePage >= totalPages ? "not-allowed" : "pointer",
+                                            transition: "all 0.2s",
+                                        }}
+                                        onMouseEnter={(e) => { if (safePage < totalPages) e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                                    >
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                            <path d="M9 18l6-6-6-6" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     );
                 })()}
             </div>
