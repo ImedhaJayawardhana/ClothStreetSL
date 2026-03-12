@@ -23,6 +23,7 @@ import DesignerOrders from "./pages/designer/DesignerOrders";
 import ProductDetail from "./pages/ProductDetail";
 import Portfolio from "./pages/supplier/Portfolio";
 import Store from "./pages/Store";
+import CustomerOrders from "./pages/CustomerOrders";
 
 
 function PrivateRoute({ children }) {
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="/designer-dashboard" element={<PrivateRoute><DesignerDashboard /></PrivateRoute>} />
           <Route path="/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><CustomerProfile /></PrivateRoute>} />
+          <Route path="/orders" element={<PrivateRoute><CustomerOrders /></PrivateRoute>} />
           <Route path="/tailor-profile" element={<PrivateRoute><TailorProfile /></PrivateRoute>} />
           <Route path="/tailor/:tailorId" element={<TailorProfile />} />
           <Route path="/designer-profile" element={<PrivateRoute><DesignerProfile /></PrivateRoute>} />
