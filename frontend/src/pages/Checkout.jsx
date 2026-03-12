@@ -47,9 +47,9 @@ export default function Checkout() {
 
   useEffect(() => {
     if (currentStep === 2 && tailors.length === 0) {
-      setTailorsLoading(true);
       getDocs(collection(db, "tailors"))
         .then((snapshot) => {
+          setTailorsLoading(true);  // ✅ moved inside async callback
           const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
           setTailors(data);
         })
@@ -125,36 +125,36 @@ export default function Checkout() {
       {currentStep < 5 && (
         <div className="checkout-stepper">
           <div className="checkout-stepper-inner">
-          {STEPS.map((label, idx) => {
-            const stepNum = idx + 1;
-            const isActive = stepNum === currentStep;
-            const isCompleted = stepNum < currentStep;
-            return (
-              <div key={label} style={{ display: "flex", alignItems: "center", flex: idx < STEPS.length - 1 ? 1 : "none" }}>
-                <div
-                  className={`checkout-step${isActive ? " active" : ""}${isCompleted ? " completed" : ""}`}
-                >
-                  {isCompleted ? (
-                    <div className="checkout-step-check">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    </div>
-                  ) : (
-                    <div className="checkout-step-circle">{stepNum}</div>
-                  )}
-                  <span className="checkout-step-label">{label}</span>
-                </div>
-                {idx < STEPS.length - 1 && (
+            {STEPS.map((label, idx) => {
+              const stepNum = idx + 1;
+              const isActive = stepNum === currentStep;
+              const isCompleted = stepNum < currentStep;
+              return (
+                <div key={label} style={{ display: "flex", alignItems: "center", flex: idx < STEPS.length - 1 ? 1 : "none" }}>
                   <div
-                    className={`checkout-step-dash${isCompleted ? " completed" : ""}`}
-                  />
-                )}
-              </div>
-            );
-          })}
+                    className={`checkout-step${isActive ? " active" : ""}${isCompleted ? " completed" : ""}`}
+                  >
+                    {isCompleted ? (
+                      <div className="checkout-step-check">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </div>
+                    ) : (
+                      <div className="checkout-step-circle">{stepNum}</div>
+                    )}
+                    <span className="checkout-step-label">{label}</span>
+                  </div>
+                  {idx < STEPS.length - 1 && (
+                    <div
+                      className={`checkout-step-dash${isCompleted ? " completed" : ""}`}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
       )}
 
       {/* ── Body ── */}
@@ -384,7 +384,7 @@ export default function Checkout() {
 
             <div className="checkout-payment-box">
               <div className="checkout-delivery-options" style={{ marginBottom: "0" }}>
-                
+
                 {/* 1. Credit / Debit Card */}
                 <div
                   className={`checkout-delivery-option${paymentMethod === "card" ? " selected" : ""}`}
@@ -617,7 +617,7 @@ export default function Checkout() {
             {/* Actions */}
             <div className="checkout-confirm-actions">
               <button className="checkout-action-back-btn" onClick={handleBack}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                 Back
               </button>
               <button className="checkout-place-order-btn" onClick={handlePlaceOrder}>
@@ -640,9 +640,9 @@ export default function Checkout() {
                 <polyline points="22 4 12 14.01 9 11.01" />
               </svg>
             </div>
-            
+
             <div className="checkout-success-badge">Order Confirmed!</div>
-            
+
             <h2 className="checkout-success-title">Thank you for your order!</h2>
             <p className="checkout-success-desc">
               Your order <strong>{orderId}</strong> has been placed successfully.
@@ -678,12 +678,12 @@ export default function Checkout() {
 
             <div className="checkout-success-actions">
               <button className="checkout-success-btn-secondary" onClick={() => toast("Tracking features coming soon!", { icon: "🚚" })}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg>
                 Track My Order
               </button>
               <button className="checkout-success-btn-primary" onClick={() => window.location.href = "/"}>
                 Continue Shopping
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
               </button>
             </div>
           </div>
@@ -694,39 +694,39 @@ export default function Checkout() {
           <div className="checkout-summary-card">
             <h3 className="checkout-summary-title">Order Summary</h3>
 
-          {/* Cart Items */}
-          {cartItems.map((item) => (
-            <div className="checkout-summary-item" key={item.id}>
-              <span className="checkout-summary-item-name">
-                {item.name} ({item.quantity}
-                {item.unit || "m"})
-              </span>
-              <span className="checkout-summary-item-price">
-                Rs {(item.unitPrice * item.quantity).toLocaleString()}
-              </span>
+            {/* Cart Items */}
+            {cartItems.map((item) => (
+              <div className="checkout-summary-item" key={item.id}>
+                <span className="checkout-summary-item-name">
+                  {item.name} ({item.quantity}
+                  {item.unit || "m"})
+                </span>
+                <span className="checkout-summary-item-price">
+                  Rs {(item.unitPrice * item.quantity).toLocaleString()}
+                </span>
+              </div>
+            ))}
+
+            <hr className="checkout-summary-divider" />
+
+            {/* Subtotal */}
+            <div className="checkout-summary-row subtotal">
+              <span>Subtotal</span>
+              <span>Rs {cartSubtotal.toLocaleString()}</span>
             </div>
-          ))}
 
-          <hr className="checkout-summary-divider" />
+            {/* Shipping */}
+            <div className="checkout-summary-row">
+              <span>Shipping</span>
+              <span>Rs {SHIPPING_COST.toLocaleString()}</span>
+            </div>
 
-          {/* Subtotal */}
-          <div className="checkout-summary-row subtotal">
-            <span>Subtotal</span>
-            <span>Rs {cartSubtotal.toLocaleString()}</span>
+            {/* Total */}
+            <div className="checkout-summary-total">
+              <span>Total</span>
+              <span>Rs {total.toLocaleString()}</span>
+            </div>
           </div>
-
-          {/* Shipping */}
-          <div className="checkout-summary-row">
-            <span>Shipping</span>
-            <span>Rs {SHIPPING_COST.toLocaleString()}</span>
-          </div>
-
-          {/* Total */}
-          <div className="checkout-summary-total">
-            <span>Total</span>
-            <span>Rs {total.toLocaleString()}</span>
-          </div>
-        </div>
         )}
       </div>
     </div>
