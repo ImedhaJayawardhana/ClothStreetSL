@@ -19,6 +19,7 @@ import Inventory from "./pages/supplier/Inventory";
 import TailorProfile from "./pages/Tailor/TailorProfile";
 import DesignerProfile from "./pages/designer/DesignerProfile";
 import DesignerDashboard from "./pages/DesignerDashboard";
+import DesignerOrders from "./pages/designer/DesignerOrders";
 import ProductDetail from "./pages/ProductDetail";
 import Portfolio from "./pages/supplier/Portfolio";
 import Store from "./pages/Store";
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/tailor/:tailorId" element={<TailorProfile />} />
           <Route path="/designer-profile" element={<PrivateRoute><DesignerProfile /></PrivateRoute>} />
           <Route path="/designer/:designerId" element={<DesignerProfile />} />
+          <Route path="/designer-orders" element={<PrivateRoute><DesignerOrders /></PrivateRoute>} />
           <Route path="/portfolio" element={<PrivateRoute><Portfolio /></PrivateRoute>} />
           <Route path="/store/:sellerId" element={<Store />} />
         </Routes>
