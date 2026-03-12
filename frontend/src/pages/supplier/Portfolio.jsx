@@ -102,3 +102,117 @@ export default function Portfolio() {
                     </div>
                 </div>
             </div>
+            {/* ── Main Layout ────────────────────────────────────────── */}
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                {/* Left Column (Main Content) */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* About Me */}
+                    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center">
+                                <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <h2 className="text-[17px] font-bold text-gray-900">About Me</h2>
+                        </div>
+                        <p className="text-gray-600 leading-relaxed text-[15px]">
+                            {profile?.about || "I deliver professional tailoring and high-quality fabric services with attention to detail and flawless execution."}
+                        </p>
+                    </div>
+                    {/* Portfolio Gallery */}
+                    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center">
+                                <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <h2 className="text-[17px] font-bold text-gray-900">Portfolio Gallery</h2>
+                        </div>
+                        {/* Empty State */}
+                        <div className="border-2 border-dashed border-gray-100 rounded-2xl py-16 flex flex-col items-center justify-center text-gray-400">
+                            <svg className="w-12 h-12 mb-3 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p className="font-medium text-sm">No portfolio photos yet</p>
+                        </div>
+                    </div>
+                    {/* Customer Reviews Header Title */}
+                    <div className="pt-2 flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                            <svg className="w-4 h-4 text-amber-500 fill-current" viewBox="0 0 24 24">
+                                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
+                            </svg>
+                        </div>
+                        <h2 className="text-[17px] font-bold text-gray-900">Customer Reviews</h2>
+                        <span className="flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-bold ml-2">
+                            <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
+                            </svg>
+                            4.7 · 3 reviews
+                        </span>
+                    </div>
+                    {/* We might display review cards here later */}
+                </div>
+                {/* Right Column (Sidebar) */}
+                <div className="bg-white rounded-3xl p-7 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 sticky top-8 relative overflow-hidden">
+                    {/* Subtle gradient bar at the top edge */}
+                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 to-indigo-500" />
+                    {/* Pricing */}
+                    <div className="mb-8 mt-2">
+                        <p className="text-xs font-bold text-gray-400 tracking-wider uppercase mb-1">Starting Price</p>
+                        <p className="text-3xl font-extrabold text-purple-700">LKR 2,000</p>
+                    </div>
+                    {/* Services */}
+                    <div className="mb-8">
+                        <h3 className="flex items-center gap-2 text-[15px] font-bold text-gray-900 mb-3">
+                            <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Services
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                            <span className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-semibold rounded-full border border-purple-100">Suits</span>
+                            <span className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-semibold rounded-full border border-purple-100">Dresses</span>
+                            <span className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-semibold rounded-full border border-purple-100">Customize designs</span>
+                        </div>
+                    </div>
+                    {/* Customization Types */}
+                    <div className="mb-8">
+                        <h3 className="flex items-center gap-2 text-[15px] font-bold text-gray-900 mb-3">
+                            <div className="w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center">
+                                <svg className="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeWidth="2.5" strokeLinecap="round" d="M12 4v16M4 12h16" />
+                                </svg>
+                            </div>
+                            Customization Types
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                            <span className="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full border border-blue-100">Measurement Base</span>
+                            <span className="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full border border-blue-100">Design Base</span>
+                        </div>
+                    </div>
+                    {/* Action Buttons */}
+                    <div className="flex flex-col gap-3">
+                        <button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-[15px] py-3.5 rounded-xl transition-colors shadow-md shadow-purple-200">
+                            Contact Me
+                        </button>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button className="flex justify-center items-center gap-2 border border-gray-200 hover:border-green-300 hover:bg-green-50 text-gray-700 text-sm font-semibold py-2.5 rounded-xl transition-colors">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                Quotation
+                            </button>
+                            <button className="flex justify-center items-center gap-2 border border-gray-200 hover:border-red-200 hover:bg-red-50 text-gray-700 text-sm font-semibold py-2.5 rounded-xl transition-colors">
+                                <svg className="w-4 h-4 text-red-500 fill-current" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                </svg>
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
