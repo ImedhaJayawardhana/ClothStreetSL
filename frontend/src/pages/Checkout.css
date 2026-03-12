@@ -936,3 +936,155 @@
 .checkout-place-order-btn:active {
   transform: translateY(0);
 }
+
+/* ── Step 5: Order Complete ── */
+.checkout-success-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.checkout-success-icon {
+  width: 80px;
+  height: 80px;
+  background: #dcfce7;
+  color: #16a34a;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.checkout-success-badge {
+  display: inline-block;
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.checkout-success-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #18181b;
+  margin: 0 0 12px;
+}
+
+.checkout-success-desc {
+  font-size: 0.95rem;
+  color: #52525b;
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.checkout-success-desc strong {
+  color: #18181b;
+  font-weight: 700;
+}
+
+.checkout-success-subdesc {
+  font-size: 0.9rem;
+  color: #71717a;
+  margin: 0 0 32px;
+}
+
+/* Order Details Box */
+.checkout-success-details {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  width: 100%;
+  padding: 24px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.checkout-success-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.checkout-success-row span:first-child {
+  color: #71717a;
+  min-width: 120px;
+}
+
+.checkout-success-row span:last-child {
+  color: #18181b;
+  font-weight: 600;
+  text-align: right;
+}
+
+.checkout-success-row.highlight span:last-child {
+  color: #4f46e5;
+}
+
+/* Action Buttons */
+.checkout-success-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.checkout-success-btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  color: #18181b;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.checkout-success-btn-secondary:hover {
+  background: #f4f4f5;
+  border-color: #d4d4d8;
+}
+
+.checkout-success-btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+}
+
+.checkout-success-btn-primary:hover {
+  background: #6d28d9;
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
+  transform: translateY(-1px);
+}
+
+.checkout-success-btn-primary:active {
+  transform: translateY(0);
+}
