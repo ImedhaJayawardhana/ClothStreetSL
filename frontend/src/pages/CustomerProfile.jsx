@@ -277,11 +277,14 @@ export default function CustomerProfile() {
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
                     Recent Orders
                   </h3>
-                  <Link to="/orders" style={{ fontSize: "13px", color: "#6366f1", fontWeight: "600", textDecoration: "none" }}>View All</Link>
+                  <Link to="/orders" style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "13px", color: "#6366f1", fontWeight: "600", textDecoration: "none" }}>
+                    View All
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                  </Link>
                 </div>
                 <div className="cp-order-list">
                   {mockOrders.map((order, idx) => (
-                    <div className="cp-order-item" key={idx}>
+                    <div className="cp-order-item" key={idx} onClick={() => navigate("/orders")} style={{ cursor: "pointer", borderRadius: "8px", padding: "16px 8px", transition: "background 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.background = "#f5f3ff"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
                       <div>
                         <p style={{ fontSize: "14px", fontWeight: "700", color: "#1e1b4b" }}>{order.id}</p>
                         <p style={{ fontSize: "12.5px", color: "#6b7280", marginTop: "2px" }}>{order.date}</p>
