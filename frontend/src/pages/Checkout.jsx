@@ -89,7 +89,8 @@ export default function Checkout() {
         return;
       }
     }
-    toast.success("Payment details saved! Confirm step coming soon.");
+    setCurrentStep(4);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handlePlaceOrder = () => {
