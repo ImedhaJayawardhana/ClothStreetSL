@@ -26,6 +26,7 @@ import Store from "./pages/Store";
 import CustomerOrders from "./pages/CustomerOrders";
 import ForgotPassword from "./pages/ForgotPassword";
 import FindTailorDesigner from "./pages/FindTailorDesigner";
+import RequestQuote from "./pages/RequestQuote";
 
 
 function PrivateRoute({ children }) {
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/find-tailor-designer" element={<FindTailorDesigner />} />
+          <Route path="/request-quote/:providerId" element={<RequestQuote />} />
 
           <Route path="/shop" element={<BrowseMaterials />} />
           <Route path="/shop/:fabricId" element={<ProductDetail />} />
