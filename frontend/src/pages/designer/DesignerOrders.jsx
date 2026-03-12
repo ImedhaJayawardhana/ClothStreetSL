@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +12,10 @@ const STATUS_STYLES = {
     "In Review":    { bg: "rgba(96, 165, 250, 0.15)", color: "#60a5fa", dot: "#60a5fa" },
     "Pending":      { bg: "rgba(251, 191, 36, 0.15)", color: "#fbbf24", dot: "#fbbf24" },
     "Completed":    { bg: "rgba(52, 211, 153, 0.15)", color: "#34d399", dot: "#34d399" },
+    "Cancelled":    { bg: "rgba(239, 68, 68, 0.15)", color: "#ef4444", dot: "#ef4444" },
 };
+
+const STATUS_OPTIONS = ["Pending", "In Progress", "In Review", "Completed", "Cancelled"];
 
 // ─────────────────────────────────────────────────────────────
 // Mock / fallback project data (matches screenshot)
@@ -83,6 +86,7 @@ export default function DesignerOrders() {
     const [orders, setOrders] = useState([]);
     const [activeTab, setActiveTab] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
+    const [statusDropdown, setStatusDropdown] = useState(null); // tracks which project's dropdown is open
 
     // Redirect non-designers away
     useEffect(() => {
@@ -120,6 +124,36 @@ export default function DesignerOrders() {
         };
         fetchData();
     }, [user]);
+
+    // ── Update order status in Firestore ──
+    const handleStatusUpdate = async (projectId, newStatus) => {
+        try {
+            // Only write to Firestore for real docs (not mock IDs)
+            if (!projectId.startsWith("DFS-")) {
+                await updateDoc(doc(db, "orders", projectId), { status: newStatus });
+            }
+            setOrders((prev) =>
+                prev.map((o) => (o.id === projectId ? { ...o, status: newStatus, progress: newStatus === "Completed" ? 100 : o.progress } : o))
+            );
+            // Update stats
+            setStats((prev) => {
+                const updated = { ...prev };
+                const oldOrder = orders.find((o) => o.id === projectId);
+                if (oldOrder) {
+                    const oldS = (oldOrder.status || "").toLowerCase();
+                    const newS = newStatus.toLowerCase();
+                    if (["in progress", "pending", "in review", "confirmed"].includes(oldS)) updated.active--;
+                    if (oldS === "completed") updated.completed--;
+                    if (["in progress", "pending", "in review", "confirmed"].includes(newS)) updated.active++;
+                    if (newS === "completed") updated.completed++;
+                }
+                return updated;
+            });
+        } catch (err) {
+            console.error("Status update failed:", err);
+        }
+        setStatusDropdown(null);
+    };
 
     // ── Format revenue ──
     const formatRevenue = (val) => {
@@ -585,21 +619,86 @@ export default function DesignerOrders() {
                                                     {project.client || project.customerName}
                                                 </p>
                                             </div>
-                                            {/* 3-dot menu */}
-                                            <button style={{
-                                                background: "none", border: "none", cursor: "pointer",
-                                                color: "#64748b", padding: "4px", borderRadius: "6px",
-                                                transition: "all 0.2s", flexShrink: 0,
-                                            }}
-                                            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#e2e8f0"; }}
-                                            onMouseLeave={(e) => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#64748b"; }}
-                                            >
-                                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                                                    <circle cx="12" cy="5" r="1.5" />
-                                                    <circle cx="12" cy="12" r="1.5" />
-                                                    <circle cx="12" cy="19" r="1.5" />
-                                                </svg>
-                                            </button>
+                                            {/* 3-dot menu + Status dropdown */}
+                                            <div style={{ position: "relative", flexShrink: 0 }}>
+                                                <button
+                                                    onClick={() => setStatusDropdown(statusDropdown === project.id ? null : project.id)}
+                                                    style={{
+                                                        background: statusDropdown === project.id ? "rgba(255,255,255,0.1)" : "none",
+                                                        border: "none", cursor: "pointer",
+                                                        color: statusDropdown === project.id ? "#e2e8f0" : "#64748b",
+                                                        padding: "4px", borderRadius: "6px",
+                                                        transition: "all 0.2s",
+                                                    }}
+                                                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#e2e8f0"; }}
+                                                    onMouseLeave={(e) => { if (statusDropdown !== project.id) { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#64748b"; } }}
+                                                >
+                                                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                                        <circle cx="12" cy="5" r="1.5" />
+                                                        <circle cx="12" cy="12" r="1.5" />
+                                                        <circle cx="12" cy="19" r="1.5" />
+                                                    </svg>
+                                                </button>
+                                                {/* Status dropdown */}
+                                                {statusDropdown === project.id && (
+                                                    <div style={{
+                                                        position: "absolute",
+                                                        top: "100%",
+                                                        right: 0,
+                                                        marginTop: "4px",
+                                                        background: "#1e1b4b",
+                                                        border: "1px solid rgba(139, 92, 246, 0.3)",
+                                                        borderRadius: "12px",
+                                                        padding: "6px",
+                                                        minWidth: "160px",
+                                                        boxShadow: "0 12px 32px rgba(0, 0, 0, 0.5)",
+                                                        zIndex: 50,
+                                                    }}>
+                                                        <p style={{ color: "#94a3b8", fontSize: "11px", fontWeight: 600, padding: "6px 10px 4px", margin: 0, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                                            Update Status
+                                                        </p>
+                                                        {STATUS_OPTIONS.map((opt) => {
+                                                            const optStyle = STATUS_STYLES[opt] || STATUS_STYLES["Pending"];
+                                                            const isActive = project.status === opt;
+                                                            return (
+                                                                <button
+                                                                    key={opt}
+                                                                    onClick={() => handleStatusUpdate(project.id, opt)}
+                                                                    style={{
+                                                                        display: "flex", alignItems: "center", gap: "8px",
+                                                                        width: "100%",
+                                                                        padding: "8px 10px",
+                                                                        borderRadius: "8px",
+                                                                        border: "none",
+                                                                        background: isActive ? "rgba(139, 92, 246, 0.15)" : "transparent",
+                                                                        color: isActive ? "#e2e8f0" : "#cbd5e1",
+                                                                        fontSize: "12px",
+                                                                        fontWeight: isActive ? 700 : 500,
+                                                                        cursor: "pointer",
+                                                                        transition: "all 0.15s",
+                                                                        textAlign: "left",
+                                                                    }}
+                                                                    onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+                                                                    onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+                                                                >
+                                                                    <span style={{
+                                                                        width: "7px", height: "7px",
+                                                                        borderRadius: "50%",
+                                                                        background: optStyle.dot,
+                                                                        flexShrink: 0,
+                                                                    }} />
+                                                                    {opt}
+                                                                    {isActive && (
+                                                                        <svg width="12" height="12" fill="none" stroke="#a78bfa" strokeWidth="2.5" viewBox="0 0 24 24" style={{ marginLeft: "auto" }}>
+                                                                            <path d="M20 6L9 17l-5-5" />
+                                                                        </svg>
+                                                                    )}
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
 
                                         {/* Order ID + Category badge */}
@@ -749,6 +848,17 @@ export default function DesignerOrders() {
                                                 Contact
                                             </button>
                                         </div>
+
+                                        {/* Click-away listener for dropdown */}
+                                        {statusDropdown === project.id && (
+                                            <div
+                                                onClick={() => setStatusDropdown(null)}
+                                                style={{
+                                                    position: "fixed", inset: 0, zIndex: 40,
+                                                    background: "transparent",
+                                                }}
+                                            />
+                                        )}
                                     </div>
                                 );
                             })}
