@@ -636,3 +636,118 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
+
+/* ── Payment Section ── */
+.checkout-payment-box {
+  margin-top: 10px;
+  margin-bottom: 24px;
+}
+
+/* Payment Info Container (expands below selected option) */
+.checkout-payment-details {
+  background: #fafafa;
+  border-top: 1px solid #e5e7eb;
+  padding: 20px;
+  border-radius: 0 0 14px 14px;
+  margin-top: -16px;
+  margin-bottom: 12px;
+  border-left: 2px solid #7c3aed;
+  border-right: 2px solid #7c3aed;
+  border-bottom: 2px solid #7c3aed;
+}
+
+/* Mock Card Form */
+.checkout-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.checkout-card-form-row {
+  display: flex;
+  gap: 16px;
+}
+
+/* Koko Installment Details */
+.checkout-koko-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.checkout-koko-info p {
+  color: #52525b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.checkout-koko-logo {
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: #f43f5e;
+  letter-spacing: -0.5px;
+}
+
+.checkout-koko-btn {
+  background: #f43f5e;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+/* Bank Transfer Details */
+.checkout-bank-details {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.checkout-bank-details p {
+  font-size: 0.9rem;
+  color: #52525b;
+  margin: 0;
+}
+
+.checkout-bank-account-box {
+  background: #fff;
+  border: 1px dashed #d4d4d8;
+  padding: 16px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checkout-bank-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+}
+
+.checkout-bank-line span:first-child {
+  color: #71717a;
+}
+.checkout-bank-line span:last-child {
+  color: #18181b;
+  font-weight: 600;
+}
+
+.checkout-upload-box {
+  margin-top: 8px;
+  border: 1px dashed #7c3aed;
+  background: #f5f3ff;
+  padding: 16px;
+  border-radius: 10px;
+  text-align: center;
+  color: #7c3aed;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
