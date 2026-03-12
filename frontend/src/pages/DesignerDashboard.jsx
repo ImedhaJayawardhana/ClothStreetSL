@@ -284,6 +284,29 @@ export default function DesignerDashboard() {
                     </div>
                 </section>
 
+                {/* ── Quotation Inbox Quick Access ── */}
+                <div
+                    onClick={() => navigate("/quotation-inbox")}
+                    className="bg-gradient-to-r from-purple-600 to-violet-600 rounded-2xl shadow-md p-5 flex items-center justify-between cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all group"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center">
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 className="text-white font-bold text-base">Quote Requests</h3>
+                            <p className="text-purple-200 text-sm">View and respond to customer quote requests</p>
+                        </div>
+                    </div>
+                    <div className="text-white/60 group-hover:text-white transition-colors">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </div>
+
                 {/* ── Order Requests + Recent Orders (3-col like seller) ── */}
                 <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 

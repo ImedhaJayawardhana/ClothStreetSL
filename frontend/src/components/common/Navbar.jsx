@@ -57,6 +57,9 @@ export default function Navbar() {
             <Link to={user?.role === "tailor" ? "/tailor-dashboard" : user?.role === "designer" ? "/designer-dashboard" : "/dashboard"} className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
                 Dashboard
             </Link>
+            <Link to="/quotation-inbox" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
+                Quotations
+            </Link>
             <Link to="/shop" className="px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium text-sm transition-colors">
                 Shop
             </Link>
@@ -168,6 +171,15 @@ export default function Navbar() {
                                             </svg>
                                             Orders
                                         </Link>
+
+                                        {(user.role === "tailor" || user.role === "designer") && (
+                                            <Link to="/quotation-inbox" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                                Quotation Inbox
+                                            </Link>
+                                        )}
 
                                         <div className="border-t border-gray-50 mt-1 pt-1">
                                             <button
