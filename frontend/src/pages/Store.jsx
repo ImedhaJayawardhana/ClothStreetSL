@@ -134,3 +134,168 @@ export default function Store() {
           </div>
         </div>
       </div>
+      {/* ── Main Layout ────────────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        {/* Left Column (Main Content) */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* About Store */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center">
+                <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <h2 className="text-[17px] font-bold text-gray-900">About Store</h2>
+            </div>
+            <p className="text-gray-600 leading-relaxed text-[15px]">
+              {profile?.about || "Welcome to our store! We supply premium quality fabrics globally, guaranteeing both durability and exquisite texture. Whether you are looking for luxurious silks, breathable cottons, or custom prints, our collections are carefully curated to ensure top-tier materials for your tailoring and designer needs."}
+            </p>
+          </div>
+          {/* Store Items Grid */}
+          <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h2 className="text-[17px] font-bold text-gray-900">Store Products</h2>
+              </div>
+            </div>
+            {storeProducts.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {storeProducts.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => navigate(`/shop/${item.id}`)}
+                    className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden group relative cursor-pointer"
+                  >
+                    {/* Image */}
+                    <div className="relative h-44 overflow-hidden" style={{ background: item.bgColor }}>
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
+                      {item.inStock ? (
+                        <span className="absolute top-3 left-3 bg-green-50 text-green-700 border border-green-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                          In Stock
+                        </span>
+                      ) : (
+                        <span className="absolute top-3 left-3 bg-red-50 text-red-700 border border-red-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
+                          Out of Stock
+                        </span>
+                      )}
+                    </div>
+                    {/* Body */}
+                    <div className="p-4">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <h3 className="font-bold text-sm leading-tight text-gray-900 line-clamp-2">
+                          {item.name}
+                        </h3>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <svg className="w-3.5 h-3.5 text-amber-400 fill-current" viewBox="0 0 24 24">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                          <span className="text-xs font-bold text-gray-700">{item.rating}</span>
+                        </div>
+                      </div>
+                      <div className="text-xs text-purple-600 font-semibold mb-3">
+                        {item.type}
+                      </div>
+                      <div className="flex items-center justify-between mt-auto">
+                        <span className="text-lg font-extrabold text-gray-900 tracking-tight">
+                          LKR {item.price.toLocaleString()}
+                        </span>
+                        <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center group-hover:bg-purple-600 transition-colors">
+                          <svg className="w-4 h-4 text-purple-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="border-2 border-dashed border-gray-100 rounded-2xl py-16 flex flex-col items-center justify-center text-gray-400">
+                <svg className="w-12 h-12 mb-3 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p className="font-medium text-sm">Products from this seller will appear here.</p>
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Right Column (Sidebar) */}
+        <div className="bg-white rounded-3xl p-7 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 sticky top-8 relative overflow-hidden">
+          {/* Subtle gradient bar at the top edge */}
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 to-indigo-500" />
+          {/* Supplier Badges */}
+          <div className="mb-8 mt-2">
+            <h3 className="flex items-center gap-2 text-[15px] font-bold text-gray-900 mb-3">
+              <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+              Achievements
+            </h3>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-xl border border-purple-100">
+                <span className="text-xl">🏆</span>
+                <div>
+                  <p className="text-sm font-bold text-purple-900">Top Seller 2023</p>
+                  <p className="text-xs text-purple-700">Consistently high ratings</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
+                <span className="text-xl">⚡</span>
+                <div>
+                  <p className="text-sm font-bold text-green-900">Fast Shipper</p>
+                  <p className="text-xs text-green-700">Dispatches within 24h</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Specialities */}
+          <div className="mb-8">
+            <h3 className="flex items-center gap-2 text-[15px] font-bold text-gray-900 mb-3">
+              <div className="w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center">
+                <svg className="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+              </div>
+              Product Specialities
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              <span className="px-3 py-1.5 bg-gray-50 text-gray-700 text-xs font-semibold rounded-full border border-gray-200">Silks</span>
+              <span className="px-3 py-1.5 bg-gray-50 text-gray-700 text-xs font-semibold rounded-full border border-gray-200">Premium Cotton</span>
+              <span className="px-3 py-1.5 bg-gray-50 text-gray-700 text-xs font-semibold rounded-full border border-gray-200">Linen Canvas</span>
+              <span className="px-3 py-1.5 bg-gray-50 text-gray-700 text-xs font-semibold rounded-full border border-gray-200">Bulk Orders</span>
+            </div>
+          </div>
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-3">
+            <button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-[15px] py-3.5 rounded-xl transition-colors shadow-md shadow-purple-200 flex items-center justify-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+              Message Seller
+            </button>
+            <div className="grid grid-cols-2 gap-3">
+              <button className="flex justify-center items-center gap-2 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold py-2.5 rounded-xl transition-colors">
+                <svg className="w-4 h-4 text-gray-500 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+                Follow Store
+              </button>
+              <button className="flex justify-center items-center gap-2 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold py-2.5 rounded-xl transition-colors">
+                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                Share
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
