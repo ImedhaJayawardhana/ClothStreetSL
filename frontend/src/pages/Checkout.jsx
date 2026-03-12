@@ -8,7 +8,7 @@ import "./Checkout.css";
 const STEPS = ["Shipping", "Delivery", "Payment", "Confirm", "Complete"];
 
 export default function Checkout() {
-  const { cartItems, cartSubtotal } = useCart();
+  const { cartItems, cartSubtotal, clearCart } = useCart();
 
   const SHIPPING_COST = 2500;
   const total = cartSubtotal + SHIPPING_COST;
@@ -61,6 +61,9 @@ export default function Checkout() {
     }
   }, [currentStep, tailors.length]);
 
+  /* ── Step 5: Complete state ── */
+  const [orderId, setOrderId] = useState(null);
+
   /* ── Step 3: Payment state ── */
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [cardDetails, setCardDetails] = useState({
@@ -94,6 +97,9 @@ export default function Checkout() {
   };
 
   const handlePlaceOrder = () => {
+    const newOrderId = "ORD-2026-" + Math.floor(100 + Math.random() * 900);
+    setOrderId(newOrderId);
+    if (clearCart) clearCart();
     toast.success("Order Placed Successfully!");
     setCurrentStep(5);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -116,8 +122,9 @@ export default function Checkout() {
   return (
     <div className="checkout-page">
       {/* ── Stepper ── */}
-      <div className="checkout-stepper">
-        <div className="checkout-stepper-inner">
+      {currentStep < 5 && (
+        <div className="checkout-stepper">
+          <div className="checkout-stepper-inner">
           {STEPS.map((label, idx) => {
             const stepNum = idx + 1;
             const isActive = stepNum === currentStep;
@@ -148,9 +155,10 @@ export default function Checkout() {
           })}
         </div>
       </div>
+      )}
 
       {/* ── Body ── */}
-      <div className="checkout-body">
+      <div className="checkout-body" style={currentStep === 5 ? { display: "block", maxWidth: "800px" } : {}}>
         {/* ══════════════ STEP 1: Shipping ══════════════ */}
         {currentStep === 1 && (
           <div className="checkout-form-card">
@@ -623,9 +631,68 @@ export default function Checkout() {
           </div>
         )}
 
-        {/* ── Order Summary (shown on all steps) ── */}
-        <div className="checkout-summary-card">
-          <h3 className="checkout-summary-title">Order Summary</h3>
+        {/* ══════════════ STEP 5: Complete ══════════════ */}
+        {currentStep === 5 && (
+          <div className="checkout-success-container">
+            <div className="checkout-success-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+            </div>
+            
+            <div className="checkout-success-badge">Order Confirmed!</div>
+            
+            <h2 className="checkout-success-title">Thank you for your order!</h2>
+            <p className="checkout-success-desc">
+              Your order <strong>{orderId}</strong> has been placed successfully.
+            </p>
+            <p className="checkout-success-subdesc">
+              You'll receive a confirmation and your supplier will contact you within 24 hours.
+            </p>
+
+            <div className="checkout-success-details">
+              <div className="checkout-success-row">
+                <span>Order ID</span>
+                <span>{orderId}</span>
+              </div>
+              <div className="checkout-success-row">
+                <span>Payment Method</span>
+                <span>{getPaymentMethodDisplay()}</span>
+              </div>
+              <div className="checkout-success-row highlight">
+                <span>Total Paid</span>
+                <span>Rs {total.toLocaleString()}</span>
+              </div>
+              <div className="checkout-success-row">
+                <span>Delivery to</span>
+                <span>
+                  {deliveryMethod === "home" ? (
+                    `${form.streetAddress}, ${form.city}`
+                  ) : (
+                    tailors.find(t => t.id === selectedTailor)?.name || "Tailor Delivery"
+                  )}
+                </span>
+              </div>
+            </div>
+
+            <div className="checkout-success-actions">
+              <button className="checkout-success-btn-secondary" onClick={() => toast("Tracking features coming soon!", { icon: "🚚" })}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                Track My Order
+              </button>
+              <button className="checkout-success-btn-primary" onClick={() => window.location.href = "/"}>
+                Continue Shopping
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Order Summary (shown on steps 1-4) ── */}
+        {currentStep < 5 && (
+          <div className="checkout-summary-card">
+            <h3 className="checkout-summary-title">Order Summary</h3>
 
           {/* Cart Items */}
           {cartItems.map((item) => (
@@ -660,6 +727,7 @@ export default function Checkout() {
             <span>Rs {total.toLocaleString()}</span>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
