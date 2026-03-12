@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import BrowseTailors from "./pages/BrowseTailors";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import BrowseMaterials from "./pages/BrowseMaterials";
 import BrowseDesigners from "./pages/BrowseDesigners";
 import Navbar from "./components/common/Navbar";
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/designers" element={<BrowseDesigners />} />
           <Route path="/match" element={<AIMatch />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
 
           <Route path="/shop" element={<BrowseMaterials />} />
           <Route path="/shop/:fabricId" element={<ProductDetail />} />
