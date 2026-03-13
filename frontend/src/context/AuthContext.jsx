@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db, googleProvider } from "../firebase/firebase";
+import { registerUser, createTailor, createDesigner } from "../api";
 
 const AuthContext = createContext();
 
@@ -19,6 +20,8 @@ export function AuthProvider({ children }) {
 
   async function register(name, email, password, role) {
     const result = await createUserWithEmailAndPassword(auth, email, password);
+
+    // Save to users collection
     await setDoc(doc(db, "users", result.user.uid), {
       uid: result.user.uid,
       name,
@@ -26,6 +29,30 @@ export function AuthProvider({ children }) {
       role,
       createdAt: new Date()
     });
+
+    // Get token for backend calls
+    const token = await result.user.getIdToken();
+
+    // Register in FastAPI backend
+    await registerUser({ email, name, role }, token);
+
+    // Auto-create role profile in backend
+    if (role === "tailor") {
+      await createTailor({
+        name,
+        skills: [],
+        location: "Sri Lanka",
+        price_range: "Contact for pricing",
+        availability: true,
+      });
+    } else if (role === "designer") {
+      await createDesigner({
+        name,
+        style: "General",
+        price_range: "Contact for pricing",
+      });
+    }
+
     return result;
   }
 
@@ -44,6 +71,26 @@ export function AuthProvider({ children }) {
         role,
         createdAt: new Date()
       });
+
+      // Register in FastAPI backend
+      const token = await result.user.getIdToken();
+      await registerUser({ email: result.user.email, name: result.user.displayName, role }, token);
+
+      if (role === "tailor") {
+        await createTailor({
+          name: result.user.displayName,
+          skills: [],
+          location: "Sri Lanka",
+          price_range: "Contact for pricing",
+          availability: true,
+        });
+      } else if (role === "designer") {
+        await createDesigner({
+          name: result.user.displayName,
+          style: "General",
+          price_range: "Contact for pricing",
+        });
+      }
     }
     return result;
   }
@@ -51,7 +98,7 @@ export function AuthProvider({ children }) {
   async function updateProfile(uid, data) {
     const userRef = doc(db, "users", uid);
     await setDoc(userRef, data, { merge: true });
-    
+
     // Update local state immediately without waiting for onAuthStateChanged
     setUser(prev => ({
       ...prev,

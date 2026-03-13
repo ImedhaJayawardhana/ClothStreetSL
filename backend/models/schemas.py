@@ -1,24 +1,18 @@
 from datetime import datetime
 from typing import List, Literal, Optional
-
 from pydantic import BaseModel
 
-
 class User(BaseModel):
-    uid: str
     email: str
     name: str
     role: Literal["customer", "tailor", "designer", "seller"]
 
-
 class TailorProfile(BaseModel):
-    uid: str
     name: str
     skills: List[str]
     location: str
     price_range: str
     availability: bool
-
 
 class TailorProfileUpdate(BaseModel):
     name: Optional[str] = None
@@ -27,14 +21,11 @@ class TailorProfileUpdate(BaseModel):
     price_range: Optional[str] = None
     availability: Optional[bool] = None
 
-
 class DesignerProfile(BaseModel):
-    uid: str
     name: str
     style: str
     portfolio_url: Optional[str] = None
     price_range: str
-
 
 class DesignerProfileUpdate(BaseModel):
     name: Optional[str] = None
@@ -42,15 +33,12 @@ class DesignerProfileUpdate(BaseModel):
     portfolio_url: Optional[str] = None
     price_range: Optional[str] = None
 
-
 class Fabric(BaseModel):
     name: str
     type: str
     color: str
     price: float
     stock: int
-    supplier_id: str
-
 
 class FabricUpdate(BaseModel):
     name: Optional[str] = None
@@ -59,22 +47,16 @@ class FabricUpdate(BaseModel):
     price: Optional[float] = None
     stock: Optional[int] = None
 
-
 class Quotation(BaseModel):
-    customer_id: str
     tailor_id: str
     fabric_id: str
     description: str
-    status: Literal["pending", "accepted", "completed"] = "pending"
     price: float
-
 
 class QuotationStatusUpdate(BaseModel):
     status: Literal["pending", "accepted", "completed"]
 
-
 class Order(BaseModel):
-    customer_id: str
     items: List[dict]
     total_price: float
     status: Literal["pending", "processing", "completed", "cancelled"] = "pending"
