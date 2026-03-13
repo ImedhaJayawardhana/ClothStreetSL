@@ -46,7 +46,7 @@ export default function Footer() {
                             <li><Link to="/about" className="text-sm hover:text-purple-400 transition-colors">About Us</Link></li>
                             <li><Link to="/shop" className="text-sm hover:text-purple-400 transition-colors">Fabric Marketplace</Link></li>
                             <li><Link to="/tailors" className="text-sm hover:text-purple-400 transition-colors">Find Tailors</Link></li>
-                            <li><Link to="/recommendations" className="text-sm hover:text-purple-400 transition-colors">AI Recommendations</Link></li>
+                            <li><Link to="/match" className="text-sm hover:text-purple-400 transition-colors">AI Recommendations</Link></li>
                             <li><Link to="/tracking" className="text-sm hover:text-purple-400 transition-colors">Order Tracking</Link></li>
                             <li><Link to="/suppliers/join" className="text-sm hover:text-purple-400 transition-colors">Join as Supplier</Link></li>
                         </ul>
