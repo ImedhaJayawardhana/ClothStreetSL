@@ -1,6 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function Footer() {
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    const handleListFabrics = (e) => {
+        e.preventDefault();
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+        if (user.role === 'seller') {
+            navigate('/inventory');
+        } else {
+            toast.error('Only suppliers can list fabrics.');
+        }
+    };
+
     return (
         <footer className="bg-[#0B0F19] text-gray-400 py-16 border-t border-gray-800">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -8,7 +26,7 @@ export default function Footer() {
 
                     {/* Brand Column */}
                     <div className="space-y-6">
-                        <Link to="/" className="flex items-center gap-3">
+                        <Link to="/" onClick={() => window.scrollTo(0, 0)} className="flex items-center gap-3">
                             <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-purple-600 text-white shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><line x1="20" x2="8.12" y1="4" y2="15.88" /><line x1="14.47" x2="20" y1="14.48" y2="20" /><line x1="8.12" x2="12" y1="8.12" y2="12" />
@@ -43,12 +61,17 @@ export default function Footer() {
                     <div className="space-y-6 lg:ml-8">
                         <h3 className="text-white font-semibold tracking-wide">Platform</h3>
                         <ul className="space-y-4">
-                            <li><Link to="/about" className="text-sm hover:text-purple-400 transition-colors">About Us</Link></li>
-                            <li><Link to="/shop" className="text-sm hover:text-purple-400 transition-colors">Fabric Marketplace</Link></li>
-                            <li><Link to="/tailors" className="text-sm hover:text-purple-400 transition-colors">Find Tailors</Link></li>
-                            <li><Link to="/recommendations" className="text-sm hover:text-purple-400 transition-colors">AI Recommendations</Link></li>
-                            <li><Link to="/tracking" className="text-sm hover:text-purple-400 transition-colors">Order Tracking</Link></li>
-                            <li><Link to="/suppliers/join" className="text-sm hover:text-purple-400 transition-colors">Join as Supplier</Link></li>
+                            <li><Link to="/about" onClick={() => window.scrollTo(0, 0)} className="text-sm hover:text-purple-400 transition-colors">About Us</Link></li>
+                            <li><Link to="/shop" onClick={() => window.scrollTo(0, 0)} className="text-sm hover:text-purple-400 transition-colors">Fabric Marketplace</Link></li>
+                            <li><Link to="/tailors" onClick={() => window.scrollTo(0, 0)} className="text-sm hover:text-purple-400 transition-colors">Find Tailors</Link></li>
+                            <li>
+                                <Link to="/designers" onClick={() => window.scrollTo(0, 0)} className="text-sm hover:text-purple-400 transition-colors">
+                                    Find Designers
+                                </Link>
+                            </li>
+                            <li><Link to="/match" onClick={() => window.scrollTo(0, 0)} className="text-sm hover:text-purple-400 transition-colors">AI Recommendations</Link></li>
+                            <li><Link to="/tracking" onClick={() => window.scrollTo(0, 0)} className="text-sm hover:text-purple-400 transition-colors">Order Tracking</Link></li>
+                            <li><Link to="/register" onClick={() => window.scrollTo(0, 0)} className="text-sm hover:text-purple-400 transition-colors">Join as Supplier</Link></li>
                         </ul>
                     </div>
 
@@ -56,11 +79,11 @@ export default function Footer() {
                     <div className="space-y-6">
                         <h3 className="text-white font-semibold tracking-wide">For Business</h3>
                         <ul className="space-y-4">
-                            <li><Link to="/business/list" className="text-sm hover:text-purple-400 transition-colors">List Your Fabrics</Link></li>
-                            <li><Link to="/business/tailors" className="text-sm hover:text-purple-400 transition-colors">Tailor Registration</Link></li>
-                            <li><Link to="/business/designers" className="text-sm hover:text-purple-400 transition-colors">Designer Portal</Link></li>
-                            <li><Link to="/business/bulk" className="text-sm hover:text-purple-400 transition-colors">Bulk Orders</Link></li>
-                            <li><Link to="/business/enterprise" className="text-sm hover:text-purple-400 transition-colors">Enterprise Solutions</Link></li>
+                            <li><a href="#" onClick={handleListFabrics} className="text-sm hover:text-purple-400 transition-colors">List Your Fabrics</a></li>
+                            <li><Link to="/register" onClick={() => window.scrollTo(0, 0)} className="text-sm hover:text-purple-400 transition-colors">Join as Tailor</Link></li>
+                            <li><Link to="/register" onClick={() => window.scrollTo(0, 0)} className="text-sm hover:text-purple-400 transition-colors">Join as Designer</Link></li>
+
+                            <li><Link to="/business/enterprise" onClick={() => window.scrollTo(0, 0)} className="text-sm hover:text-purple-400 transition-colors">Enterprise Solutions</Link></li>
                         </ul>
                     </div>
 
@@ -91,9 +114,9 @@ export default function Footer() {
                         © 2026 ClothStreet. All rights reserved.
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-                        <Link to="/privacy" className="text-sm text-gray-500 hover:text-purple-400 transition-colors">Privacy Policy</Link>
-                        <Link to="/terms" className="text-sm text-gray-500 hover:text-purple-400 transition-colors">Terms of Service</Link>
-                        <Link to="/cookies" className="text-sm text-gray-500 hover:text-purple-400 transition-colors">Cookie Policy</Link>
+                        <Link to="/privacy" onClick={() => window.scrollTo(0, 0)} className="text-sm text-gray-500 hover:text-purple-400 transition-colors">Privacy Policy</Link>
+                        <Link to="/terms" onClick={() => window.scrollTo(0, 0)} className="text-sm text-gray-500 hover:text-purple-400 transition-colors">Terms of Service</Link>
+                        <Link to="/cookies" onClick={() => window.scrollTo(0, 0)} className="text-sm text-gray-500 hover:text-purple-400 transition-colors">Cookie Policy</Link>
                     </div>
                 </div>
             </div>
