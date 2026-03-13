@@ -1,17 +1,17 @@
-import { useState, useEffect} from"react";
-import { collection, query, where, getDocs, doc, updateDoc} from"firebase/firestore";
-import { db} from"../firebase/firebase";
-import { useAuth} from"../context/AuthContext";
+import { useState, useEffect } from "react";
+import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function DesignerDashboard() {
   const navigate = useNavigate();
-  const { user} = useAuth();
+  const { user } = useAuth();
 
   const [orders, setOrders] = useState([]);
   const [jobRequests, setJobRequests] = useState([]);
-  const [reviews, setReviews] = useState([]);
-  const [stats, setStats] = useState({ active: 0, inProgress: 0, readyToDeliver: 0, completed: 0});
+  //const [reviews, setReviews] = useState([]);
+  const [stats, setStats] = useState({ active: 0, inProgress: 0, readyToDeliver: 0, completed: 0 });
   const [loading, setLoading] = useState(true);
 
   // Status badge colors
@@ -73,15 +73,11 @@ export default function DesignerDashboard() {
         const reqSnap = await getDocs(query(collection(db, "jobRequests"), where("designerId", "==", uid)));
         const reqs = reqSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
         setJobRequests(reqs.length > 0 ? reqs : FALLBACK_REQUESTS);
-
-        const revSnap = await getDocs(query(collection(db, "reviews"), where("designerId", "==", uid)));
-        const revs = revSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
-        setReviews(revs.length > 0 ? revs : FALLBACK_REVIEWS);
       } catch (err) {
         console.error("DesignerDashboard fetch error:", err);
         setOrders(FALLBACK_ORDERS);
         setJobRequests(FALLBACK_REQUESTS);
-        setReviews(FALLBACK_REVIEWS);
+
       } finally {
         setLoading(false);
       }
@@ -98,11 +94,6 @@ export default function DesignerDashboard() {
     setJobRequests(prev => prev.filter(r => r.id !== id));
   };
 
-  const formatDate = (raw) => {
-    if (!raw) return "";
-    const d = raw?.toDate ? raw.toDate() : new Date(raw);
-    return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-  };
 
   const displayName = user?.name || user?.email || "Designer";
   const avatarLetter = displayName.charAt(0).toUpperCase();
@@ -204,12 +195,12 @@ export default function DesignerDashboard() {
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-black text-slate-900">4.9</span>
                 <div className="flex">
-                  {[1,2,3,4,5].map(s => <svg key={s} className="w-3 h-3 text-amber-400 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>)}
+                  {[1, 2, 3, 4, 5].map(s => <svg key={s} className="w-3 h-3 text-amber-400 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" /></svg>)}
                 </div>
               </div>
             </div>
             <div className="space-y-3">
-              {[ {s:5, c:110, p:95}, {s:4, c:10, p:8}, {s:3, c:4, p:3}].map(row => (
+              {[{ s: 5, c: 110, p: 95 }, { s: 4, c: 10, p: 8 }, { s: 3, c: 4, p: 3 }].map(row => (
                 <div key={row.s} className="flex items-center gap-4">
                   <span className="text-[10px] font-black text-slate-400 w-2 shrink-0">{row.s}</span>
                   <div className="flex-1 h-1.5 bg-slate-50 rounded-full overflow-hidden">
@@ -230,7 +221,7 @@ export default function DesignerDashboard() {
           <div className="flex items-center gap-6">
             <div className="w-14 h-14 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center transition-transform group-hover:scale-105">
               <svg className="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
               </svg>
             </div>
             <div>
@@ -271,7 +262,7 @@ export default function DesignerDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                       <div className="flex gap-2">
+                      <div className="flex gap-2">
                         {(req.status || "").toLowerCase() === "new" ? (
                           <>
                             <button onClick={() => handleAccept(req.id)} className="px-6 py-2 bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-blue-600 transition-all shadow-sm">Accept Brief</button>
@@ -280,13 +271,13 @@ export default function DesignerDashboard() {
                         ) : (
                           <span className="px-4 py-2 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest border border-emerald-100 rounded-lg">✓ Proposal Accepted</span>
                         )}
-                       </div>
-                       <div className="flex items-center gap-3">
-                         <span className={`text-[10px] font-bold px-3 py-1 rounded-lg ${statusColours[req.status] || "bg-slate-100 text-slate-600"}`}>{req.status}</span>
-                         <button className="w-9 h-9 border border-slate-100 rounded-lg flex items-center justify-center text-slate-300 hover:text-blue-600 hover:border-blue-100 transition-all">
-                           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
-                         </button>
-                       </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className={`text-[10px] font-bold px-3 py-1 rounded-lg ${statusColours[req.status] || "bg-slate-100 text-slate-600"}`}>{req.status}</span>
+                        <button className="w-9 h-9 border border-slate-100 rounded-lg flex items-center justify-center text-slate-300 hover:text-blue-600 hover:border-blue-100 transition-all">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -297,24 +288,24 @@ export default function DesignerDashboard() {
           {/* Activity Column */}
           <div className="space-y-6">
             <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-                <div className="px-5 py-4 border-b border-slate-50 flex items-center justify-between">
-                  <h3 className="font-black text-xs text-slate-400 uppercase tracking-widest">Active Orders</h3>
-                  <button onClick={() => navigate("/orders")} className="text-[10px] font-black text-blue-600 uppercase hover:underline">Full Report</button>
-                </div>
-                <div className="divide-y divide-slate-50">
-                  {orders.map(order => (
-                    <div key={order.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
-                      <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center text-slate-300 shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-black text-sm text-slate-900 truncate">{order.itemName || "Custom Project"}</p>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter truncate">{order.customerName}</p>
-                      </div>
-                      <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md ${statusColours[order.status] || "bg-slate-100 text-slate-600"}`}>{order.status}</span>
+              <div className="px-5 py-4 border-b border-slate-50 flex items-center justify-between">
+                <h3 className="font-black text-xs text-slate-400 uppercase tracking-widest">Active Orders</h3>
+                <button onClick={() => navigate("/orders")} className="text-[10px] font-black text-blue-600 uppercase hover:underline">Full Report</button>
+              </div>
+              <div className="divide-y divide-slate-50">
+                {orders.map(order => (
+                  <div key={order.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
+                    <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-center text-slate-300 shrink-0">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
                     </div>
-                  ))}
-                </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-black text-sm text-slate-900 truncate">{order.itemName || "Custom Project"}</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter truncate">{order.customerName}</p>
+                    </div>
+                    <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md ${statusColours[order.status] || "bg-slate-100 text-slate-600"}`}>{order.status}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
