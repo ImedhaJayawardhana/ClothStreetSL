@@ -8,11 +8,11 @@ import { useNavigate } from "react-router-dom";
 // Status colours for badges
 // ─────────────────────────────────────────────────────────────
 const STATUS_STYLES = {
-    "In Progress":  { bg: "bg-orange-100", text: "text-orange-600", dot: "bg-orange-500" },
-    "In Review":    { bg: "bg-blue-100", text: "text-blue-600", dot: "bg-blue-500" },
-    "Pending":      { bg: "bg-gray-100", text: "text-gray-600", dot: "bg-gray-500" },
-    "Completed":    { bg: "bg-green-100", text: "text-green-600", dot: "bg-green-500" },
-    "Cancelled":    { bg: "bg-red-100", text: "text-red-600", dot: "bg-red-500" },
+    "In Progress": { bg: "bg-orange-100", text: "text-orange-600", dot: "bg-orange-500" },
+    "In Review": { bg: "bg-blue-100", text: "text-blue-600", dot: "bg-blue-500" },
+    "Pending": { bg: "bg-gray-100", text: "text-gray-600", dot: "bg-gray-500" },
+    "Completed": { bg: "bg-green-100", text: "text-green-600", dot: "bg-green-500" },
+    "Cancelled": { bg: "bg-red-100", text: "text-red-600", dot: "bg-red-500" },
 };
 
 const STATUS_OPTIONS = ["Pending", "In Progress", "In Review", "Completed", "Cancelled"];
@@ -90,6 +90,7 @@ export default function DesignerOrders() {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusDropdown, setStatusDropdown] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedProject, setSelectedProject] = useState(null);
 
     // Reset page when filter/search changes
     useEffect(() => { setCurrentPage(1); }, [activeTab, searchTerm]);
@@ -159,6 +160,30 @@ export default function DesignerOrders() {
             console.error("Status update failed:", err);
         }
         setStatusDropdown(null);
+    };
+
+    // ── Export orders to CSV ──
+    const handleExport = () => {
+        const headers = ["ID", "Name", "Client", "Category", "Status", "Progress (%)", "Designs", "Value (Rs)", "Due Date"];
+        const rows = orders.map((o) => [
+            o.id,
+            o.name || "",
+            o.client || o.customerName || "",
+            o.category || "",
+            o.status || "",
+            o.progress || 0,
+            o.designs || 0,
+            o.value || 0,
+            o.due || "",
+        ]);
+        const csvContent = [headers, ...rows].map((r) => r.map((v) => `"${v}"`).join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `designer_projects_${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
     };
 
     // ── Format revenue ──
@@ -274,7 +299,7 @@ export default function DesignerOrders() {
                     </div>
                 </div>
                 {/* Export Button */}
-                <button className="flex items-center gap-2 bg-white text-purple-700 hover:bg-purple-50 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-all hover:shadow-md border border-purple-100 hover:-translate-y-0.5 w-full sm:w-auto justify-center">
+                <button onClick={handleExport} className="flex items-center gap-2 bg-white text-purple-700 hover:bg-purple-50 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-all hover:shadow-md border border-purple-100 hover:-translate-y-0.5 w-full sm:w-auto justify-center">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
@@ -283,7 +308,7 @@ export default function DesignerOrders() {
             </div>
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6 flex-1 w-full">
-                
+
                 {/* ── Stat Cards ── */}
                 <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {statsData.map((stat) => (
@@ -325,11 +350,10 @@ export default function DesignerOrders() {
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-                                    activeTab === tab
+                                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${activeTab === tab
                                         ? "bg-white text-gray-900 shadow-sm border border-gray-200"
                                         : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-                                }`}
+                                    }`}
                             >
                                 {tab}
                             </button>
@@ -392,161 +416,160 @@ export default function DesignerOrders() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {paginatedItems.map((project) => {
-                                const statusStyle = STATUS_STYLES[project.status] || STATUS_STYLES["Pending"];
-                                const progressColor = project.progress >= 100 ? "bg-green-500" : project.progress >= 60 ? "bg-purple-500" : "bg-blue-500";
-                                const formattedValue = project.value >= 1000 ? `Rs ${(project.value / 1000).toFixed(0)}K` : `Rs ${(project.value || 0).toLocaleString()}`;
+                                {paginatedItems.map((project) => {
+                                    const statusStyle = STATUS_STYLES[project.status] || STATUS_STYLES["Pending"];
+                                    const progressColor = project.progress >= 100 ? "bg-green-500" : project.progress >= 60 ? "bg-purple-500" : "bg-blue-500";
+                                    const formattedValue = project.value >= 1000 ? `Rs ${(project.value / 1000).toFixed(0)}K` : `Rs ${(project.value || 0).toLocaleString()}`;
 
-                                return (
-                                    <div key={project.id} className="do-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                                        
-                                        {/* Card Header: Thumbnail + Title + Menu */}
-                                        <div className="flex items-start gap-3 mb-4">
-                                            <img
-                                                src={project.thumbnail}
-                                                alt={project.name}
-                                                className="w-12 h-12 rounded-xl object-cover border border-gray-100 shrink-0"
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="text-gray-900 text-base font-bold truncate">
-                                                    {project.name}
-                                                </h3>
-                                                <p className="text-gray-500 text-sm truncate mt-0.5">
-                                                    {project.client || project.customerName}
-                                                </p>
-                                            </div>
-                                            {/* 3-dot menu + Status dropdown */}
-                                            <div className="relative shrink-0">
-                                                <button
-                                                    onClick={() => setStatusDropdown(statusDropdown === project.id ? null : project.id)}
-                                                    className={`p-1.5 rounded-lg transition-colors ${statusDropdown === project.id ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
-                                                >
-                                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                                        <circle cx="12" cy="5" r="1.5" />
-                                                        <circle cx="12" cy="12" r="1.5" />
-                                                        <circle cx="12" cy="19" r="1.5" />
-                                                    </svg>
-                                                </button>
+                                    return (
+                                        <div key={project.id} className="do-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
 
-                                                {/* Status dropdown */}
-                                                {statusDropdown === project.id && (
-                                                    <div className="absolute top-full right-0 mt-1 bg-white border border-gray-100 rounded-xl p-1.5 min-w-[160px] shadow-lg z-50">
-                                                        <p className="text-gray-400 text-[10px] font-bold px-2.5 py-1.5 uppercase tracking-wider">
-                                                            Update Status
-                                                        </p>
-                                                        {STATUS_OPTIONS.map((opt) => {
-                                                            const optStyle = STATUS_STYLES[opt] || STATUS_STYLES["Pending"];
-                                                            const isActive = project.status === opt;
-                                                            return (
-                                                                <button
-                                                                    key={opt}
-                                                                    onClick={() => handleStatusUpdate(project.id, opt)}
-                                                                    className={`flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-sm transition-colors text-left ${
-                                                                        isActive ? `${optStyle.bg} ${optStyle.text} font-bold` : "text-gray-600 font-medium hover:bg-gray-50"
-                                                                    }`}
-                                                                >
-                                                                    <span className={`w-2 h-2 rounded-full shrink-0 ${optStyle.dot}`} />
-                                                                    {opt}
-                                                                    {isActive && (
-                                                                        <svg className={`w-4 h-4 ml-auto ${optStyle.text}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M20 6L9 17l-5-5" />
-                                                                        </svg>
-                                                                    )}
-                                                                </button>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* Order ID + Category badge */}
-                                        <div className="flex items-center gap-2 mb-3">
-                                            <span className="text-gray-500 text-xs font-medium">
-                                                {project.id}
-                                            </span>
-                                            <span className="text-gray-300 text-xs">•</span>
-                                            <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full">
-                                                {project.category}
-                                            </span>
-                                        </div>
-
-                                        {/* Description */}
-                                        <p className="text-gray-600 text-sm line-clamp-2 mb-5 h-10">
-                                            {project.description}
-                                        </p>
-
-                                        {/* Progress bar */}
-                                        <div className="mb-5 bg-gray-50 p-3 rounded-xl border border-gray-100/50">
-                                            <div className="flex justify-between mb-2 items-center">
-                                                <span className="text-gray-600 text-xs font-medium">Progress</span>
-                                                <span className={`text-xs font-bold ${progressColor.replace('bg-', 'text-')}`}>{project.progress}%</span>
-                                            </div>
-                                            <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                                                <div 
-                                                    className={`h-full rounded-full transition-all duration-700 ${progressColor}`}
-                                                    style={{ width: `${project.progress}%` }} 
+                                            {/* Card Header: Thumbnail + Title + Menu */}
+                                            <div className="flex items-start gap-3 mb-4">
+                                                <img
+                                                    src={project.thumbnail}
+                                                    alt={project.name}
+                                                    className="w-12 h-12 rounded-xl object-cover border border-gray-100 shrink-0"
                                                 />
-                                            </div>
-                                        </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-gray-900 text-base font-bold truncate">
+                                                        {project.name}
+                                                    </h3>
+                                                    <p className="text-gray-500 text-sm truncate mt-0.5">
+                                                        {project.client || project.customerName}
+                                                    </p>
+                                                </div>
+                                                {/* 3-dot menu + Status dropdown */}
+                                                <div className="relative shrink-0">
+                                                    <button
+                                                        onClick={() => setStatusDropdown(statusDropdown === project.id ? null : project.id)}
+                                                        className={`p-1.5 rounded-lg transition-colors ${statusDropdown === project.id ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
+                                                    >
+                                                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                            <circle cx="12" cy="5" r="1.5" />
+                                                            <circle cx="12" cy="12" r="1.5" />
+                                                            <circle cx="12" cy="19" r="1.5" />
+                                                        </svg>
+                                                    </button>
 
-                                        {/* Stats row: Designs, Value */}
-                                        <div className="flex items-center gap-5 mb-5 px-1">
-                                            <div className="flex items-center gap-1.5">
-                                                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
-                                                </svg>
-                                                <span className="text-gray-500 text-xs">Designs:</span>
-                                                <span className="text-gray-900 text-xs font-bold">{project.designs}</span>
+                                                    {/* Status dropdown */}
+                                                    {statusDropdown === project.id && (
+                                                        <div className="absolute top-full right-0 mt-1 bg-white border border-gray-100 rounded-xl p-1.5 min-w-[160px] shadow-lg z-50">
+                                                            <p className="text-gray-400 text-[10px] font-bold px-2.5 py-1.5 uppercase tracking-wider">
+                                                                Update Status
+                                                            </p>
+                                                            {STATUS_OPTIONS.map((opt) => {
+                                                                const optStyle = STATUS_STYLES[opt] || STATUS_STYLES["Pending"];
+                                                                const isActive = project.status === opt;
+                                                                return (
+                                                                    <button
+                                                                        key={opt}
+                                                                        onClick={() => handleStatusUpdate(project.id, opt)}
+                                                                        className={`flex items-center gap-2.5 w-full px-2.5 py-2 rounded-lg text-sm transition-colors text-left ${isActive ? `${optStyle.bg} ${optStyle.text} font-bold` : "text-gray-600 font-medium hover:bg-gray-50"
+                                                                            }`}
+                                                                    >
+                                                                        <span className={`w-2 h-2 rounded-full shrink-0 ${optStyle.dot}`} />
+                                                                        {opt}
+                                                                        {isActive && (
+                                                                            <svg className={`w-4 h-4 ml-auto ${optStyle.text}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M20 6L9 17l-5-5" />
+                                                                            </svg>
+                                                                        )}
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-1.5">
-                                                <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <line x1="12" y1="1" x2="12" y2="23" strokeLinecap="round" />
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-                                                </svg>
-                                                <span className="text-gray-500 text-xs">Value:</span>
-                                                <span className="text-gray-900 text-xs font-bold">{formattedValue}</span>
-                                            </div>
-                                        </div>
 
-                                        {/* Due date + Status badge */}
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="flex items-center gap-1.5 text-gray-500">
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <rect x="3" y="4" width="18" height="18" rx="2" />
-                                                    <line x1="16" y1="2" x2="16" y2="6" />
-                                                    <line x1="8" y1="2" x2="8" y2="6" />
-                                                    <line x1="3" y1="10" x2="21" y2="10" />
-                                                </svg>
-                                                <span className="text-xs font-medium">Due: <span className="text-gray-900 font-bold">{project.due}</span></span>
-                                            </div>
-                                            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${statusStyle.bg}`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
-                                                <span className={`text-[11px] font-bold ${statusStyle.text}`}>
-                                                    {project.status}
+                                            {/* Order ID + Category badge */}
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <span className="text-gray-500 text-xs font-medium">
+                                                    {project.id}
+                                                </span>
+                                                <span className="text-gray-300 text-xs">•</span>
+                                                <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full">
+                                                    {project.category}
                                                 </span>
                                             </div>
-                                        </div>
 
-                                        {/* Action buttons */}
-                                        <div className="flex gap-2">
-                                            <button className="flex-1 flex justify-center items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white font-semibold py-2.5 px-3 rounded-xl text-sm transition-all shadow-sm hover:shadow-md">
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                </svg>
-                                                View Project
-                                            </button>
-                                            <button className="flex justify-center items-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-semibold py-2.5 px-4 rounded-xl text-sm transition-all border border-gray-200">
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                                </svg>
-                                                Message
-                                            </button>
+                                            {/* Description */}
+                                            <p className="text-gray-600 text-sm line-clamp-2 mb-5 h-10">
+                                                {project.description}
+                                            </p>
+
+                                            {/* Progress bar */}
+                                            <div className="mb-5 bg-gray-50 p-3 rounded-xl border border-gray-100/50">
+                                                <div className="flex justify-between mb-2 items-center">
+                                                    <span className="text-gray-600 text-xs font-medium">Progress</span>
+                                                    <span className={`text-xs font-bold ${progressColor.replace('bg-', 'text-')}`}>{project.progress}%</span>
+                                                </div>
+                                                <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                                    <div
+                                                        className={`h-full rounded-full transition-all duration-700 ${progressColor}`}
+                                                        style={{ width: `${project.progress}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Stats row: Designs, Value */}
+                                            <div className="flex items-center gap-5 mb-5 px-1">
+                                                <div className="flex items-center gap-1.5">
+                                                    <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                                    </svg>
+                                                    <span className="text-gray-500 text-xs">Designs:</span>
+                                                    <span className="text-gray-900 text-xs font-bold">{project.designs}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                        <line x1="12" y1="1" x2="12" y2="23" strokeLinecap="round" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                                                    </svg>
+                                                    <span className="text-gray-500 text-xs">Value:</span>
+                                                    <span className="text-gray-900 text-xs font-bold">{formattedValue}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Due date + Status badge */}
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div className="flex items-center gap-1.5 text-gray-500">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                                                        <line x1="16" y1="2" x2="16" y2="6" />
+                                                        <line x1="8" y1="2" x2="8" y2="6" />
+                                                        <line x1="3" y1="10" x2="21" y2="10" />
+                                                    </svg>
+                                                    <span className="text-xs font-medium">Due: <span className="text-gray-900 font-bold">{project.due}</span></span>
+                                                </div>
+                                                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${statusStyle.bg}`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
+                                                    <span className={`text-[11px] font-bold ${statusStyle.text}`}>
+                                                        {project.status}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* Action buttons */}
+                                            <div className="flex gap-2">
+                                                <button onClick={() => setSelectedProject(project)} className="flex-1 flex justify-center items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white font-semibold py-2.5 px-3 rounded-xl text-sm transition-all shadow-sm hover:shadow-md">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                    View Project
+                                                </button>
+                                                <button onClick={() => window.location.href = `mailto:${project.clientEmail || ''}?subject=Regarding%20Project%20${project.id}%20-%20${encodeURIComponent(project.name || '')}`} className="flex justify-center items-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-semibold py-2.5 px-4 rounded-xl text-sm transition-all border border-gray-200">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                                    </svg>
+                                                    Message
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
                             </div>
 
                             {/* Pagination Controls */}
@@ -555,28 +578,26 @@ export default function DesignerOrders() {
                                     <button
                                         onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                         disabled={safePage === 1}
-                                        className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                                            safePage === 1
+                                        className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${safePage === 1
                                                 ? "text-gray-300 bg-gray-50 cursor-not-allowed"
                                                 : "text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm"
-                                        }`}
+                                            }`}
                                     >
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                                         </svg>
                                         Prev
                                     </button>
-                                    
+
                                     <div className="flex gap-1.5">
                                         {Array.from({ length: totalPages }).map((_, i) => (
                                             <button
                                                 key={i}
                                                 onClick={() => setCurrentPage(i + 1)}
-                                                className={`w-9 h-9 rounded-xl text-sm font-bold transition-all flex items-center justify-center ${
-                                                    safePage === i + 1
+                                                className={`w-9 h-9 rounded-xl text-sm font-bold transition-all flex items-center justify-center ${safePage === i + 1
                                                         ? "bg-purple-600 text-white shadow-md shadow-purple-600/20"
                                                         : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50 hover:text-gray-700"
-                                                }`}
+                                                    }`}
                                             >
                                                 {i + 1}
                                             </button>
@@ -586,11 +607,10 @@ export default function DesignerOrders() {
                                     <button
                                         onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                         disabled={safePage === totalPages}
-                                        className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                                            safePage === totalPages
+                                        className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${safePage === totalPages
                                                 ? "text-gray-300 bg-gray-50 cursor-not-allowed"
                                                 : "text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm"
-                                        }`}
+                                            }`}
                                     >
                                         Next
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -603,6 +623,85 @@ export default function DesignerOrders() {
                     );
                 })()}
             </main>
+
+            {/* ── Project Detail Modal ── */}
+            {selectedProject && (() => {
+                const sp = selectedProject;
+                const spStatus = STATUS_STYLES[sp.status] || STATUS_STYLES["Pending"];
+                const spProgress = sp.progress >= 100 ? "bg-green-500" : sp.progress >= 60 ? "bg-purple-500" : "bg-blue-500";
+                const spValue = sp.value >= 1000 ? `Rs ${(sp.value / 1000).toFixed(0)}K` : `Rs ${(sp.value || 0).toLocaleString()}`;
+                return (
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedProject(null)}>
+                        <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                            {/* Modal Header */}
+                            <div className="relative">
+                                <img src={sp.thumbnail} alt={sp.name} className="w-full h-48 object-cover rounded-t-3xl" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-t-3xl" />
+                                <button onClick={() => setSelectedProject(null)} className="absolute top-4 right-4 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-all">
+                                    <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                                <div className="absolute bottom-4 left-5 right-5">
+                                    <h2 className="text-white text-xl font-bold drop-shadow-sm">{sp.name}</h2>
+                                    <p className="text-white/80 text-sm mt-0.5">{sp.client || sp.customerName}</p>
+                                </div>
+                            </div>
+
+                            {/* Modal Body */}
+                            <div className="p-6 space-y-5">
+                                {/* ID + Category + Status */}
+                                <div className="flex items-center flex-wrap gap-2">
+                                    <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-lg">{sp.id}</span>
+                                    <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">{sp.category}</span>
+                                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${spStatus.bg}`}>
+                                        <span className={`w-1.5 h-1.5 rounded-full ${spStatus.dot}`} />
+                                        <span className={`text-[11px] font-bold ${spStatus.text}`}>{sp.status}</span>
+                                    </div>
+                                </div>
+
+                                {/* Description */}
+                                <div>
+                                    <h4 className="text-sm font-bold text-gray-900 mb-1">Description</h4>
+                                    <p className="text-sm text-gray-600 leading-relaxed">{sp.description || "No description provided."}</p>
+                                </div>
+
+                                {/* Progress */}
+                                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                    <div className="flex justify-between mb-2 items-center">
+                                        <span className="text-gray-700 text-sm font-semibold">Progress</span>
+                                        <span className={`text-sm font-bold ${spProgress.replace('bg-', 'text-')}`}>{sp.progress}%</span>
+                                    </div>
+                                    <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                                        <div className={`h-full rounded-full transition-all duration-700 ${spProgress}`} style={{ width: `${sp.progress}%` }} />
+                                    </div>
+                                </div>
+
+                                {/* Stats Grid */}
+                                <div className="grid grid-cols-3 gap-3">
+                                    <div className="bg-purple-50 rounded-xl p-3 text-center">
+                                        <p className="text-lg font-bold text-purple-700">{sp.designs}</p>
+                                        <p className="text-[11px] text-purple-500 font-medium">Designs</p>
+                                    </div>
+                                    <div className="bg-emerald-50 rounded-xl p-3 text-center">
+                                        <p className="text-lg font-bold text-emerald-700">{spValue}</p>
+                                        <p className="text-[11px] text-emerald-500 font-medium">Value</p>
+                                    </div>
+                                    <div className="bg-blue-50 rounded-xl p-3 text-center">
+                                        <p className="text-lg font-bold text-blue-700">{sp.due}</p>
+                                        <p className="text-[11px] text-blue-500 font-medium">Due Date</p>
+                                    </div>
+                                </div>
+
+                                {/* Close button */}
+                                <button onClick={() => setSelectedProject(null)} className="w-full py-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl transition-colors text-sm">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
         </div>
     );
 }
