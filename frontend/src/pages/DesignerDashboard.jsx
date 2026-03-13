@@ -2,12 +2,7 @@ import { useState, useEffect} from"react";
 import { collection, query, where, getDocs, doc, updateDoc} from"firebase/firestore";
 import { db} from"../firebase/firebase";
 import { useAuth} from"../context/AuthContext";
-import { navigate} from"react-router-dom"; // Note: this was previously useNavigate, but I'll keep the import correct based on the file content. 
-// Wait, looking at the previous view_file, it was:
-// 5:  import { useNavigate} from'react-router-dom';
-// I will stick to the exact previous imports.
-
-import { useNavigate} from'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export default function DesignerDashboard() {
   const navigate = useNavigate();
