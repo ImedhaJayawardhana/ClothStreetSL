@@ -97,10 +97,42 @@ const mockOrders = [
 export default function CustomerOrders() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [orders, setOrders] = useState(mockOrders);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("All");
   const [quotations, setQuotations] = useState([]);
   const [quotationsLoading, setQuotationsLoading] = useState(true);
+
+  // Review Modal State
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewOrder, setReviewOrder] = useState(null);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
+
+  const handleDeleteOrder = (orderId) => {
+    if (window.confirm("Are you sure you want to remove this order from your history?")) {
+      setOrders(prev => prev.filter(o => o.id !== orderId));
+      toast.success("Order removed successfully!");
+    }
+  };
+
+  const handleOpenReview = (order) => {
+    setReviewOrder(order);
+    setReviewText("");
+    setReviewRating(5);
+    setIsReviewModalOpen(true);
+  };
+
+  const handleSubmitReview = () => {
+    if (!reviewText.trim()) {
+      toast.error("Please write a review before submitting.");
+      return;
+    }
+    // Update order status to "Completed"
+    setOrders(prev => prev.map(o => o.id === reviewOrder.id ? { ...o, status: "Completed", statusClass: "completed" } : o));
+    setIsReviewModalOpen(false);
+    toast.success("Review submitted successfully!");
+  };
 
   // Fetch quotations from Firestore
   useEffect(() => {
@@ -126,7 +158,7 @@ export default function CustomerOrders() {
   }, [user]);
 
   // ── Tab filtering ──
-  const filteredOrders = mockOrders.filter((order) => {
+  const filteredOrders = orders.filter((order) => {
     const query = searchQuery.toLowerCase();
     const matchesSearch =
       order.product.toLowerCase().includes(query) ||
@@ -147,14 +179,14 @@ export default function CustomerOrders() {
   });
 
   // ── Stats ──
-  const totalOrders = mockOrders.length;
-  const activeOrders = mockOrders.filter((o) =>
+  const totalOrders = orders.length;
+  const activeOrders = orders.filter((o) =>
     ["Shipped", "In Progress", "Confirmed"].includes(o.status)
   ).length;
-  const completedOrders = mockOrders.filter((o) =>
+  const completedOrders = orders.filter((o) =>
     ["Delivered", "Completed"].includes(o.status)
   ).length;
-  const totalSpent = mockOrders.reduce((sum, o) => sum + o.amount, 0);
+  const totalSpent = orders.reduce((sum, o) => sum + o.amount, 0);
 
   // ── Status badge colors ──
   const statusStyles = {
@@ -200,17 +232,34 @@ export default function CustomerOrders() {
 
           {/* Right: Action Buttons */}
           <div className="flex items-center gap-2.5">
+
             <button
-              onClick={() => toast("Filter options coming soon!", { icon: "🔍" })}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/12 backdrop-blur-md text-white border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-              </svg>
-              Filter
-            </button>
-            <button
-              onClick={() => toast("Export coming soon!", { icon: "📄" })}
+              onClick={() => {
+                const csvData = [
+                  ["Order ID", "Product", "Seller", "Category", "Quantity", "Amount (LKR)", "Status", "Tracking"],
+                  ...filteredOrders.map(o => [
+                    o.id,
+                    `"${o.product}"`,
+                    `"${o.seller}"`,
+                    o.category,
+                    o.quantity,
+                    o.amount,
+                    o.status,
+                    o.tracking || "N/A"
+                  ])
+                ].map(e => e.join(",")).join("\n");
+                
+                const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", `my_orders_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                toast.success("Orders exported successfully!");
+              }}
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white text-indigo-600 hover:bg-indigo-50 shadow-sm hover:shadow-md transition-all cursor-pointer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -413,7 +462,7 @@ export default function CustomerOrders() {
 
                     {/* Actions */}
                     <div className="flex gap-2.5">
-                      {q.status === "quoted" ? (
+                      {q.status === "quoted" && (
                         <button
                           onClick={() => navigate(`/quotation-review/${q.id}`, { state: { quotation: q } })}
                           className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm hover:shadow-md transition-all cursor-pointer"
@@ -422,13 +471,6 @@ export default function CustomerOrders() {
                             <path d="m9 12 2 2 4-4" /><circle cx="12" cy="12" r="10" />
                           </svg>
                           Review & Respond
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => navigate(`/quotation-review/${q.id}`, { state: { quotation: q } })}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                        >
-                          View Details
                         </button>
                       )}
                     </div>
@@ -474,11 +516,17 @@ export default function CustomerOrders() {
                       </span>
                     </div>
                   </div>
-                  <button className="w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors shrink-0 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" />
-                    </svg>
-                  </button>
+                  {order.status === "Completed" && (
+                    <button 
+                      onClick={() => handleDeleteOrder(order.id)}
+                      className="w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center text-red-400 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors shrink-0 cursor-pointer"
+                      title="Delete Order"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
 
                 {/* Description */}
@@ -554,15 +602,6 @@ export default function CustomerOrders() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2.5 mt-4">
-                  <button
-                    onClick={() => navigate(`/order-tracking/${order.id}`, { state: { order } })}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" />
-                    </svg>
-                    View Details
-                  </button>
 
                   {["Shipped", "In Progress", "Confirmed"].includes(order.status) && (
                     <button
@@ -578,13 +617,18 @@ export default function CustomerOrders() {
 
                   {["Delivered", "Completed"].includes(order.status) && (
                     <button
-                      onClick={() => toast(`Reviewing ${order.id}...`, { icon: "⭐" })}
-                      className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50 transition-all cursor-pointer"
+                      onClick={() => handleOpenReview(order)}
+                      disabled={order.status === "Completed"}
+                      className={`inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                        order.status === "Completed"
+                          ? "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"
+                          : "bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50 cursor-pointer"
+                      }`}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                       </svg>
-                      Review
+                      {order.status === "Completed" ? "Reviewed" : "Review"}
                     </button>
                   )}
                 </div>
@@ -606,6 +650,63 @@ export default function CustomerOrders() {
         )}
 
       </div>
+
+      {/* ════════════ REVIEW MODAL ════════════ */}
+      {isReviewModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-gray-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+              <h3 className="text-lg font-bold text-gray-900">Write a Review</h3>
+              <button 
+                onClick={() => setIsReviewModalOpen(false)}
+                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+            </div>
+            <div className="px-6 py-5">
+              <p className="text-sm text-gray-500 mb-4">How was your experience with <span className="font-semibold text-gray-900">{reviewOrder?.product}</span>?</p>
+              
+              <div className="flex gap-2 mb-6 justify-center">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button 
+                    key={star} 
+                    onClick={() => setReviewRating(star)}
+                    className="focus:outline-none focus:scale-110 transition-transform"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`w-8 h-8 ${star <= reviewRating ? "text-amber-400 fill-amber-400" : "text-gray-300"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </button>
+                ))}
+              </div>
+
+              <textarea 
+                rows="4"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all resize-none"
+                placeholder="Share your feedback about the product and delivery..."
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+              />
+            </div>
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+              <button 
+                onClick={() => setIsReviewModalOpen(false)}
+                className="px-5 py-2 rounded-xl text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSubmitReview}
+                className="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-200"
+              >
+                Submit Review
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
