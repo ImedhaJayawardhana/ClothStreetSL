@@ -169,7 +169,7 @@ function ItemModal({ item, onClose, onSave }) {
                         { label: "Name", name: "name", placeholder: "e.g. Premium Cotton Twill" },
                         { label: "Type / Fabric", name: "type", placeholder: "e.g. Cotton" },
                         { label: "Location", name: "category", placeholder: "e.g. Colombo" },
-                        { label: "Price (Rs)", name: "price", placeholder: "e.g. 1500", type: "number" },
+                        { label: "Price (LKR )", name: "price", placeholder: "e.g. 1500", type: "number" },
                         { label: "Stock (meters)", name: "stock", placeholder: "e.g. 50", type: "number" },
                     ].map(({ label, name, placeholder, type }) => (
                         <div key={name}>
@@ -433,9 +433,9 @@ export default function Inventory() {
         setItems((prev) => prev.map((i) => i.id === id ? { ...i, hidden: !i.hidden } : i));
     }
     const formatValue = (v) => {
-        if (v >= 1_000_000) return `Rs${(v / 1_000_000).toFixed(1)}M`;
-        if (v >= 1_000) return `Rs${(v / 1_000).toFixed(0)}K`;
-        return `Rs${v}`;
+        if (v >= 1_000_000) return `LKR ${(v / 1_000_000).toFixed(1)}M`;
+        if (v >= 1_000) return `LKR ${(v / 1_000).toFixed(0)}K`;
+        return `LKR ${v}`;
     };
     const stats = [
         {
@@ -726,7 +726,7 @@ export default function Inventory() {
                                         <div className="flex items-center justify-between pt-1">
                                             <div>
                                                 <span className="text-base font-extrabold text-gray-900">
-                                                    Rs {item.price.toLocaleString()}
+                                                    LKR {item.price.toLocaleString()}
                                                 </span>
                                                 <span className="text-xs text-gray-400"> /m</span>
                                             </div>
@@ -829,7 +829,7 @@ export default function Inventory() {
                                                     {ss.label}
                                                 </span>
                                             </td>
-                                            <td className="px-5 py-3.5 font-bold text-gray-900">Rs {item.price.toLocaleString()}</td>
+                                            <td className="px-5 py-3.5 font-bold text-gray-900">LKR {item.price.toLocaleString()}</td>
                                             <td className="px-5 py-3.5 text-gray-600">{item.sales}</td>
                                             <td className="px-5 py-3.5">
                                                 <div className="flex items-center gap-2">

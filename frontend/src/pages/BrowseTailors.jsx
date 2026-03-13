@@ -368,7 +368,7 @@ export default function BrowseTailors() {
                                         <div className="flex items-center justify-between mb-4">
                                             <span className="text-xs text-gray-500 font-medium">Starting from</span>
                                             <span className="text-sm font-bold text-gray-900">
-                                                Rs {tailor.priceMin?.toLocaleString() || '1,500'}
+                                                LKR {tailor.priceMin?.toLocaleString() || '1,500'}
                                             </span>
                                         </div>
                                         <div className="grid grid-cols-2 gap-3">

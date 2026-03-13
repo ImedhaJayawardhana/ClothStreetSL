@@ -8,11 +8,11 @@ export default function Cart() {
     removeFromCart,
     updateQuantity,
     clearCart,
-    cartCount,
+    cartProductCount,
     cartSubtotal,
   } = useCart();
 
-  const SHIPPING_COST = 2500;
+  const SHIPPING_COST = 500;
   const FREE_SHIPPING_THRESHOLD = 50000;
   const shipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const total = cartSubtotal + shipping;
@@ -70,7 +70,7 @@ export default function Cart() {
               Shopping Cart
             </h1>
             <span className="cart-header-count">
-              {cartCount} {cartCount === 1 ? "item" : "items"} in your cart
+              {cartProductCount} {cartProductCount === 1 ? "item" : "items"} in your cart
             </span>
           </div>
 
@@ -134,10 +134,10 @@ export default function Cart() {
               {/* Price */}
               <div className="cart-item-price">
                 <p className="cart-item-total">
-                  Rs {((item.unitPrice ?? 0) * item.quantity).toLocaleString()}
+                  LKR {((item.unitPrice ?? 0) * item.quantity).toLocaleString()}
                 </p>
                 <p className="cart-item-unit-price">
-                  Rs {(item.unitPrice ?? 0).toLocaleString()} / metre
+                  LKR {(item.unitPrice ?? 0).toLocaleString()} / metre
                 </p>
               </div>
 
@@ -185,23 +185,23 @@ export default function Cart() {
 
             <div className="cart-summary-row">
               <span>Subtotal</span>
-              <span>Rs {cartSubtotal.toLocaleString()}</span>
+              <span>LKR {cartSubtotal.toLocaleString()}</span>
             </div>
 
             <div className="cart-summary-row">
               <span>Shipping</span>
-              <span>{shipping === 0 ? "Free" : `Rs ${shipping.toLocaleString()}`}</span>
+              <span>{shipping === 0 ? "Free" : `LKR ${shipping.toLocaleString()}`}</span>
             </div>
 
             <p className="cart-summary-note">
-              Free shipping on orders over Rs {FREE_SHIPPING_THRESHOLD.toLocaleString()}
+              Free shipping on orders over LKR {FREE_SHIPPING_THRESHOLD.toLocaleString()}
             </p>
 
             <hr className="cart-summary-divider" />
 
             <div className="cart-summary-total">
               <span>Total</span>
-              <span>Rs {total.toLocaleString()}</span>
+              <span>LKR {total.toLocaleString()}</span>
             </div>
 
             <Link to="/checkout" className="cart-checkout-btn">

@@ -60,6 +60,9 @@ export function CartProvider({ children }) {
     setCartItems([]);
   }, []);
 
+  // Number of distinct product lines in the cart
+  const cartProductCount = cartItems.length;
+  // Total quantity across all products (metres)
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const cartSubtotal = cartItems.reduce(
     (sum, item) => sum + item.unitPrice * item.quantity,
@@ -75,6 +78,7 @@ export function CartProvider({ children }) {
         updateQuantity,
         clearCart,
         cartCount,
+        cartProductCount,
         cartSubtotal,
       }}
     >

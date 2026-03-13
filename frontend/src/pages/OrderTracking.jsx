@@ -142,7 +142,7 @@ export default function OrderTracking() {
               {trackingData.amount && (
                 <div className="text-right">
                   <p className="text-xs text-gray-400 font-medium">Amount</p>
-                  <p className="text-lg font-bold text-gray-900">Rs {trackingData.amount.toLocaleString()}</p>
+                  <p className="text-lg font-bold text-gray-900">LKR {trackingData.amount.toLocaleString()}</p>
                 </div>
               )}
               {trackingData.expectedDate && (

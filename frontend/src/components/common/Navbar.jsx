@@ -5,7 +5,7 @@ import { useCart } from "../../context/CartContext";
 
 export default function Navbar() {
     const { user, logout } = useAuth();
-    const { cartCount } = useCart();
+    const { cartProductCount } = useCart();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const profileRef = useRef(null);
 
@@ -112,9 +112,9 @@ export default function Navbar() {
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
                             </svg>
-                            {cartCount > 0 && (
+                            {cartProductCount > 0 && (
                                 <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-purple-600 text-white text-[11px] font-bold leading-none shadow-sm">
-                                    {cartCount > 99 ? "99+" : cartCount}
+                                    {cartProductCount > 99 ? "99+" : cartProductCount}
                                 </span>
                             )}
                         </Link>

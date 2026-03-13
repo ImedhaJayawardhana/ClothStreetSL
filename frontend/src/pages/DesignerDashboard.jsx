@@ -20,9 +20,9 @@ const statusColours = {
 // Mock / fallback data
 // ─────────────────────────────────────────────────────────────
 const FALLBACK_REQUESTS = [
-    { id: "mock_req_1", customer: "Hiruni Siriwardena", status: "New", description: "Evening Gown Design (Custom)", price: "Rs 25,000", due: "Due next week" },
-    { id: "mock_req_2", customer: "Studio Red", status: "New", description: "Bridal Wear Sketches (3 items)", price: "Rs 45,000", due: "Due tomorrow" },
-    { id: "mock_req_3", customer: "Amandi Perera", status: "Accepted", description: "Casual Dress Pattern", price: "Rs 8,500", due: "Due in 3 days" },
+    { id: "mock_req_1", customer: "Hiruni Siriwardena", status: "New", description: "Evening Gown Design (Custom)", price: "LKR 25,000", due: "Due next week" },
+    { id: "mock_req_2", customer: "Studio Red", status: "New", description: "Bridal Wear Sketches (3 items)", price: "LKR 45,000", due: "Due tomorrow" },
+    { id: "mock_req_3", customer: "Amandi Perera", status: "Accepted", description: "Casual Dress Pattern", price: "LKR 8,500", due: "Due in 3 days" },
 ];
 
 const FALLBACK_ORDERS = [
@@ -227,7 +227,7 @@ export default function DesignerDashboard() {
                                 </svg>
                             </div>
                             <p className="text-purple-200 text-sm font-medium mb-1">Total Earnings</p>
-                            <h3 className="font-bold text-3xl mb-1">Rs 65,000</h3>
+                            <h3 className="font-bold text-3xl mb-1">LKR 65,000</h3>
                             <p className="text-purple-200 text-sm mb-4 leading-snug">from 8 completed orders</p>
                             <div className="flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-3 py-1 w-fit">
                                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

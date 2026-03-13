@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useCart } from "../context/CartContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import "./Checkout.css";
 
@@ -12,11 +12,12 @@ export default function Checkout() {
   const { cartItems, cartSubtotal, clearCart } = useCart();
   const navigate = useNavigate();
 
-  const SHIPPING_COST = 2500;
+  const SHIPPING_COST = 500;
   const total = cartSubtotal + SHIPPING_COST;
 
   /* ── Multi-step state ── */
-  const [currentStep, setCurrentStep] = useState(1);
+  const location = useLocation();
+  const [currentStep, setCurrentStep] = useState(location.state?.step || 1);
 
   /* ── Step 1: Shipping form state ── */
   const [form, setForm] = useState({
@@ -27,7 +28,19 @@ export default function Checkout() {
     district: "",
   });
 
+  // Validate phone: strip spaces/dashes/+94 prefix → must be 10 digits
+  const isValidPhone = (phone) => {
+    const digits = phone.replace(/[\s\-().+]/g, "").replace(/^94/, "0");
+    return /^\d{10}$/.test(digits);
+  };
+
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "phoneNumber") {
+      const cleaned = value.replace(/[^\d\s\-+]/g, "");
+      setForm((prev) => ({ ...prev, phoneNumber: cleaned }));
+      return;
+    }
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -35,6 +48,10 @@ export default function Checkout() {
     const { fullName, phoneNumber, city, streetAddress, district } = form;
     if (!fullName || !phoneNumber || !city || !streetAddress || !district) {
       toast.error("Please fill in all shipping details.");
+      return;
+    }
+    if (!isValidPhone(phoneNumber)) {
+      toast.error("Phone number must be exactly 10 digits.");
       return;
     }
     setCurrentStep(2);
@@ -45,7 +62,7 @@ export default function Checkout() {
   const [deliveryMethod, setDeliveryMethod] = useState("home");
   const [selectedTailor, setSelectedTailor] = useState(null);
   const [tailors, setTailors] = useState([]);
-  const [tailorsLoading, setTailorsLoading] = useState(false);
+  const [setTailorsLoading] = useState(false);
 
   useEffect(() => {
     if (currentStep === 2 && tailors.length === 0) {
@@ -193,10 +210,16 @@ export default function Checkout() {
                   type="tel"
                   name="phoneNumber"
                   className="checkout-form-input"
-                  placeholder="+94 77 000 0000"
+                  placeholder="0771234567"
                   value={form.phoneNumber}
                   onChange={handleChange}
+                  maxLength={15}
                 />
+                {form.phoneNumber && !isValidPhone(form.phoneNumber) && (
+                  <span style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px", display: "block" }}>
+                    Phone number must be exactly 10 digits.
+                  </span>
+                )}
               </div>
               <div className="checkout-form-group">
                 <label className="checkout-form-label">City</label>
@@ -286,24 +309,7 @@ export default function Checkout() {
                 </div>
               </div>
 
-              {/* Tailor Delivery */}
-              <div
-                className={`checkout-delivery-option${deliveryMethod === "tailor" ? " selected" : ""}`}
-                onClick={() => setDeliveryMethod("tailor")}
-              >
-                <div className="checkout-delivery-option-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                  </svg>
-                </div>
-                <div className="checkout-delivery-option-info">
-                  <p className="checkout-delivery-option-name">Tailor Delivery</p>
-                  <p className="checkout-delivery-option-desc">Deliver to a tailor</p>
-                </div>
-                <div className="checkout-delivery-option-radio">
-                  <div className="checkout-delivery-option-radio-dot" />
-                </div>
-              </div>
+
 
               {/* Find a Tailor / Designer */}
               <div
@@ -340,57 +346,7 @@ export default function Checkout() {
               </div>
             </div>
 
-            {/* Tailor Selection List (shown when "tailor" selected) */}
-            {deliveryMethod === "tailor" && (
-              <div className="checkout-tailor-list">
-                {tailorsLoading ? (
-                  /* Skeleton loaders */
-                  [1, 2, 3].map((i) => (
-                    <div className="checkout-tailor-skeleton" key={i}>
-                      <div className="checkout-tailor-skeleton-icon" />
-                      <div className="checkout-tailor-skeleton-lines">
-                        <div className="checkout-tailor-skeleton-line" />
-                        <div className="checkout-tailor-skeleton-line" />
-                        <div className="checkout-tailor-skeleton-line" />
-                      </div>
-                    </div>
-                  ))
-                ) : tailors.length === 0 ? (
-                  <p style={{ color: "#71717a", fontSize: "0.9rem", textAlign: "center", padding: "20px 0" }}>
-                    No tailors available at the moment.
-                  </p>
-                ) : (
-                  tailors.map((tailor) => (
-                    <div
-                      key={tailor.id}
-                      className={`checkout-tailor-card${selectedTailor === tailor.id ? " selected" : ""}`}
-                      onClick={() => setSelectedTailor(tailor.id)}
-                    >
-                      <div className="checkout-tailor-card-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                        </svg>
-                      </div>
-                      <div className="checkout-tailor-card-info">
-                        <p className="checkout-tailor-card-name">{tailor.name}</p>
-                        <p className="checkout-tailor-card-meta">
-                          {tailor.location}
-                          {tailor.specializations?.length > 0 && ` · ${tailor.specializations[0]}`}
-                        </p>
-                        <p className="checkout-tailor-card-stats">
-                          <span className="star">★</span> {tailor.rating?.toFixed(1) || "N/A"}
-                          <span>·</span>
-                          {tailor.orders || 0} orders
-                        </p>
-                      </div>
-                      <div className="checkout-tailor-card-radio">
-                        <div className="checkout-tailor-card-radio-dot" />
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
+
 
             {/* Navigation Row */}
             <div className="checkout-nav-row">
@@ -598,18 +554,10 @@ export default function Checkout() {
                 <h4>Shipping to</h4>
               </div>
               <div className="checkout-confirm-shipping-info">
-                {deliveryMethod === "home" ? (
-                  <>
-                    {form.fullName}<br />
-                    {form.streetAddress}, {form.city}, {form.district}
-                  </>
-                ) : (
-                  <>
-                    <strong>Tailor Delivery</strong><br />
-                    {tailors.find(t => t.id === selectedTailor)?.name || "Selected Tailor"}<br />
-                    {tailors.find(t => t.id === selectedTailor)?.location}
-                  </>
-                )}
+                <>
+                  {form.fullName}<br />
+                  {form.streetAddress}, {form.city}, {form.district}
+                </>
               </div>
             </div>
 
@@ -632,7 +580,7 @@ export default function Checkout() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                       <p className="checkout-confirm-item-name">{item.name}</p>
                       <div className="checkout-confirm-item-price">
-                        Rs {(item.unitPrice * item.quantity).toLocaleString()}
+                        LKR {(item.unitPrice * item.quantity).toLocaleString()}
                       </div>
                     </div>
                     <p className="checkout-confirm-item-meta">{item.quantity} {item.unit || "m"}</p>
@@ -661,7 +609,7 @@ export default function Checkout() {
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                   <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
-                Place Order · Rs {total.toLocaleString()}
+                Place Order · LKR {total.toLocaleString()}
               </button>
             </div>
           </div>
@@ -698,17 +646,11 @@ export default function Checkout() {
               </div>
               <div className="checkout-success-row highlight">
                 <span>Total Paid</span>
-                <span>Rs {total.toLocaleString()}</span>
+                <span>LKR {total.toLocaleString()}</span>
               </div>
               <div className="checkout-success-row">
                 <span>Delivery to</span>
-                <span>
-                  {deliveryMethod === "home" ? (
-                    `${form.streetAddress}, ${form.city}`
-                  ) : (
-                    tailors.find(t => t.id === selectedTailor)?.name || "Tailor Delivery"
-                  )}
-                </span>
+                <span>{`${form.streetAddress}, ${form.city}`}</span>
               </div>
             </div>
 
@@ -738,7 +680,7 @@ export default function Checkout() {
                   {item.unit || "m"})
                 </span>
                 <span className="checkout-summary-item-price">
-                  Rs {(item.unitPrice * item.quantity).toLocaleString()}
+                  LKR {(item.unitPrice * item.quantity).toLocaleString()}
                 </span>
               </div>
             ))}
@@ -748,19 +690,19 @@ export default function Checkout() {
             {/* Subtotal */}
             <div className="checkout-summary-row subtotal">
               <span>Subtotal</span>
-              <span>Rs {cartSubtotal.toLocaleString()}</span>
+              <span>LKR {cartSubtotal.toLocaleString()}</span>
             </div>
 
             {/* Shipping */}
             <div className="checkout-summary-row">
               <span>Shipping</span>
-              <span>Rs {SHIPPING_COST.toLocaleString()}</span>
+              <span>LKR {SHIPPING_COST.toLocaleString()}</span>
             </div>
 
             {/* Total */}
             <div className="checkout-summary-total">
               <span>Total</span>
-              <span>Rs {total.toLocaleString()}</span>
+              <span>LKR {total.toLocaleString()}</span>
             </div>
           </div>
         )}

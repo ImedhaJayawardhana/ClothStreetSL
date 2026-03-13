@@ -164,7 +164,7 @@ export default function DesignerOrders() {
 
     // ── Export orders to CSV ──
     const handleExport = () => {
-        const headers = ["ID", "Name", "Client", "Category", "Status", "Progress (%)", "Designs", "Value (Rs)", "Due Date"];
+        const headers = ["ID", "Name", "Client", "Category", "Status", "Progress (%)", "Designs", "Value (LKR )", "Due Date"];
         const rows = orders.map((o) => [
             o.id,
             o.name || "",
@@ -188,9 +188,9 @@ export default function DesignerOrders() {
 
     // ── Format revenue ──
     const formatRevenue = (val) => {
-        if (val >= 1000000) return `Rs ${(val / 1000000).toFixed(1)}M`;
-        if (val >= 1000) return `Rs ${(val / 1000).toFixed(0)}K`;
-        return `Rs ${val.toLocaleString()}`;
+        if (val >= 1000000) return `LKR ${(val / 1000000).toFixed(1)}M`;
+        if (val >= 1000) return `LKR ${(val / 1000).toFixed(0)}K`;
+        return `LKR ${val.toLocaleString()}`;
     };
 
     // ── Stat cards data ──
@@ -419,7 +419,7 @@ export default function DesignerOrders() {
                                 {paginatedItems.map((project) => {
                                     const statusStyle = STATUS_STYLES[project.status] || STATUS_STYLES["Pending"];
                                     const progressColor = project.progress >= 100 ? "bg-green-500" : project.progress >= 60 ? "bg-purple-500" : "bg-blue-500";
-                                    const formattedValue = project.value >= 1000 ? `Rs ${(project.value / 1000).toFixed(0)}K` : `Rs ${(project.value || 0).toLocaleString()}`;
+                                    const formattedValue = project.value >= 1000 ? `LKR ${(project.value / 1000).toFixed(0)}K` : `LKR ${(project.value || 0).toLocaleString()}`;
 
                                     return (
                                         <div key={project.id} className="do-card bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
@@ -629,7 +629,7 @@ export default function DesignerOrders() {
                 const sp = selectedProject;
                 const spStatus = STATUS_STYLES[sp.status] || STATUS_STYLES["Pending"];
                 const spProgress = sp.progress >= 100 ? "bg-green-500" : sp.progress >= 60 ? "bg-purple-500" : "bg-blue-500";
-                const spValue = sp.value >= 1000 ? `Rs ${(sp.value / 1000).toFixed(0)}K` : `Rs ${(sp.value || 0).toLocaleString()}`;
+                const spValue = sp.value >= 1000 ? `LKR ${(sp.value / 1000).toFixed(0)}K` : `LKR ${(sp.value || 0).toLocaleString()}`;
                 return (
                     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedProject(null)}>
                         <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>

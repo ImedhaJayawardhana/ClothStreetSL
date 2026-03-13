@@ -48,7 +48,7 @@ export default function Store() {
       }
     };
     fetchProfile();
-  }, [decodedSellerId]);
+  }, [sellerId , decodedSellerId]);
   const displayName = profile?.shopName || "Seller Store";
   const avatarLetter = displayName.charAt(0).toUpperCase();
   if (loading) {
