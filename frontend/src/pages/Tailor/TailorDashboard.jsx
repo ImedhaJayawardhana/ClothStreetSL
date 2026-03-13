@@ -89,7 +89,7 @@ function StatCard({ stat }) {
 }
 
 const DUMMY_EARNINGS = {
-    total: "Rs 18,000",
+    total: "LKR 18,000",
     fromOrders: 1,
     growthPercent: 24,
 };
@@ -194,7 +194,7 @@ const DUMMY_ORDERS = [
         name: "Wedding Dress",
         customer: "Shalini Fernando",
         status: "In Progress",
-        price: "Rs 28,000",
+        price: "LKR 28,000",
         iconColor: "text-red-400",
         iconBg: "bg-red-50",
         icon: (
@@ -210,7 +210,7 @@ const DUMMY_ORDERS = [
         name: "Business Suits",
         customer: "Ravi Wijesinghe",
         status: "Ready to Deliver",
-        price: "Rs 75,000",
+        price: "LKR 75,000",
         iconColor: "text-blue-400",
         iconBg: "bg-blue-50",
         icon: (
@@ -226,7 +226,7 @@ const DUMMY_ORDERS = [
         name: "School Uniforms",
         customer: "Chamara Bandara",
         status: "Pending",
-        price: "Rs 45,000",
+        price: "LKR 45,000",
         iconColor: "text-gray-400",
         iconBg: "bg-gray-100",
         icon: (
@@ -241,7 +241,7 @@ const DUMMY_ORDERS = [
         name: "Evening Gown",
         customer: "Nadeesha Perera",
         status: "Completed",
-        price: "Rs 18,000",
+        price: "LKR 18,000",
         iconColor: "text-emerald-500",
         iconBg: "bg-emerald-50",
         icon: (
@@ -256,7 +256,7 @@ const DUMMY_ORDERS = [
         name: "Casual Shirts",
         customer: "Amal Jayawardena",
         status: "In Progress",
-        price: "Rs 12,000",
+        price: "LKR 12,000",
         iconColor: "text-violet-400",
         iconBg: "bg-violet-50",
         icon: (
@@ -331,7 +331,7 @@ const DUMMY_REQUESTS = [
         customer: "Dilini Perera",
         badge: "New",
         description: "Bridesmaid Dresses (4)",
-        price: "Rs 40,000",
+        price: "LKR 40,000",
         due: "Due Apr 15",
         status: "new",
     },
@@ -340,7 +340,7 @@ const DUMMY_REQUESTS = [
         customer: "Colombo Sports Club",
         badge: "New",
         description: "Team Jerseys (25)",
-        price: "Rs 62,500",
+        price: "LKR 62,500",
         due: "Due Apr 1",
         status: "new",
     },
@@ -349,7 +349,7 @@ const DUMMY_REQUESTS = [
         customer: "Malintha Rajapaksa",
         badge: "Accepted",
         description: "Bespoke Suit",
-        price: "Rs 15,000",
+        price: "LKR 15,000",
         due: "Due Mar 25",
         status: "accepted",
     },

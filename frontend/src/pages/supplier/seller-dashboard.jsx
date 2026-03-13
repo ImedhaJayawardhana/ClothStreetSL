@@ -309,7 +309,7 @@ export default function SellerDashboard() {
                         {order.status}
                       </span>
                       <span className="font-bold text-gray-900 text-sm whitespace-nowrap">
-                        Rs {Number(order.total ?? order.totalAmount ?? 0).toLocaleString()}
+                        LKR {Number(order.total ?? order.totalAmount ?? 0).toLocaleString()}
                       </span>
                     </div>
                   </div>

@@ -308,7 +308,7 @@ export default function RequestQuote() {
                       </p>
                     </div>
                     <span className="rq-product-price">
-                      Rs{" "}
+                      LKR {" "}
                       {(item.unitPrice * item.quantity).toLocaleString()}
                     </span>
                   </div>

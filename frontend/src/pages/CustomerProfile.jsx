@@ -9,9 +9,9 @@ import "./CustomerProfile.css";
 
 // --- Mock Data for Dashboard Widgets ---
 const mockOrders = [
-  { id: "#CS-8472", date: "Oct 12, 2025", total: "Rs. 4,500", status: "Delivered", class: "delivered" },
-  { id: "#CS-8591", date: "Nov 03, 2025", total: "Rs. 12,000", status: "Shipped", class: "shipped" },
-  { id: "#CS-8610", date: "Nov 15, 2025", total: "Rs. 3,250", status: "Processing", class: "processing" },
+  { id: "#CS-8472", date: "Oct 12, 2025", total: "LKR 4,500", status: "Delivered", class: "delivered" },
+  { id: "#CS-8591", date: "Nov 03, 2025", total: "LKR 12,000", status: "Shipped", class: "shipped" },
+  { id: "#CS-8610", date: "Nov 15, 2025", total: "LKR 3,250", status: "Processing", class: "processing" },
 ];
 
 const mockTailors = [

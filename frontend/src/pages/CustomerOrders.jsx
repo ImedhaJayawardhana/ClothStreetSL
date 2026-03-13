@@ -275,7 +275,7 @@ export default function CustomerOrders() {
           <div className="bg-white border border-gray-200 rounded-2xl p-5 flex items-start justify-between hover:shadow-md hover:-translate-y-0.5 transition-all">
             <div>
               <p className="text-sm font-medium text-gray-500 mb-1">Total Spent</p>
-              <p className="text-3xl font-bold text-gray-900">Rs {(totalSpent / 1000).toFixed(0)}K</p>
+              <p className="text-3xl font-bold text-gray-900">LKR {(totalSpent / 1000).toFixed(0)}K</p>
               <p className="text-xs text-gray-400 mt-1">Total purchases</p>
             </div>
             <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
@@ -406,7 +406,7 @@ export default function CustomerOrders() {
                             <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                           </svg>
                           <span className="text-gray-400">Quoted Amount:</span>
-                          <span className="font-bold text-violet-600">Rs {q.grandTotal.toLocaleString()}</span>
+                          <span className="font-bold text-violet-600">LKR {q.grandTotal.toLocaleString()}</span>
                         </div>
                       )}
                     </div>
@@ -516,7 +516,7 @@ export default function CustomerOrders() {
                       <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                     </svg>
                     <span className="text-gray-400">Amount:</span>
-                    <span className="font-semibold text-emerald-600">Rs {order.amount.toLocaleString()}</span>
+                    <span className="font-semibold text-emerald-600">LKR {order.amount.toLocaleString()}</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

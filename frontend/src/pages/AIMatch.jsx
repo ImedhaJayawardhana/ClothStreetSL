@@ -5,9 +5,9 @@ import { useCart } from '../context/CartContext';
 // Mock Fallback Data
 const mockResults = {
   materials: [
-    { id: 1, name: 'Premium Cotton Fabric', supplier: 'TextileCo Lanka', price: 'Rs 450/m', rating: 4.8, match: 97, color: 'White' },
-    { id: 2, name: 'Polyester Blend', supplier: 'FabricHub Colombo', price: 'Rs 280/m', rating: 4.5, match: 89, color: 'Blue' },
-    { id: 3, name: 'Organic Linen', supplier: 'EcoTextile SL', price: 'Rs 620/m', rating: 4.9, match: 85, color: 'Beige' }
+    { id: 1, name: 'Premium Cotton Fabric', supplier: 'TextileCo Lanka', price: 'LKR 450/m', rating: 4.8, match: 97, color: 'White' },
+    { id: 2, name: 'Polyester Blend', supplier: 'FabricHub Colombo', price: 'LKR 280/m', rating: 4.5, match: 89, color: 'Blue' },
+    { id: 3, name: 'Organic Linen', supplier: 'EcoTextile SL', price: 'LKR 620/m', rating: 4.9, match: 85, color: 'Beige' }
   ],
   tailors: [
     { id: 1, name: 'Nimal Perera', location: 'Colombo 05', experience: '12 years', rating: 4.9, match: 96, speciality: 'Formal Wear' },
@@ -138,9 +138,9 @@ export default function AIMatch() {
 
                 {/* Total Budget */}
                 <div>
-                  <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">Total Budget (Rs)</label>
+                  <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">Total Budget (LKR )</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">Rs</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">LKR </span>
                     <input
                       type="number"
                       id="budget"
@@ -152,7 +152,7 @@ export default function AIMatch() {
                     />
                   </div>
                   <p className="text-sm text-gray-500 mt-2">
-                    Estimated: ≈ Rs {pricePerPiece} per piece
+                    Estimated: ≈ LKR {pricePerPiece} per piece
                   </p>
                 </div>
 

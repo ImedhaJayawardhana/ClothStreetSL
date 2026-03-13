@@ -218,14 +218,14 @@ export default function QuotationResponse() {
                     <p className="text-xs text-gray-500">{item.quantity} {item.unit || "m"}</p>
                   </div>
                   <p className="text-sm font-bold text-violet-600 whitespace-nowrap">
-                    Rs {((item.unitPrice || 0) * (item.quantity || 1)).toLocaleString()}
+                    LKR {((item.unitPrice || 0) * (item.quantity || 1)).toLocaleString()}
                   </p>
                 </div>
               ))}
             </div>
             <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
               <span className="text-sm font-medium text-gray-500">Material Total</span>
-              <span className="text-base font-bold text-gray-900">Rs {materialTotal.toLocaleString()}</span>
+              <span className="text-base font-bold text-gray-900">LKR {materialTotal.toLocaleString()}</span>
             </div>
           </div>
         )}
@@ -321,7 +321,7 @@ export default function QuotationResponse() {
                     Labor / Service Charge *
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">Rs</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">LKR </span>
                     <input
                       type="number"
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 transition-all"
@@ -339,7 +339,7 @@ export default function QuotationResponse() {
                     Additional Charges
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">Rs</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-400">LKR </span>
                     <input
                       type="number"
                       className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 transition-all"
@@ -441,7 +441,7 @@ export default function QuotationResponse() {
                     {quotation.items?.map((item, idx) => (
                       <div key={idx} className="flex justify-between items-center text-sm">
                         <span className="text-gray-700">{item.name} × {item.quantity} {item.unit || "m"}</span>
-                        <span className="font-semibold text-gray-900">Rs {((item.unitPrice || 0) * (item.quantity || 1)).toLocaleString()}</span>
+                        <span className="font-semibold text-gray-900">LKR {((item.unitPrice || 0) * (item.quantity || 1)).toLocaleString()}</span>
                       </div>
                     ))}
 
@@ -449,18 +449,18 @@ export default function QuotationResponse() {
 
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-gray-500">Material Subtotal</span>
-                      <span className="font-semibold text-gray-700">Rs {materialTotal.toLocaleString()}</span>
+                      <span className="font-semibold text-gray-700">LKR {materialTotal.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-gray-500">Labor / Service Charge</span>
-                      <span className="font-semibold text-gray-700">Rs {labor.toLocaleString()}</span>
+                      <span className="font-semibold text-gray-700">LKR {labor.toLocaleString()}</span>
                     </div>
                     {additional > 0 && (
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-gray-500">
                           Additional{additionalNote ? ` (${additionalNote})` : ""}
                         </span>
-                        <span className="font-semibold text-gray-700">Rs {additional.toLocaleString()}</span>
+                        <span className="font-semibold text-gray-700">LKR {additional.toLocaleString()}</span>
                       </div>
                     )}
 
@@ -468,7 +468,7 @@ export default function QuotationResponse() {
 
                     <div className="flex justify-between items-center">
                       <span className="text-base font-bold text-gray-900">Grand Total</span>
-                      <span className="text-xl font-extrabold text-violet-600">Rs {grandTotal.toLocaleString()}</span>
+                      <span className="text-xl font-extrabold text-violet-600">LKR {grandTotal.toLocaleString()}</span>
                     </div>
                   </div>
 
@@ -529,7 +529,7 @@ export default function QuotationResponse() {
                "Request Declined"}
             </h3>
             {quotation.grandTotal && (
-              <p className="text-2xl font-extrabold text-violet-600 mb-2">Rs {quotation.grandTotal.toLocaleString()}</p>
+              <p className="text-2xl font-extrabold text-violet-600 mb-2">LKR {quotation.grandTotal.toLocaleString()}</p>
             )}
             {quotation.completionDate && (
               <p className="text-sm text-gray-500">Completion by: <span className="font-semibold">{quotation.completionDate}</span></p>

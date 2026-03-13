@@ -178,7 +178,7 @@ export default function QuotationReview() {
                   {item.image && <img src={item.image} alt="" className="w-8 h-8 rounded-lg object-cover border border-gray-100" />}
                   <span className="text-gray-700">{item.name} × {item.quantity} {item.unit || "m"}</span>
                 </div>
-                <span className="font-semibold text-gray-900">Rs {((item.unitPrice || 0) * (item.quantity || 1)).toLocaleString()}</span>
+                <span className="font-semibold text-gray-900">LKR {((item.unitPrice || 0) * (item.quantity || 1)).toLocaleString()}</span>
               </div>
             ))}
 
@@ -186,18 +186,18 @@ export default function QuotationReview() {
 
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Material Subtotal</span>
-              <span className="font-semibold text-gray-700">Rs {materialTotal.toLocaleString()}</span>
+              <span className="font-semibold text-gray-700">LKR {materialTotal.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Labor / Service Charge</span>
-              <span className="font-semibold text-gray-700">Rs {labor.toLocaleString()}</span>
+              <span className="font-semibold text-gray-700">LKR {labor.toLocaleString()}</span>
             </div>
             {additional > 0 && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">
                   Additional{quotation.additionalNote ? ` (${quotation.additionalNote})` : ""}
                 </span>
-                <span className="font-semibold text-gray-700">Rs {additional.toLocaleString()}</span>
+                <span className="font-semibold text-gray-700">LKR {additional.toLocaleString()}</span>
               </div>
             )}
 
@@ -205,7 +205,7 @@ export default function QuotationReview() {
 
             <div className="flex justify-between items-center pt-1">
               <span className="text-base font-bold text-gray-900">Grand Total</span>
-              <span className="text-2xl font-extrabold text-violet-600">Rs {grandTotal.toLocaleString()}</span>
+              <span className="text-2xl font-extrabold text-violet-600">LKR {grandTotal.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -259,7 +259,7 @@ export default function QuotationReview() {
                   Payment
                 </h3>
                 <p className="text-sm text-gray-500 mb-6">
-                  Amount to pay: <span className="font-bold text-gray-900">Rs {grandTotal.toLocaleString()}</span>
+                  Amount to pay: <span className="font-bold text-gray-900">LKR {grandTotal.toLocaleString()}</span>
                 </p>
 
                 {/* Payment method selection */}
@@ -311,7 +311,7 @@ export default function QuotationReview() {
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                           <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
-                        Confirm & Pay Rs {grandTotal.toLocaleString()}
+                        Confirm & Pay LKR {grandTotal.toLocaleString()}
                       </>
                     )}
                   </button>
@@ -336,7 +336,7 @@ export default function QuotationReview() {
             <h3 className="text-lg font-bold text-gray-900 mb-1">
               {quotation.status === "accepted" ? "Quotation Accepted" : "Quotation Declined"}
             </h3>
-            <p className="text-2xl font-extrabold text-violet-600 mb-2">Rs {grandTotal.toLocaleString()}</p>
+            <p className="text-2xl font-extrabold text-violet-600 mb-2">LKR {grandTotal.toLocaleString()}</p>
             {quotation.paymentMethod && (
               <p className="text-sm text-gray-500 capitalize">Payment: {quotation.paymentMethod}</p>
             )}

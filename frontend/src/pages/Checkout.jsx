@@ -12,7 +12,7 @@ export default function Checkout() {
   const { cartItems, cartSubtotal, clearCart } = useCart();
   const navigate = useNavigate();
 
-  const SHIPPING_COST = 2500;
+  const SHIPPING_COST = 500;
   const total = cartSubtotal + SHIPPING_COST;
 
   /* ── Multi-step state ── */
@@ -654,7 +654,7 @@ export default function Checkout() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                       <p className="checkout-confirm-item-name">{item.name}</p>
                       <div className="checkout-confirm-item-price">
-                        Rs {(item.unitPrice * item.quantity).toLocaleString()}
+                        LKR {(item.unitPrice * item.quantity).toLocaleString()}
                       </div>
                     </div>
                     <p className="checkout-confirm-item-meta">{item.quantity} {item.unit || "m"}</p>
@@ -683,7 +683,7 @@ export default function Checkout() {
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                   <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
-                Place Order · Rs {total.toLocaleString()}
+                Place Order · LKR {total.toLocaleString()}
               </button>
             </div>
           </div>
@@ -720,7 +720,7 @@ export default function Checkout() {
               </div>
               <div className="checkout-success-row highlight">
                 <span>Total Paid</span>
-                <span>Rs {total.toLocaleString()}</span>
+                <span>LKR {total.toLocaleString()}</span>
               </div>
               <div className="checkout-success-row">
                 <span>Delivery to</span>
@@ -760,7 +760,7 @@ export default function Checkout() {
                   {item.unit || "m"})
                 </span>
                 <span className="checkout-summary-item-price">
-                  Rs {(item.unitPrice * item.quantity).toLocaleString()}
+                  LKR {(item.unitPrice * item.quantity).toLocaleString()}
                 </span>
               </div>
             ))}
@@ -770,19 +770,19 @@ export default function Checkout() {
             {/* Subtotal */}
             <div className="checkout-summary-row subtotal">
               <span>Subtotal</span>
-              <span>Rs {cartSubtotal.toLocaleString()}</span>
+              <span>LKR {cartSubtotal.toLocaleString()}</span>
             </div>
 
             {/* Shipping */}
             <div className="checkout-summary-row">
               <span>Shipping</span>
-              <span>Rs {SHIPPING_COST.toLocaleString()}</span>
+              <span>LKR {SHIPPING_COST.toLocaleString()}</span>
             </div>
 
             {/* Total */}
             <div className="checkout-summary-total">
               <span>Total</span>
-              <span>Rs {total.toLocaleString()}</span>
+              <span>LKR {total.toLocaleString()}</span>
             </div>
           </div>
         )}

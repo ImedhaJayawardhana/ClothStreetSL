@@ -369,8 +369,8 @@ export default function BrowseMaterials() {
               id="bm-price-range"
             />
             <div className="bm-range-values">
-              <span className="bm-range-val">Rs 0</span>
-              <span className="bm-range-val">Rs {maxPrice.toLocaleString()}</span>
+              <span className="bm-range-val">LKR 0</span>
+              <span className="bm-range-val">LKR {maxPrice.toLocaleString()}</span>
             </div>
           </div>
 
@@ -512,7 +512,7 @@ export default function BrowseMaterials() {
                     <div className="bm-meta-item">
                       <span className="bm-meta-label">Price/meter</span>
                       <span className="bm-meta-value bm-price-highlight">
-                        Rs {fab.price.toLocaleString()}
+                        LKR {fab.price.toLocaleString()}
                       </span>
                     </div>
                     <div className="bm-meta-item">
