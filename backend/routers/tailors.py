@@ -41,9 +41,12 @@ def update_tailor(
         raise HTTPException(
             status_code=403, detail="You can only update your own profile"
         )
-    doc = db.collection("tailors").document(tailor_id).get()
-    if not doc.exists:
-        raise HTTPException(status_code=404, detail="Tailor not found")
     update_data = {k: v for k, v in updates.dict().items() if v is not None}
-    db.collection("tailors").document(tailor_id).update(update_data)
+    doc = db.collection("tailors").document(tailor_id).get()
+    if doc.exists:
+        db.collection("tailors").document(tailor_id).update(update_data)
+    else:
+        # Auto-create profile for new users
+        update_data["uid"] = uid
+        db.collection("tailors").document(tailor_id).set(update_data)
     return {"message": "Tailor profile updated"}

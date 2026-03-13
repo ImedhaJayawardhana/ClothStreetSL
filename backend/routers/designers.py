@@ -39,11 +39,14 @@ def update_designer(
     uid = decoded_token["uid"]
     if uid != designer_id:
         raise HTTPException(status_code=403, detail="You can only update your own profile")
-    doc = db.collection("designers").document(designer_id).get()
-    if not doc.exists:
-        raise HTTPException(status_code=404, detail="Designer not found")
     update_data = {k: v for k, v in updates.dict().items() if v is not None}
-    db.collection("designers").document(designer_id).update(update_data)
+    doc = db.collection("designers").document(designer_id).get()
+    if doc.exists:
+        db.collection("designers").document(designer_id).update(update_data)
+    else:
+        # Auto-create profile for new users
+        update_data["uid"] = uid
+        db.collection("designers").document(designer_id).set(update_data)
     return {"message": "Designer profile updated"}
 
 

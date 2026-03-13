@@ -52,6 +52,9 @@ class DesignerProfile(BaseModel):
     aesthetics: Optional[List[str]] = []
     portfolioImages: Optional[List[str]] = []
     phoneNumber: Optional[str] = None
+    experience: Optional[int] = 0
+    rating: Optional[float] = 5.0
+    availability: Optional[bool] = True
 
 class DesignerProfileUpdate(BaseModel):
     name: Optional[str] = None
@@ -66,6 +69,9 @@ class DesignerProfileUpdate(BaseModel):
     aesthetics: Optional[List[str]] = None
     portfolioImages: Optional[List[str]] = None
     phoneNumber: Optional[str] = None
+    experience: Optional[int] = None
+    rating: Optional[float] = None
+    availability: Optional[bool] = None
 
 class Fabric(BaseModel):
     name: str
