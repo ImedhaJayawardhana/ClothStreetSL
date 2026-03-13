@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useCart } from "../context/CartContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import "./Checkout.css";
 
@@ -16,7 +16,8 @@ export default function Checkout() {
   const total = cartSubtotal + SHIPPING_COST;
 
   /* ── Multi-step state ── */
-  const [currentStep, setCurrentStep] = useState(1);
+  const location = useLocation();
+  const [currentStep, setCurrentStep] = useState(location.state?.step || 1);
 
   /* ── Step 1: Shipping form state ── */
   const [form, setForm] = useState({
@@ -308,24 +309,7 @@ export default function Checkout() {
                 </div>
               </div>
 
-              {/* Tailor Delivery */}
-              <div
-                className={`checkout-delivery-option${deliveryMethod === "tailor" ? " selected" : ""}`}
-                onClick={() => setDeliveryMethod("tailor")}
-              >
-                <div className="checkout-delivery-option-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                  </svg>
-                </div>
-                <div className="checkout-delivery-option-info">
-                  <p className="checkout-delivery-option-name">Tailor Delivery</p>
-                  <p className="checkout-delivery-option-desc">Deliver to a tailor</p>
-                </div>
-                <div className="checkout-delivery-option-radio">
-                  <div className="checkout-delivery-option-radio-dot" />
-                </div>
-              </div>
+
 
               {/* Find a Tailor / Designer */}
               <div
@@ -362,57 +346,7 @@ export default function Checkout() {
               </div>
             </div>
 
-            {/* Tailor Selection List (shown when "tailor" selected) */}
-            {deliveryMethod === "tailor" && (
-              <div className="checkout-tailor-list">
-                {tailorsLoading ? (
-                  /* Skeleton loaders */
-                  [1, 2, 3].map((i) => (
-                    <div className="checkout-tailor-skeleton" key={i}>
-                      <div className="checkout-tailor-skeleton-icon" />
-                      <div className="checkout-tailor-skeleton-lines">
-                        <div className="checkout-tailor-skeleton-line" />
-                        <div className="checkout-tailor-skeleton-line" />
-                        <div className="checkout-tailor-skeleton-line" />
-                      </div>
-                    </div>
-                  ))
-                ) : tailors.length === 0 ? (
-                  <p style={{ color: "#71717a", fontSize: "0.9rem", textAlign: "center", padding: "20px 0" }}>
-                    No tailors available at the moment.
-                  </p>
-                ) : (
-                  tailors.map((tailor) => (
-                    <div
-                      key={tailor.id}
-                      className={`checkout-tailor-card${selectedTailor === tailor.id ? " selected" : ""}`}
-                      onClick={() => setSelectedTailor(tailor.id)}
-                    >
-                      <div className="checkout-tailor-card-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                        </svg>
-                      </div>
-                      <div className="checkout-tailor-card-info">
-                        <p className="checkout-tailor-card-name">{tailor.name}</p>
-                        <p className="checkout-tailor-card-meta">
-                          {tailor.location}
-                          {tailor.specializations?.length > 0 && ` · ${tailor.specializations[0]}`}
-                        </p>
-                        <p className="checkout-tailor-card-stats">
-                          <span className="star">★</span> {tailor.rating?.toFixed(1) || "N/A"}
-                          <span>·</span>
-                          {tailor.orders || 0} orders
-                        </p>
-                      </div>
-                      <div className="checkout-tailor-card-radio">
-                        <div className="checkout-tailor-card-radio-dot" />
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
+
 
             {/* Navigation Row */}
             <div className="checkout-nav-row">
@@ -620,18 +554,10 @@ export default function Checkout() {
                 <h4>Shipping to</h4>
               </div>
               <div className="checkout-confirm-shipping-info">
-                {deliveryMethod === "home" ? (
-                  <>
-                    {form.fullName}<br />
-                    {form.streetAddress}, {form.city}, {form.district}
-                  </>
-                ) : (
-                  <>
-                    <strong>Tailor Delivery</strong><br />
-                    {tailors.find(t => t.id === selectedTailor)?.name || "Selected Tailor"}<br />
-                    {tailors.find(t => t.id === selectedTailor)?.location}
-                  </>
-                )}
+                <>
+                  {form.fullName}<br />
+                  {form.streetAddress}, {form.city}, {form.district}
+                </>
               </div>
             </div>
 
@@ -724,13 +650,7 @@ export default function Checkout() {
               </div>
               <div className="checkout-success-row">
                 <span>Delivery to</span>
-                <span>
-                  {deliveryMethod === "home" ? (
-                    `${form.streetAddress}, ${form.city}`
-                  ) : (
-                    tailors.find(t => t.id === selectedTailor)?.name || "Tailor Delivery"
-                  )}
-                </span>
+                <span>{`${form.streetAddress}, ${form.city}`}</span>
               </div>
             </div>
 

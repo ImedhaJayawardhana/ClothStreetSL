@@ -85,9 +85,21 @@ export default function FindTailorDesigner() {
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          {/* Label pill */}
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-violet-200 uppercase bg-violet-500/15 border border-violet-400/25 rounded-full px-4 py-1.5 mb-5">
+        <div className="max-w-5xl mx-auto relative z-10">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate("/checkout", { state: { step: 2 } })}
+            className="absolute -top-4 left-0 inline-flex items-center gap-2 text-sm font-semibold text-white/70 hover:text-white transition-colors cursor-pointer"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Checkout
+          </button>
+
+          <div className="text-center pt-8">
+            {/* Label pill */}
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-violet-200 uppercase bg-violet-500/15 border border-violet-400/25 rounded-full px-4 py-1.5 mb-5">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
             </svg>
@@ -103,6 +115,7 @@ export default function FindTailorDesigner() {
           <p className="text-base text-violet-200/70 max-w-lg mx-auto">
             Choose a professional to custom-make your purchased fabrics into exactly what you envision
           </p>
+          </div>
         </div>
       </section>
 
@@ -340,7 +353,7 @@ export default function FindTailorDesigner() {
       {/* ───────────── BACK LINK ───────────── */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <button
-          onClick={() => navigate("/checkout")}
+          onClick={() => navigate("/checkout", { state: { step: 2 } })}
           className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-violet-600 transition-colors cursor-pointer"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
