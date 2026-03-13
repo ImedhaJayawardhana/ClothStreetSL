@@ -215,23 +215,23 @@ const FABRICS = [
 
 /* ─── Style tokens (light theme — matches shop page) ────────── */
 const C = {
- bgPage:"#f3f4f6",
- bgCard:"#ffffff",
- bgCardAlt:"#f9fafb",
- border:"#e5e7eb",
- borderPurple:"rgba(124,58,237,0.35)",
- purple:"#7c3aed",
- purpleLight:"#6d28d9",
- purpleDark:"#5b21b6",
- purpleMuted:"rgba(124,58,237,0.08)",
+ bgPage:"var(--clr-bg)",
+ bgCard:"var(--clr-surface)",
+ bgCardAlt:"var(--clr-surface-2)",
+ border:"var(--clr-border-2)",
+ borderPurple:"rgba(37, 99, 235, 0.2)",
+ purple:"var(--clr-primary)",
+ purpleLight:"var(--clr-primary-2)",
+ purpleDark:"#1e40af",
+ purpleMuted:"var(--clr-glow)",
  white:"#ffffff",
- text:"#111827",
- textMuted:"#6b7280",
- textFaint:"#9ca3af",
+ text:"var(--clr-text)",
+ textMuted:"var(--clr-text-2)",
+ textFaint:"var(--clr-muted)",
  yellow:"#f59e0b",
- green:"#059669",
- greenBg:"rgba(5,150,105,0.1)",
- greenBorder:"rgba(5,150,105,0.3)",
+ green:"#10b981",
+ greenBg:"rgba(16, 185, 129, 0.1)",
+ greenBorder:"rgba(16, 185, 129, 0.2)",
 };
 
 /* ─── Stars helper ─────────────────────────────────────────── */
@@ -689,8 +689,8 @@ export default function ProductDetail() {
  type="text"
  value={reviewForm.name}
  onChange={e => setReviewForm({ ...reviewForm, name: e.target.value})}
- placeholder="John Doe"
- style={{ width:"100%", padding:"10px 12px", borderRadius: 8, border:`1px solid ${C.border}`, fontSize:"0.9rem", outline:"none", boxSizing:"border-box"}}
+ placeholder="e.g. John Doe"
+ style={{ width:"100%", padding:"10px 14px", borderRadius: 8, border:`1px solid ${C.border}`, fontSize:"0.9rem", outline:"none", boxSizing:"border-box"}}
  />
  </div>
  <div>
@@ -698,7 +698,7 @@ export default function ProductDetail() {
  <select
  value={reviewForm.rating}
  onChange={e => setReviewForm({ ...reviewForm, rating: Number(e.target.value)})}
- style={{ width:"100%", padding:"10px 12px", borderRadius: 8, border:`1px solid ${C.border}`, fontSize:"0.9rem", outline:"none", background: C.bgCard, boxSizing:"border-box"}}
+ style={{ width:"100%", padding:"10px 14px", borderRadius: 8, border:`1px solid ${C.border}`, fontSize:"0.9rem", outline:"none", background: C.bgCard, boxSizing:"border-box"}}
  >
  <option value="5">5 Stars - Excellent</option>
  <option value="4">4 Stars - Very Good</option>
@@ -715,7 +715,7 @@ export default function ProductDetail() {
  value={reviewForm.title}
  onChange={e => setReviewForm({ ...reviewForm, title: e.target.value})}
  placeholder="Summary of your experience"
- style={{ width:"100%", padding:"10px 12px", borderRadius: 8, border:`1px solid ${C.border}`, fontSize:"0.9rem", outline:"none", boxSizing:"border-box"}}
+ style={{ width:"100%", padding:"10px 14px", borderRadius: 8, border:`1px solid ${C.border}`, fontSize:"0.9rem", outline:"none", boxSizing:"border-box"}}
  />
  </div>
  <div>
@@ -725,7 +725,7 @@ export default function ProductDetail() {
  onChange={e => setReviewForm({ ...reviewForm, text: e.target.value})}
  placeholder="What did you like or dislike?"
  rows="4"
- style={{ width:"100%", padding:"10px 12px", borderRadius: 8, border:`1px solid ${C.border}`, fontSize:"0.9rem", outline:"none", resize:"vertical", fontFamily:"inherit", boxSizing:"border-box"}}
+ style={{ width:"100%", padding:"10px 14px", borderRadius: 8, border:`1px solid ${C.border}`, fontSize:"0.9rem", outline:"none", resize:"vertical", fontFamily:"inherit", boxSizing:"border-box"}}
  />
  </div>
  <div style={{ display:"flex", justifyContent:"flex-end"}}>
@@ -823,7 +823,7 @@ export default function ProductDetail() {
  {/* ── Responsive style ── */}
  <style>{`
  .pd-page {
- background: #f3f4f6;
+ background: var(--clr-bg);
 }
  @media (max-width: 768px) {
  .pd-grid { grid-template-columns: 1fr !important;}

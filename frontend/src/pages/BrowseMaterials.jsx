@@ -276,7 +276,7 @@ export default function BrowseMaterials() {
  </svg>
  <input
  type="text"
- placeholder="Search fabrics, suppliers..."
+ placeholder="Search for fabrics, suppliers, or locations..."
  value={searchQuery}
  onChange={(e) => setSearchQuery(e.target.value)}
  id="bm-search-input"

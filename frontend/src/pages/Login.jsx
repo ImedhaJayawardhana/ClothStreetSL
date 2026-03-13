@@ -59,7 +59,7 @@ export default function Login() {
  alt="Textile background"
  className="w-full h-full object-cover"
  />
- <div className="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-violet-950/85 to-gray-900/90"></div>
+ <div className="absolute inset-0 bg-gradient-to-br from-slate-50/90 via-blue-50/80 to-slate-100/90"></div>
  </div>
 
  {/* Decorative blurred orbs */}
@@ -83,7 +83,7 @@ export default function Login() {
  </div>
 
  {/* Glass Card */}
- <div className="backdrop-blur-xl border rounded-3xl p-8 shadow-2xl shadow-black/40">
+ <div className="bg-white/80 backdrop-blur-xl border border-white/40 rounded-3xl p-8 shadow-xl shadow-slate-200/50">
 
  {/* Header */}
  <div className="mb-7">
