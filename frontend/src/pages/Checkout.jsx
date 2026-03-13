@@ -62,7 +62,7 @@ export default function Checkout() {
   const [deliveryMethod, setDeliveryMethod] = useState("home");
   const [selectedTailor, setSelectedTailor] = useState(null);
   const [tailors, setTailors] = useState([]);
-  const [tailorsLoading, setTailorsLoading] = useState(false);
+  const [setTailorsLoading] = useState(false);
 
   useEffect(() => {
     if (currentStep === 2 && tailors.length === 0) {
