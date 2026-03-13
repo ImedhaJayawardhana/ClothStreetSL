@@ -12,6 +12,7 @@ import BrowseDesigners from"./pages/BrowseDesigners";
 import Navbar from"./components/common/Navbar";
 import Footer from"./components/common/Footer";
 import SellerDashboard from"./pages/supplier/seller-dashboard";
+import SellerProfile from"./pages/supplier/SellerProfile";
 import TailorDashboard from"./pages/Tailor/TailorDashboard";
 import CustomerProfile from"./pages/CustomerProfile";
 import AIMatch from"./pages/AIMatch";
@@ -65,6 +66,7 @@ export default function App() {
  <Route path="/shop/:fabricId" element={<ProductDetail />} />
  <Route path="/fabrics" element={<BrowseMaterials />} />
  <Route path="/dashboard" element={<SellerDashboard />} />
+ <Route path="/seller-profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
  <Route path="/tailor-dashboard" element={<TailorDashboard />} />
  <Route path="/designer-dashboard" element={<PrivateRoute><DesignerDashboard /></PrivateRoute>} />
  <Route path="/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />
