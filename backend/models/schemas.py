@@ -1,23 +1,29 @@
 from datetime import datetime
 from typing import List, Literal, Optional
-
 from pydantic import BaseModel
 
 
 class User(BaseModel):
-    uid: str
     email: str
     name: str
     role: Literal["customer", "tailor", "designer", "seller"]
 
 
 class TailorProfile(BaseModel):
-    uid: str
     name: str
     skills: List[str]
     location: str
     price_range: str
     availability: bool
+    bio: Optional[str] = None
+    startingPrice: Optional[int] = 0
+    services: Optional[List[str]] = []
+    customizationTypes: Optional[List[str]] = []
+    portfolioImages: Optional[List[str]] = []
+    profilePhoto: Optional[str] = None
+    phoneNumber: Optional[str] = None
+    experience: Optional[int] = 0
+    rating: Optional[float] = 4.5
 
 
 class TailorProfileUpdate(BaseModel):
@@ -26,14 +32,33 @@ class TailorProfileUpdate(BaseModel):
     location: Optional[str] = None
     price_range: Optional[str] = None
     availability: Optional[bool] = None
+    bio: Optional[str] = None
+    startingPrice: Optional[int] = None
+    services: Optional[List[str]] = None
+    customizationTypes: Optional[List[str]] = None
+    portfolioImages: Optional[List[str]] = None
+    profilePhoto: Optional[str] = None
+    phoneNumber: Optional[str] = None
+    experience: Optional[int] = None
+    rating: Optional[float] = None
 
 
 class DesignerProfile(BaseModel):
-    uid: str
     name: str
     style: str
     portfolio_url: Optional[str] = None
     price_range: str
+    location: Optional[str] = "Sri Lanka"
+    bio: Optional[str] = None
+    profilePhoto: Optional[str] = None
+    hourlyRate: Optional[int] = 0
+    services: Optional[List[str]] = []
+    aesthetics: Optional[List[str]] = []
+    portfolioImages: Optional[List[str]] = []
+    phoneNumber: Optional[str] = None
+    experience: Optional[int] = 0
+    rating: Optional[float] = 5.0
+    availability: Optional[bool] = True
 
 
 class DesignerProfileUpdate(BaseModel):
@@ -41,6 +66,17 @@ class DesignerProfileUpdate(BaseModel):
     style: Optional[str] = None
     portfolio_url: Optional[str] = None
     price_range: Optional[str] = None
+    location: Optional[str] = None
+    bio: Optional[str] = None
+    profilePhoto: Optional[str] = None
+    hourlyRate: Optional[int] = None
+    services: Optional[List[str]] = None
+    aesthetics: Optional[List[str]] = None
+    portfolioImages: Optional[List[str]] = None
+    phoneNumber: Optional[str] = None
+    experience: Optional[int] = None
+    rating: Optional[float] = None
+    availability: Optional[bool] = None
 
 
 class Fabric(BaseModel):
@@ -49,7 +85,6 @@ class Fabric(BaseModel):
     color: str
     price: float
     stock: int
-    supplier_id: str
 
 
 class FabricUpdate(BaseModel):
@@ -61,11 +96,9 @@ class FabricUpdate(BaseModel):
 
 
 class Quotation(BaseModel):
-    customer_id: str
     tailor_id: str
     fabric_id: str
     description: str
-    status: Literal["pending", "accepted", "completed"] = "pending"
     price: float
 
 
@@ -74,7 +107,6 @@ class QuotationStatusUpdate(BaseModel):
 
 
 class Order(BaseModel):
-    customer_id: str
     items: List[dict]
     total_price: float
     status: Literal["pending", "processing", "completed", "cancelled"] = "pending"

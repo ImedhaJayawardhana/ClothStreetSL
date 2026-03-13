@@ -33,8 +33,10 @@ export default function Register() {
       } else {
         navigate('/');
       }
-    } catch {
-      setError('Failed to create account. Please try again.');
+    } catch (err) {
+      console.error(err);
+      const msg = err.response?.data?.detail || err.message || 'Failed to create account. Please try again.';
+      setError(msg);
     }
     setLoading(false);
   }
@@ -44,7 +46,15 @@ export default function Register() {
     setLoading(true);
     try {
       await loginWithGoogle(role);
-      navigate('/');
+      if (role === 'designer') {
+        navigate('/designer-dashboard');
+      } else if (role === 'seller') {
+        navigate('/dashboard');
+      } else if (role === 'tailor') {
+        navigate('/tailor-dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.message || 'Failed to sign in with Google.');
     }

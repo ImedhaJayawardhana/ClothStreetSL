@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getCurrentUser } from "../api";
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -17,11 +18,12 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const res = await login(email, password);
-      const { doc, getDoc } = await import('firebase/firestore');
-      const { db } = await import('../firebase/firebase');
-      const userDoc = await getDoc(doc(db, "users", res.user.uid));
-      const role = userDoc.exists() ? userDoc.data().role : null;
+      await login(email, password);
+
+      // Get user role from FastAPI backend
+      const res = await getCurrentUser();
+      const role = res.data.role;
+
       if (role === 'designer') {
         navigate('/designer-dashboard');
       } else if (role === 'seller') {
@@ -31,18 +33,34 @@ export default function Login() {
       } else {
         navigate('/');
       }
-    } catch {
-      setError('Failed to login. Check your email and password.');
+    } catch (err) {
+      console.error(err);
+      const msg = err.response?.data?.detail || err.message || 'Failed to login. Check your email and password.';
+      setError(msg);
     }
     setLoading(false);
   }
+
 
   async function handleGoogleLogin() {
     setError('');
     setLoading(true);
     try {
       await loginWithGoogle();
-      navigate('/');
+
+      // Get user role from FastAPI backend
+      const res = await getCurrentUser();
+      const role = res?.data?.role || 'customer';
+
+      if (role === 'designer') {
+        navigate('/designer-dashboard');
+      } else if (role === 'seller') {
+        navigate('/dashboard');
+      } else if (role === 'tailor') {
+        navigate('/tailor-dashboard');
+      } else {
+        navigate('/');
+      }
     } catch {
       setError('Failed to login with Google.');
     }

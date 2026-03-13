@@ -104,10 +104,12 @@ export default function BrowseTailors() {
  tailor.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
  tailor.skills?.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
 
- const matchesAvailable = availableOnly ? tailor.status ==='Available' : true;
- const matchesSpecialization = activeSpecialization ==='All' || tailor.specializations?.includes(activeSpecialization);
+  const matchesAvailable = availableOnly ? (tailor.status ==='Available' || tailor.availability === true) : true;
+  const matchesSpecialization = activeSpecialization ==='All' ||
+                                (tailor.specializations?.includes(activeSpecialization) ||
+                                 tailor.services?.includes(activeSpecialization));
 
- return matchesSearch && matchesAvailable && matchesSpecialization;
+  return matchesSearch && matchesAvailable && matchesSpecialization;
 });
 
  const SPECIALIZATIONS = [
@@ -292,17 +294,17 @@ export default function BrowseTailors() {
  </div>
 
  {/* Badges Overlay */}
- <div className="absolute inset-x-0 bottom-0 p-3 flex justify-between items-end bg-gradient-to-t from-black/60 to-transparent">
- <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase flex items-center gap-1.5 shadow-sm backdrop-blur-md ${
- tailor.status ==='Available' ?'bg-emerald-500/90' :''
+  <div className="absolute inset-x-0 bottom-0 p-3 flex justify-between items-end bg-gradient-to-t from-black/60 to-transparent">
+  <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase flex items-center gap-1.5 shadow-sm backdrop-blur-md ${
+  (tailor.status ==='Available' || tailor.availability === true) ?'bg-emerald-500/90' :'bg-slate-500/90'
 }`}>
- <span className={`w-1.5 h-1.5 rounded-full ${tailor.status ==='Available' ?'' :''}`}></span>
- {tailor.status ||'Busy'}
- </div>
- <div className="backdrop-blur-md text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
- +{tailor.portfolioImages?.length > 2 ? tailor.portfolioImages.length - 2 : 4} works
- </div>
- </div>
+  <span className={`w-1.5 h-1.5 rounded-full ${ (tailor.status ==='Available' || tailor.availability === true) ?'bg-white' :'bg-slate-300'}`}></span>
+  {(tailor.status || (tailor.availability ? 'Available' : 'Busy'))}
+  </div>
+  <div className="backdrop-blur-md text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+  +{tailor.portfolioImages?.length > 2 ? tailor.portfolioImages.length - 2 : 0} works
+  </div>
+  </div>
  
  {/* Star Rating Badge */}
  <div className="absolute top-3 right-3 backdrop-blur-md shadow-sm px-2 py-1 rounded-lg flex items-center gap-1">
@@ -326,20 +328,20 @@ export default function BrowseTailors() {
  </div>
  </div>
 
- {/* Specializations & Skills */}
- <div className="mb-5 flex-grow">
- <div className="flex flex-wrap gap-2 mb-3">
- {tailor.specializations?.slice(0, 2).map((spec, idx) => (
- <span key={idx} className="inline-flex px-2.5 py-1 rounded-md text-[11px] font-semibold text-violet-700 bg-violet-50 border border-violet-100">
- {spec}
- </span>
- ))}
- </div>
- <p className="text-xs leading-relaxed line-clamp-2">
- <span className="font-semibold">Expertise:</span> {tailor.skills?.slice(0, 3).join(',')}
- {tailor.skills?.length > 3 &&` +${tailor.skills.length - 3} more`}
- </p>
- </div>
+  {/* Specializations & Skills */}
+  <div className="mb-5 flex-grow">
+  <div className="flex flex-wrap gap-2 mb-3">
+  {(tailor.services || tailor.specializations)?.slice(0, 2).map((spec, idx) => (
+  <span key={idx} className="inline-flex px-2.5 py-1 rounded-md text-[11px] font-semibold text-violet-700 bg-violet-50 border border-violet-100">
+  {spec}
+  </span>
+  ))}
+  </div>
+  <p className="text-xs leading-relaxed line-clamp-2">
+  <span className="font-semibold">Expertise:</span> {(tailor.skills || tailor.customizationTypes)?.slice(0, 3).join(',')}
+  {(tailor.skills || tailor.customizationTypes)?.length > 3 &&` +${(tailor.skills || tailor.customizationTypes).length - 3} more`}
+  </p>
+  </div>
 
  {/* Stats Boxes */}
  <div className="grid grid-cols-2 gap-3 mb-5">
@@ -366,11 +368,11 @@ export default function BrowseTailors() {
  {/* Price Range & Actions */}
  <div className="pt-4 border-t mt-auto">
  <div className="flex items-center justify-between mb-4">
- <span className="text-xs font-medium">Starting from</span>
- <span className="text-sm font-bold">
- LKR {tailor.priceMin?.toLocaleString() ||'1,500'}
- </span>
- </div>
+  <span className="text-xs font-medium">Starting from</span>
+  <span className="text-sm font-bold">
+  LKR {(tailor.startingPrice || tailor.priceMin || 1500).toLocaleString()}
+  </span>
+  </div>
  <div className="grid grid-cols-2 gap-3">
  <button
  onClick={() => navigate(`/tailor/${tailor.id}`)}
@@ -470,7 +472,7 @@ export default function BrowseTailors() {
  <div className="space-y-3">
  {/* Phone */}
  <a
- href={`tel:${contactTailor.phone ||'+94770000000'}`}
+ href={`tel:${contactTailor.phoneNumber || contactTailor.phone ||'+94770000000'}`}
  className="flex items-center gap-3 p-3 hover: border hover: rounded-xl transition-all duration-200 group/link"
  >
  <div className="w-10 h-10 group-hover/link: rounded-lg flex items-center justify-center transition-colors">
@@ -478,10 +480,10 @@ export default function BrowseTailors() {
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
  </svg>
  </div>
- <div className="flex-1 min-w-0">
- <p className="text-sm font-semibold">Call Now</p>
- <p className="text-xs truncate">{contactTailor.phone ||'+94770000000'}</p>
- </div>
+  <div className="flex-1 min-w-0">
+  <p className="text-sm font-semibold">Call Now</p>
+  <p className="text-xs truncate">{contactTailor.phoneNumber || contactTailor.phone ||'+94770000000'}</p>
+  </div>
  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
  </svg>
@@ -489,7 +491,7 @@ export default function BrowseTailors() {
 
  {/* WhatsApp */}
  <a
- href={`https://wa.me/${(contactTailor.phone ||'+94770000000').replace('+','')}?text=Hi ${encodeURIComponent(contactTailor.name)}, I found your profile on ClothStreet and I'd like to discuss a tailoring project.`}
+ href={`https://wa.me/${(contactTailor.phoneNumber || contactTailor.phone ||'+94770000000').replace('+','')}?text=Hi ${encodeURIComponent(contactTailor.name)}, I found your profile on ClothStreet and I'd like to discuss a tailoring project.`}
  target="_blank"
  rel="noopener noreferrer"
  className="flex items-center gap-3 p-3 hover:bg-emerald-50 border hover:border-emerald-200 rounded-xl transition-all duration-200 group/link"
@@ -499,10 +501,10 @@ export default function BrowseTailors() {
  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
  </svg>
  </div>
- <div className="flex-1 min-w-0">
- <p className="text-sm font-semibold">WhatsApp</p>
- <p className="text-xs truncate">Chat on WhatsApp</p>
- </div>
+  <div className="flex-1 min-w-0">
+  <p className="text-sm font-semibold">WhatsApp</p>
+  <p className="text-xs truncate">{(contactTailor.phoneNumber || contactTailor.phone ||'+94770000000')}</p>
+  </div>
  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
  </svg>
