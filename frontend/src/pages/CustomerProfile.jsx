@@ -59,8 +59,20 @@ export default function CustomerProfile() {
     return "U";
   };
 
+  // Validate phone: strip spaces, dashes, brackets, optional +94/0 prefix → must be 10 digits
+  const isValidPhone = (phone) => {
+    const digits = phone.replace(/[\s\-().+]/g, "").replace(/^94/, "0");
+    return /^\d{10}$/.test(digits);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === "phone") {
+      // Allow only digits, spaces, dashes, plus sign
+      const cleaned = value.replace(/[^\d\s\-+]/g, "");
+      setFormData((prev) => ({ ...prev, phone: cleaned }));
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -125,6 +137,10 @@ export default function CustomerProfile() {
   };
 
   const handleSave = async () => {
+    if (formData.phone && !isValidPhone(formData.phone)) {
+      toast.error("Phone number must be exactly 10 digits.");
+      return;
+    }
     try {
       setIsSaving(true);
       let newPhotoURL = formData.photoURL;
@@ -468,7 +484,14 @@ export default function CustomerProfile() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
+                placeholder="0771234567"
+                maxLength={15}
               />
+              {formData.phone && !isValidPhone(formData.phone) && (
+                <span style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px", display: "block" }}>
+                  Phone number must be exactly 10 digits.
+                </span>
+              )}
             </div>
           </div>
         ) : (

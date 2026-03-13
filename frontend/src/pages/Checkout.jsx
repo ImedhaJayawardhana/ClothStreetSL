@@ -27,7 +27,19 @@ export default function Checkout() {
     district: "",
   });
 
+  // Validate phone: strip spaces/dashes/+94 prefix → must be 10 digits
+  const isValidPhone = (phone) => {
+    const digits = phone.replace(/[\s\-().+]/g, "").replace(/^94/, "0");
+    return /^\d{10}$/.test(digits);
+  };
+
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "phoneNumber") {
+      const cleaned = value.replace(/[^\d\s\-+]/g, "");
+      setForm((prev) => ({ ...prev, phoneNumber: cleaned }));
+      return;
+    }
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -35,6 +47,10 @@ export default function Checkout() {
     const { fullName, phoneNumber, city, streetAddress, district } = form;
     if (!fullName || !phoneNumber || !city || !streetAddress || !district) {
       toast.error("Please fill in all shipping details.");
+      return;
+    }
+    if (!isValidPhone(phoneNumber)) {
+      toast.error("Phone number must be exactly 10 digits.");
       return;
     }
     setCurrentStep(2);
@@ -193,10 +209,16 @@ export default function Checkout() {
                   type="tel"
                   name="phoneNumber"
                   className="checkout-form-input"
-                  placeholder="+94 77 000 0000"
+                  placeholder="0771234567"
                   value={form.phoneNumber}
                   onChange={handleChange}
+                  maxLength={15}
                 />
+                {form.phoneNumber && !isValidPhone(form.phoneNumber) && (
+                  <span style={{ color: "#dc2626", fontSize: "12px", marginTop: "4px", display: "block" }}>
+                    Phone number must be exactly 10 digits.
+                  </span>
+                )}
               </div>
               <div className="checkout-form-group">
                 <label className="checkout-form-label">City</label>

@@ -8,7 +8,7 @@ export default function Cart() {
     removeFromCart,
     updateQuantity,
     clearCart,
-    cartCount,
+    cartProductCount,
     cartSubtotal,
   } = useCart();
 
@@ -70,7 +70,7 @@ export default function Cart() {
               Shopping Cart
             </h1>
             <span className="cart-header-count">
-              {cartCount} {cartCount === 1 ? "item" : "items"} in your cart
+              {cartProductCount} {cartProductCount === 1 ? "item" : "items"} in your cart
             </span>
           </div>
 
