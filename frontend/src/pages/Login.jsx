@@ -1,6 +1,6 @@
-import React, { useState} from'react';
-import { useNavigate, Link} from'react-router-dom';
-import { useAuth} from'../context/AuthContext';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -9,7 +9,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login, loginWithGoogle} = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   async function handleLogin(e) {
@@ -18,15 +18,15 @@ export default function Login() {
     setLoading(true);
     try {
       const res = await login(email, password);
-      const { doc, getDoc} = await import('firebase/firestore');
-      const { db} = await import('../firebase/firebase');
-      const userDoc = await getDoc(doc(db,"users", res.user.uid));
+      const { doc, getDoc } = await import('firebase/firestore');
+      const { db } = await import('../firebase/firebase');
+      const userDoc = await getDoc(doc(db, "users", res.user.uid));
       const role = userDoc.exists() ? userDoc.data().role : null;
-      if (role ==='designer') {
+      if (role === 'designer') {
         navigate('/designer-dashboard');
-      } else if (role ==='seller') {
+      } else if (role === 'seller') {
         navigate('/dashboard');
-      } else if (role ==='tailor') {
+      } else if (role === 'tailor') {
         navigate('/tailor-dashboard');
       } else {
         navigate('/');
@@ -51,7 +51,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center overflow-hidden font-sans">
-      {/* Background with Professional Gradient */}
+      {/* Background */}
       <div className="absolute inset-0 z-0">
         <img
           src="https://images.unsplash.com/photo-1558171813-4c088753af8f?auto=format&fit=crop&w=1920&q=80"
@@ -61,15 +61,15 @@ export default function Login() {
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50/95 via-blue-50/90 to-slate-100/95"></div>
       </div>
 
-      {/* Subtle background decorative elements */}
+      {/* Decorative blobs */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl opacity-50"></div>
         <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-slate-200/50 rounded-full blur-3xl opacity-50"></div>
       </div>
 
-      {/* Main Content Container */}
+      {/* Main Container */}
       <div className="relative z-10 w-full max-w-md mx-4 py-12">
-        {/* Brand Integration */}
+        {/* Brand */}
         <div className="text-center mb-10">
           <Link to="/" className="inline-flex items-center gap-3 group">
             <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
@@ -84,10 +84,10 @@ export default function Login() {
           </Link>
         </div>
 
-        {/* Auth Glass Card */}
+        {/* Card */}
         <div className="bg-white border border-slate-200/60 rounded-[2.5rem] p-10 shadow-2xl shadow-slate-200/80 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50/50 rounded-full blur-2xl -mr-16 -mt-16"></div>
-          
+
           <div className="relative z-10">
             {/* Header */}
             <div className="mb-8">
@@ -99,9 +99,9 @@ export default function Login() {
               <p className="text-sm text-slate-400 font-bold mt-2 font-serif italic">Sign in to orchestrate your fashion ecosystem</p>
             </div>
 
-            {/* Error Notification */}
+            {/* Error */}
             {error && (
-              <div className="flex items-center gap-3 bg-red-50 border border-red-100 px-4 py-3 rounded-2xl mb-6 text-red-600 animate-shake">
+              <div className="flex items-center gap-3 bg-red-50 border border-red-100 px-4 py-3 rounded-2xl mb-6 text-red-600">
                 <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -109,61 +109,58 @@ export default function Login() {
               </div>
             )}
 
-            {/* Login Form */}
+            {/* Form */}
             <form onSubmit={handleLogin} className="space-y-5">
-              {/* Email Input */}
+
+              {/* Email */}
               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-600 transition-colors duration-300">
-                    <svg className="w-5 h-5 font-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                    </svg>
-                  </div>
+                <div style={{ display: 'flex', alignItems: 'center', background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '1rem', padding: '0 16px', gap: '10px' }}>
+                  <svg style={{ width: '20px', height: '20px', flexShrink: 0, color: '#94a3b8' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
                   <input
                     type="email"
                     placeholder="Enter your professional email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-100 focus:border-blue-600/30 focus:bg-white rounded-2xl pl-12 pr-4 py-4 text-sm font-bold text-slate-900 placeholder-slate-300 outline-none transition-all duration-300 shadow-sm shadow-slate-50/50"
+                    style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', padding: '14px 0', fontSize: '14px', fontWeight: '700', color: '#0f172a' }}
                     required
                   />
                 </div>
               </div>
 
-              {/* Password Input */}
+              {/* Password */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between px-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Password</label>
-                  <Link to="/forgot-password" size="sm" className="text-[10px] font-black text-blue-600 uppercase tracking-tight hover:underline">
+                  <Link to="/forgot-password" className="text-[10px] font-black text-blue-600 uppercase tracking-tight hover:underline">
                     Reset Password?
                   </Link>
                 </div>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-600 transition-colors duration-300">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  </div>
+                <div style={{ display: 'flex', alignItems: 'center', background: '#f8fafc', border: '1px solid #f1f5f9', borderRadius: '1rem', padding: '0 16px', gap: '10px' }}>
+                  <svg style={{ width: '20px', height: '20px', flexShrink: 0, color: '#94a3b8' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
                   <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-100 focus:border-blue-600/30 focus:bg-white rounded-2xl pl-12 pr-12 py-4 text-sm font-bold text-slate-900 placeholder-slate-300 outline-none transition-all duration-300 shadow-sm shadow-slate-50/50"
+                    style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', padding: '14px 0', fontSize: '14px', fontWeight: '700', color: '#0f172a' }}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-blue-600 transition-colors duration-300"
+                    style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
                   >
                     {showPassword ? (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268-2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                       </svg>
                     ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
@@ -172,7 +169,7 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* Login Button */}
               <button
                 type="submit"
                 disabled={loading}
@@ -182,7 +179,7 @@ export default function Login() {
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
                   <>
-                    Initialize Session
+                    Login
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
@@ -191,12 +188,17 @@ export default function Login() {
               </button>
             </form>
 
+            {/* Divider */}
             <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-100"></div></div>
-              <div className="relative flex justify-center"><span className="px-4 bg-white text-[10px] font-black text-slate-300 uppercase tracking-widest">Identity Gateway</span></div>
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-100"></div>
+              </div>
+              <div className="relative flex justify-center">
+                <span className="px-4 bg-white text-[10px] font-black text-slate-300 uppercase tracking-widest">Identity Gateway</span>
+              </div>
             </div>
 
-            {/* Social Authentication */}
+            {/* Google Login */}
             <button
               onClick={handleGoogleLogin}
               disabled={loading}
@@ -208,10 +210,10 @@ export default function Login() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
               </svg>
-              <span className="text-sm font-black text-slate-900 uppercase tracking-tight">Sync with Google</span>
+              <span className="text-sm font-black text-slate-900 uppercase tracking-tight">Sign in with Google</span>
             </button>
 
-            {/* Navigation Link */}
+            {/* Sign Up Link */}
             <div className="text-center mt-10">
               <p className="text-sm text-slate-400 font-bold">
                 New to the ecosystem?{' '}
@@ -223,10 +225,10 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Legal Footer */}
+        {/* Footer */}
         <div className="mt-8 text-center space-y-2">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-loose">
-            Secure Digital Protocol &copy; {new Date().getFullYear()} ClothStreet Lanka <br/>
+            Secure Digital Protocol &copy; {new Date().getFullYear()} ClothStreet Lanka <br />
             <Link to="#" className="hover:text-blue-600 transition-colors mx-2">Terms</Link>
             <span className="text-slate-200">|</span>
             <Link to="#" className="hover:text-blue-600 transition-colors mx-2">Privacy</Link>
