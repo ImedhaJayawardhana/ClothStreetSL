@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../firebase/firebase";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect} from"react";
+import { collection, query, where, getDocs} from"firebase/firestore";
+import { db} from"../firebase/firebase";
+import { useAuth} from"../context/AuthContext";
+import { useNavigate} from"react-router-dom";
 
 const STATUS_MAP = {
   pending: { label: "Pending", bg: "bg-amber-100", text: "text-amber-700", dot: "bg-amber-500" },
   quoted: { label: "Quoted", bg: "bg-blue-100", text: "text-blue-700", dot: "bg-blue-500" },
   accepted: { label: "Accepted", bg: "bg-emerald-100", text: "text-emerald-700", dot: "bg-emerald-500" },
-  rejected: { label: "Rejected", bg: "bg-red-100", text: "text-red-700", dot: "bg-red-500" },
+  rejected: { label: "Rejected", bg: "bg-slate-100", text: "text-slate-500", dot: "bg-slate-400" },
 };
 
 export default function QuotationInbox() {
@@ -20,7 +20,6 @@ export default function QuotationInbox() {
 
   useEffect(() => {
     if (!user?.uid) return;
-
     const fetchQuotations = async () => {
       try {
         const q = query(
@@ -61,152 +60,146 @@ export default function QuotationInbox() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ── Header ── */}
-      <div className="bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-600 px-6 py-8">
+    <div className="min-h-screen bg-white font-sans">
+      {/* ── Sticky Professional Header ── */}
+      <div className="bg-white border-b px-6 py-10 sticky top-0 z-30 bg-white/80 backdrop-blur-md">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-10 h-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <div className="flex items-center gap-5 mb-1">
+            <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Quote Requests</h1>
-              <p className="text-purple-200 text-sm">Manage incoming quote requests from customers</p>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight">Quotation Requests</h1>
+              <p className="text-sm text-slate-500 font-bold italic">Review new requirements and engage with potential clients</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
         {/* ── Stat Cards ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { label: "Total Requests", value: stats.total, icon: "📋", bg: "bg-violet-50", accent: "text-violet-600" },
-            { label: "Pending", value: stats.pending, icon: "⏳", bg: "bg-amber-50", accent: "text-amber-600" },
-            { label: "Quoted", value: stats.quoted, icon: "💰", bg: "bg-blue-50", accent: "text-blue-600" },
-            { label: "Accepted", value: stats.accepted, icon: "✅", bg: "bg-emerald-50", accent: "text-emerald-600" },
+            { label: "Incoming Requests", value: stats.total, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>, bg: "bg-blue-50", accent: "text-blue-600" },
+            { label: "Awaiting Quote", value: stats.pending, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M12 6v6l4 2" /><circle cx="12" cy="12" r="10" strokeWidth="2.5" /></svg>, bg: "bg-amber-50", accent: "text-amber-600" },
+            { label: "Negotiating", value: stats.quoted, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.407 2.67 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.407-2.67-1M12 16v1m4-12V3c0-1.105-1.343-2-3-2s-3 .895-3 2v2m0 16v2c0 1.105 1.343 2 3 2s3-.895 3-2v-2" /></svg>, bg: "bg-blue-50", accent: "text-blue-600" },
+            { label: "Successful Bids", value: stats.accepted, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="3" d="M5 13l4 4L19 7" /></svg>, bg: "bg-emerald-50", accent: "text-emerald-600" },
           ].map((stat) => (
-            <div key={stat.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-shadow">
-              <div className={`w-10 h-10 ${stat.bg} rounded-xl flex items-center justify-center text-lg mb-3`}>
+            <div key={stat.label} className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 hover:shadow-md hover:border-blue-100 transition-all group">
+              <div className={`w-11 h-11 ${stat.bg} ${stat.accent} rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110`}>
                 {stat.icon}
               </div>
-              <p className="text-3xl font-extrabold text-gray-900">{loading ? "—" : stat.value}</p>
-              <p className="text-sm text-gray-400 font-medium mt-1">{stat.label}</p>
+              <p className="text-4xl font-black text-slate-900 leading-none">{loading ? "—" : stat.value}</p>
+              <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mt-2">{stat.label}</p>
             </div>
           ))}
         </div>
 
-        {/* ── Tab Filter ── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-2 overflow-x-auto">
+        {/* ── Interactive Filters ── */}
+        <div className="bg-slate-50/50 p-2 rounded-2xl border border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar">
           {["All", "Pending", "Quoted", "Accepted", "Rejected"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all cursor-pointer ${activeTab === tab
-                  ? "bg-violet-600 text-white shadow-md shadow-violet-200"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-                }`}
+              className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all cursor-pointer ${activeTab === tab
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
+                : "text-slate-400 hover:text-blue-600 hover:bg-white"
+              }`}
             >
               {tab}
               {tab !== "All" && (
-                <span className={`ml-1.5 text-xs ${activeTab === tab ? "text-violet-200" : "text-gray-400"}`}>
-                  ({quotations.filter((q) => q.status === tab.toLowerCase()).length})
+                <span className={`ml-2 px-1.5 py-0.5 rounded-md text-[9px] ${activeTab === tab ? "bg-white/20 text-white" : "bg-slate-200 text-slate-500"}`}>
+                  {quotations.filter((q) => q.status === tab.toLowerCase()).length}
                 </span>
               )}
             </button>
           ))}
         </div>
 
-        {/* ── Quotation List ── */}
+        {/* ── Quotation Stream ── */}
         {loading ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-6 animate-pulse">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-xl" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-1/3" />
-                    <div className="h-3 bg-gray-200 rounded w-1/4" />
-                  </div>
-                  <div className="h-8 w-24 bg-gray-200 rounded-full" />
+              <div key={i} className="bg-white rounded-3xl border border-slate-100 p-8 animate-pulse flex items-center gap-6">
+                <div className="w-16 h-16 bg-slate-50 rounded-2xl shrink-0" />
+                <div className="flex-1 space-y-3">
+                  <div className="h-4 bg-slate-50 rounded w-1/4" />
+                  <div className="h-3 bg-slate-50 rounded w-1/2" />
                 </div>
+                <div className="h-10 w-24 bg-slate-50 rounded-xl" />
               </div>
             ))}
           </div>
         ) : filteredQuotations.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {filteredQuotations.map((q) => {
-              const statusStyle = STATUS_MAP[q.status] || STATUS_MAP.pending;
+              const style = STATUS_MAP[q.status] || STATUS_MAP.pending;
               return (
                 <div
                   key={q.id}
-                  className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-violet-100 transition-all cursor-pointer group"
+                  className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-200 hover:-translate-y-1 transition-all cursor-pointer group relative overflow-hidden"
                   onClick={() => navigate(`/quotation-response/${q.id}`, { state: { quotation: q } })}
                 >
-                  <div className="p-6">
-                    <div className="flex items-start gap-4">
-                      {/* Customer avatar */}
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shrink-0">
+                  <div className="p-8">
+                    <div className="flex items-start gap-6">
+                      {/* Brand Avatar */}
+                      <div className="w-16 h-16 rounded-2xl bg-slate-900 flex items-center justify-center font-black text-2xl text-white shrink-0 shadow-xl shadow-slate-200 group-hover:bg-blue-600 transition-colors">
                         {q.customerName?.charAt(0) || "?"}
                       </div>
 
-                      {/* Main info */}
+                      {/* Content Engine */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-base font-bold text-gray-900 truncate group-hover:text-violet-700 transition-colors">
-                            {q.customerName || "Unknown Customer"}
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-lg font-black text-slate-900 truncate group-hover:text-blue-600 transition-colors">
+                            {q.customerName || "Prototyping Session"}
                           </h3>
-                          <span className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${statusStyle.bg} ${statusStyle.text}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
-                            {statusStyle.label}
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${style.bg} ${style.text} border border-transparent group-hover:border-current/20`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${style.dot} animate-pulse`} />
+                            {style.label}
                           </span>
                         </div>
 
-                        <p className="text-sm text-gray-500 mb-3 line-clamp-1">
-                          {q.requirements || "No description"}
+                        <p className="text-sm text-slate-500 font-bold mb-6 line-clamp-2 leading-relaxed italic">
+                          "{q.requirements || "No specific design brief provided"}"
                         </p>
 
-                        {/* Meta row */}
-                        <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
-                          <span className="flex items-center gap-1">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                              <rect width="18" height="18" x="3" y="4" rx="2" />
-                              <line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" />
-                              <line x1="3" x2="21" y1="10" y2="10" />
+                        {/* Intelligence Row */}
+                        <div className="flex flex-wrap items-center gap-6 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                          <span className="flex items-center gap-2">
+                            <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                              <rect width="18" height="18" x="3" y="4" rx="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" />
                             </svg>
-                            Received: {formatDate(q.createdAt)}
+                            Logged: {formatDate(q.createdAt)}
                           </span>
-                          <span className="flex items-center gap-1">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <span className="flex items-center gap-2">
+                            <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                               <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                             </svg>
-                            Expected: {q.expectedDate || "—"}
+                            Milestone: {q.expectedDate || "TBA"}
                           </span>
-                          <span className="flex items-center gap-1">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <span className="flex items-center gap-2">
+                            <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
                             </svg>
-                            {q.items?.length || 0} item{q.items?.length !== 1 ? "s" : ""}
+                            {q.items?.length || 0} Components
                           </span>
                           {q.designImages?.length > 0 && (
-                            <span className="flex items-center gap-1">
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <rect x="3" y="3" width="18" height="18" rx="2" />
-                                <circle cx="8.5" cy="8.5" r="1.5" />
-                                <polyline points="21 15 16 10 5 21" />
+                            <span className="flex items-center gap-2 bg-blue-50 px-2 py-1 rounded-md text-blue-600">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
                               </svg>
-                              {q.designImages.length} image{q.designImages.length !== 1 ? "s" : ""}
+                              Assets Included
                             </span>
                           )}
                         </div>
                       </div>
 
-                      {/* Arrow */}
-                      <div className="shrink-0 text-gray-300 group-hover:text-violet-500 transition-colors self-center">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      {/* Navigation Logic */}
+                      <div className="w-12 h-12 rounded-full border border-slate-100 flex items-center justify-center text-slate-300 group-hover:bg-slate-900 group-hover:text-white group-hover:border-slate-900 transition-all self-center shadow-sm">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                         </svg>
                       </div>
                     </div>
@@ -216,15 +209,15 @@ export default function QuotationInbox() {
             })}
           </div>
         ) : (
-          <div className="bg-white rounded-3xl border border-gray-100 border-dashed p-12 text-center">
-            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+          <div className="bg-slate-50/50 rounded-[40px] border-2 border-dashed border-slate-100 p-20 text-center">
+            <div className="w-20 h-20 rounded-3xl bg-white flex items-center justify-center mx-auto mb-6 shadow-xl shadow-slate-100 text-slate-200">
+              <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">No quote requests yet</h3>
-            <p className="text-gray-500 max-w-sm mx-auto">
-              When customers request quotes from you, they&apos;ll appear here.
+            <h3 className="text-2xl font-black text-slate-900 mb-2 uppercase tracking-tight">System Idle</h3>
+            <p className="max-w-xs mx-auto text-slate-400 font-bold italic leading-relaxed">
+              No active quotation requests found. New opportunities will be logged here in real-time.
             </p>
           </div>
         )}

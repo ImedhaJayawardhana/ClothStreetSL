@@ -85,7 +85,7 @@
 }
 
 .hero-headline .highlight {
-  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  background: linear-gradient(135deg, #a78bfa, var(--clr-primary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -114,7 +114,7 @@
   gap: 8px;
   padding: 13px 28px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-2));
   color: #ffffff;
   font-size: 15px;
   font-weight: 600;
@@ -126,7 +126,7 @@
 }
 
 .btn-primary-hero:hover {
-  background: linear-gradient(135deg, #6d28d9, #5b21b6);
+  background: linear-gradient(135deg, var(--clr-primary-2), #5b21b6);
   transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(124, 58, 237, 0.5);
 }
@@ -188,7 +188,7 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-2));
   border: none;
   color: white;
   cursor: pointer;
@@ -197,7 +197,7 @@
 }
 
 .hero-search-btn:hover {
-  background: linear-gradient(135deg, #6d28d9, #5b21b6);
+  background: linear-gradient(135deg, var(--clr-primary-2), #5b21b6);
 }
 
 /* Stats Row */
@@ -257,7 +257,7 @@
   display: inline-block;
   padding: 3px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-2));
   color: white;
   font-size: 12px;
   font-weight: 600;
@@ -303,7 +303,7 @@
   padding: 5px 16px;
   border-radius: 999px;
   background: rgba(124, 58, 237, 0.08);
-  color: #7c3aed;
+  color: var(--clr-primary);
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 14px;
@@ -351,7 +351,7 @@
 
 /* Featured card (step 2) */
 .hiw-card-featured {
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-2));
   border-color: transparent;
 }
 
@@ -382,7 +382,7 @@
   height: 30px;
   border-radius: 8px;
   background: rgba(124, 58, 237, 0.08);
-  color: #7c3aed;
+  color: var(--clr-primary);
   font-size: 13px;
   font-weight: 700;
   display: flex;
@@ -396,7 +396,7 @@
   height: 64px;
   border-radius: 16px;
   background: rgba(124, 58, 237, 0.08);
-  color: #7c3aed;
+  color: var(--clr-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -511,7 +511,7 @@
   padding: 5px 16px;
   border-radius: 999px;
   background: rgba(124, 58, 237, 0.08);
-  color: #7c3aed;
+  color: var(--clr-primary);
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 16px;
@@ -544,7 +544,7 @@
   height: 38px;
   border-radius: 10px;
   background: rgba(124, 58, 237, 0.08);
-  color: #7c3aed;
+  color: var(--clr-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -571,7 +571,7 @@
   gap: 8px;
   padding: 12px 26px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-2));
   color: #ffffff;
   font-size: 14px;
   font-weight: 600;
@@ -581,7 +581,7 @@
 }
 
 .craft-cta:hover {
-  background: linear-gradient(135deg, #6d28d9, #5b21b6);
+  background: linear-gradient(135deg, var(--clr-primary-2), #5b21b6);
   transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4);
 }
@@ -809,7 +809,7 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  background: linear-gradient(135deg, #a78bfa, var(--clr-primary));
   color: white;
   display: flex;
   align-items: center;
@@ -847,7 +847,7 @@
 }
 
 .cta-banner-content {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, var(--clr-primary-2) 100%);
   border-radius: 24px;
   padding: 64px 40px;
   text-align: center;
@@ -902,7 +902,7 @@
   padding: 14px 32px;
   border-radius: 12px;
   background: #ffffff;
-  color: #6d28d9;
+  color: var(--clr-primary-2);
   font-size: 1.05rem;
   font-weight: 700;
   text-decoration: none;
