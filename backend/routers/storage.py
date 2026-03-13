@@ -19,7 +19,7 @@ async def upload_image(
     if file.content_type not in ALLOWED_TYPES:
         raise HTTPException(
             status_code=400,
-            detail="Invalid file type. Only JPEG, PNG, and WebP are allowed."
+            detail="Invalid file type. Only JPEG, PNG, and WebP are allowed.",
         )
 
     # Read and validate file size
@@ -27,8 +27,7 @@ async def upload_image(
     size_mb = len(contents) / (1024 * 1024)
     if size_mb > MAX_SIZE_MB:
         raise HTTPException(
-            status_code=400,
-            detail=f"File too large. Maximum size is {MAX_SIZE_MB}MB."
+            status_code=400, detail=f"File too large. Maximum size is {MAX_SIZE_MB}MB."
         )
 
     # Upload to Firebase Storage
@@ -57,8 +56,7 @@ async def delete_image(
     # Make sure user can only delete their own files
     if uid not in filename:
         raise HTTPException(
-            status_code=403,
-            detail="You can only delete your own files"
+            status_code=403, detail="You can only delete your own files"
         )
 
     blob = bucket.blob(filename)

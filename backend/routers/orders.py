@@ -12,13 +12,15 @@ router = APIRouter()
 @router.post("")
 def create_order(order: Order, decoded_token: dict = Depends(verify_token)):
     uid = decoded_token["uid"]
-    doc_ref = db.collection("orders").add({
-        "customer_id": uid,
-        "items": order.items,
-        "total_price": order.total_price,
-        "status": "pending",
-        "created_at": datetime.utcnow().isoformat(),
-    })
+    doc_ref = db.collection("orders").add(
+        {
+            "customer_id": uid,
+            "items": order.items,
+            "total_price": order.total_price,
+            "status": "pending",
+            "created_at": datetime.utcnow().isoformat(),
+        }
+    )
     return {"message": "Order placed successfully", "order_id": doc_ref[1].id}
 
 
@@ -55,7 +57,9 @@ def update_order_status(
 ):
     valid_statuses = ["pending", "processing", "completed", "cancelled"]
     if status not in valid_statuses:
-        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of {valid_statuses}")
+        raise HTTPException(
+            status_code=400, detail=f"Invalid status. Must be one of {valid_statuses}"
+        )
     doc = db.collection("orders").document(order_id).get()
     if not doc.exists:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -71,7 +75,9 @@ def cancel_order(order_id: str, decoded_token: dict = Depends(verify_token)):
         raise HTTPException(status_code=404, detail="Order not found")
     data = doc.to_dict()
     if data.get("customer_id") != uid:
-        raise HTTPException(status_code=403, detail="You can only cancel your own orders")
+        raise HTTPException(
+            status_code=403, detail="You can only cancel your own orders"
+        )
     if data.get("status") == "completed":
         raise HTTPException(status_code=400, detail="Cannot cancel a completed order")
     db.collection("orders").document(order_id).update({"status": "cancelled"})

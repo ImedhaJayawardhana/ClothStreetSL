@@ -54,7 +54,7 @@ function ShareIcon({ size = 16 }) {
     );
 }
 
-function Tag({ label, onRemove, editMode, colorScheme = "purple" }) {
+function Tag({ label, onRemove, editMode }) {
     return (
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border">
             {label}
@@ -474,22 +474,20 @@ export default function DesignerProfile() {
                                 {editMode ? (
                                     <button
                                         onClick={() => setDraftAvailability(!draftAvailability)}
-                                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer ${
-                                            draftAvailability
-                                                ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300'
-                                                : 'bg-red-500/20 border-red-400/30 text-red-300'
-                                        }`}
+                                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer ${draftAvailability
+                                            ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300'
+                                            : 'bg-red-500/20 border-red-400/30 text-red-300'
+                                            }`}
                                     >
                                         <span className={`w-2 h-2 rounded-full ${draftAvailability ? 'bg-emerald-400' : 'bg-red-400'}`} />
                                         {draftAvailability ? 'Available' : 'Unavailable'}
                                         <span className="text-white/50 ml-0.5">▾</span>
                                     </button>
                                 ) : (
-                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
-                                        (designer.availability !== false)
-                                            ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300'
-                                            : 'bg-red-500/20 border-red-400/30 text-red-300'
-                                    }`}>
+                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${(designer.availability !== false)
+                                        ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300'
+                                        : 'bg-red-500/20 border-red-400/30 text-red-300'
+                                        }`}>
                                         <span className={`w-2 h-2 rounded-full ${(designer.availability !== false) ? 'bg-emerald-400' : 'bg-red-400'}`} />
                                         {(designer.availability !== false) ? 'Available' : 'Unavailable'}
                                     </span>

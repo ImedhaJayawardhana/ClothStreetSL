@@ -338,12 +338,11 @@ export default function TailorProfile() {
     const handleAddPortfolioImages = async (files) => {
         setUploadingPortfolio(true);
         setError("");
-        let uploadCount = 0;
         for (const file of files) {
             try {
                 const res = await uploadImage(file, "portfolio");
                 setDraftPortfolioImages((prev) => [...prev, res.data.url]);
-                uploadCount++;
+
             } catch (err) {
                 console.error("Portfolio upload failed:", err);
                 const msg = err.response?.data?.detail || err.message || "Failed to upload image. Make sure the backend server is running.";
@@ -551,22 +550,20 @@ export default function TailorProfile() {
                                 {editMode ? (
                                     <button
                                         onClick={() => setDraftAvailability(!draftAvailability)}
-                                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer ${
-                                            draftAvailability
-                                                ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300'
-                                                : 'bg-red-500/20 border-red-400/30 text-red-300'
-                                        }`}
+                                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer ${draftAvailability
+                                            ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300'
+                                            : 'bg-red-500/20 border-red-400/30 text-red-300'
+                                            }`}
                                     >
                                         <span className={`w-2 h-2 rounded-full ${draftAvailability ? 'bg-emerald-400' : 'bg-red-400'}`} />
                                         {draftAvailability ? 'Available' : 'Unavailable'}
                                         <span className="text-white/50 ml-0.5">▾</span>
                                     </button>
                                 ) : (
-                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
-                                        (tailor.availability !== false)
-                                            ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300'
-                                            : 'bg-red-500/20 border-red-400/30 text-red-300'
-                                    }`}>
+                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${(tailor.availability !== false)
+                                        ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300'
+                                        : 'bg-red-500/20 border-red-400/30 text-red-300'
+                                        }`}>
                                         <span className={`w-2 h-2 rounded-full ${(tailor.availability !== false) ? 'bg-emerald-400' : 'bg-red-400'}`} />
                                         {(tailor.availability !== false) ? 'Available' : 'Unavailable'}
                                     </span>

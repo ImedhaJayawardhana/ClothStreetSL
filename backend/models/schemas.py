@@ -2,10 +2,12 @@ from datetime import datetime
 from typing import List, Literal, Optional
 from pydantic import BaseModel
 
+
 class User(BaseModel):
     email: str
     name: str
     role: Literal["customer", "tailor", "designer", "seller"]
+
 
 class TailorProfile(BaseModel):
     name: str
@@ -23,6 +25,7 @@ class TailorProfile(BaseModel):
     experience: Optional[int] = 0
     rating: Optional[float] = 4.5
 
+
 class TailorProfileUpdate(BaseModel):
     name: Optional[str] = None
     skills: Optional[List[str]] = None
@@ -38,6 +41,7 @@ class TailorProfileUpdate(BaseModel):
     phoneNumber: Optional[str] = None
     experience: Optional[int] = None
     rating: Optional[float] = None
+
 
 class DesignerProfile(BaseModel):
     name: str
@@ -56,6 +60,7 @@ class DesignerProfile(BaseModel):
     rating: Optional[float] = 5.0
     availability: Optional[bool] = True
 
+
 class DesignerProfileUpdate(BaseModel):
     name: Optional[str] = None
     style: Optional[str] = None
@@ -73,12 +78,14 @@ class DesignerProfileUpdate(BaseModel):
     rating: Optional[float] = None
     availability: Optional[bool] = None
 
+
 class Fabric(BaseModel):
     name: str
     type: str
     color: str
     price: float
     stock: int
+
 
 class FabricUpdate(BaseModel):
     name: Optional[str] = None
@@ -87,14 +94,17 @@ class FabricUpdate(BaseModel):
     price: Optional[float] = None
     stock: Optional[int] = None
 
+
 class Quotation(BaseModel):
     tailor_id: str
     fabric_id: str
     description: str
     price: float
 
+
 class QuotationStatusUpdate(BaseModel):
     status: Literal["pending", "accepted", "completed"]
+
 
 class Order(BaseModel):
     items: List[dict]

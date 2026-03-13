@@ -8,7 +8,9 @@ router = APIRouter()
 
 
 @router.post("")
-def create_designer(profile: DesignerProfile, decoded_token: dict = Depends(verify_token)):
+def create_designer(
+    profile: DesignerProfile, decoded_token: dict = Depends(verify_token)
+):
     uid = decoded_token["uid"]
     data = profile.dict()
     data["uid"] = uid
@@ -38,7 +40,9 @@ def update_designer(
 ):
     uid = decoded_token["uid"]
     if uid != designer_id:
-        raise HTTPException(status_code=403, detail="You can only update your own profile")
+        raise HTTPException(
+            status_code=403, detail="You can only update your own profile"
+        )
     update_data = {k: v for k, v in updates.dict().items() if v is not None}
     doc = db.collection("designers").document(designer_id).get()
     if doc.exists:
@@ -57,7 +61,9 @@ def delete_designer(
 ):
     uid = decoded_token["uid"]
     if uid != designer_id:
-        raise HTTPException(status_code=403, detail="You can only delete your own profile")
+        raise HTTPException(
+            status_code=403, detail="You can only delete your own profile"
+        )
     doc = db.collection("designers").document(designer_id).get()
     if not doc.exists:
         raise HTTPException(status_code=404, detail="Designer not found")
