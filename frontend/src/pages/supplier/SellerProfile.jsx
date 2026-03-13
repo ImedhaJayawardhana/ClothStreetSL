@@ -106,7 +106,8 @@ export default function SellerProfile() {
       const userDocRef = doc(db, "users", uid);
       try {
         await updateDoc(userDocRef, { phone: formData.phone, address: formData.address });
-      } catch (e) {
+      } catch (error) {
+        console.debug("Ignored user doc update error:", error);
         // User doc might not exist or we might not have permissions, ignore
       }
       // Handle password update via Firebase Auth
