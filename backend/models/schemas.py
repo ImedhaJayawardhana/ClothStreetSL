@@ -19,6 +19,9 @@ class TailorProfile(BaseModel):
     customizationTypes: Optional[List[str]] = []
     portfolioImages: Optional[List[str]] = []
     profilePhoto: Optional[str] = None
+    phoneNumber: Optional[str] = None
+    experience: Optional[int] = 0
+    rating: Optional[float] = 4.5
 
 class TailorProfileUpdate(BaseModel):
     name: Optional[str] = None
@@ -32,6 +35,9 @@ class TailorProfileUpdate(BaseModel):
     customizationTypes: Optional[List[str]] = None
     portfolioImages: Optional[List[str]] = None
     profilePhoto: Optional[str] = None
+    phoneNumber: Optional[str] = None
+    experience: Optional[int] = None
+    rating: Optional[float] = None
 
 class DesignerProfile(BaseModel):
     name: str
@@ -45,6 +51,7 @@ class DesignerProfile(BaseModel):
     services: Optional[List[str]] = []
     aesthetics: Optional[List[str]] = []
     portfolioImages: Optional[List[str]] = []
+    phoneNumber: Optional[str] = None
 
 class DesignerProfileUpdate(BaseModel):
     name: Optional[str] = None
@@ -58,6 +65,7 @@ class DesignerProfileUpdate(BaseModel):
     services: Optional[List[str]] = None
     aesthetics: Optional[List[str]] = None
     portfolioImages: Optional[List[str]] = None
+    phoneNumber: Optional[str] = None
 
 class Fabric(BaseModel):
     name: str

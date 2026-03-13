@@ -11,6 +11,8 @@ const DEFAULT_TAILOR = {
     profilePhoto: "",
     startingPrice: 2000,
     rating: 4.7,
+    phoneNumber: "0712345678",
+    location: "Colombo, Sri Lanka",
     services: ["Suits", "Dresses", "Customize designs"],
     customizationTypes: ["Measurement Base", "Design Base"],
     portfolioImages: [],
@@ -247,6 +249,11 @@ export default function TailorProfile() {
     // Draft state
     const [draftBio, setDraftBio] = useState("");
     const [draftPrice, setDraftPrice] = useState(0);
+    const [draftName, setDraftName] = useState("");
+    const [draftLocation, setDraftLocation] = useState("");
+    const [draftPhoneNumber, setDraftPhoneNumber] = useState("");
+    const [draftExperience, setDraftExperience] = useState(0);
+    const [draftRating, setDraftRating] = useState(4.5);
     const [draftServices, setDraftServices] = useState([]);
     const [draftCustomTypes, setDraftCustomTypes] = useState([]);
     const [draftPortfolioImages, setDraftPortfolioImages] = useState([]);
@@ -287,6 +294,11 @@ export default function TailorProfile() {
 
     // ── Enter edit mode ──
     const enterEditMode = () => {
+        setDraftName(tailor.name || "");
+        setDraftLocation(tailor.location || "");
+        setDraftPhoneNumber(tailor.phoneNumber || "");
+        setDraftExperience(tailor.experience || 0);
+        setDraftRating(tailor.rating || 4.5);
         setDraftBio(tailor.bio || "");
         setDraftPrice(tailor.startingPrice || 0);
         setDraftServices([...(tailor.services || [])]);
@@ -342,22 +354,32 @@ export default function TailorProfile() {
         setError("");
         try {
             await updateTailor(resolvedTailorId, {
+                name: draftName,
+                location: draftLocation,
+                phoneNumber: draftPhoneNumber,
                 bio: draftBio,
                 startingPrice: Number(draftPrice),
                 services: draftServices,
                 customizationTypes: draftCustomTypes,
                 portfolioImages: draftPortfolioImages,
                 profilePhoto: draftProfilePhoto,
+                experience: Number(draftExperience),
+                rating: Number(draftRating),
             });
             // Update local state immediately
             setTailor((prev) => ({
                 ...prev,
+                name: draftName,
+                location: draftLocation,
+                phoneNumber: draftPhoneNumber,
                 bio: draftBio,
                 startingPrice: Number(draftPrice),
                 services: draftServices,
                 customizationTypes: draftCustomTypes,
                 portfolioImages: draftPortfolioImages,
                 profilePhoto: draftProfilePhoto,
+                experience: Number(draftExperience),
+                rating: Number(draftRating),
             }));
             setEditMode(false);
         } catch (err) {
@@ -400,13 +422,13 @@ export default function TailorProfile() {
         );
     }
 
-    const displayPortfolioImages = editMode ? draftPortfolioImages : tailor.portfolioImages || [];
-    const displayServices = editMode ? draftServices : tailor.services || [];
-    const displayCustomTypes = editMode ? draftCustomTypes : tailor.customizationTypes || [];
-    const displayBio = editMode ? draftBio : tailor.bio;
-    const displayPrice = editMode ? draftPrice : tailor.startingPrice;
-    const displayProfilePhoto = editMode ? draftProfilePhoto : tailor.profilePhoto;
-    const reviews = tailor.reviews || DEFAULT_TAILOR.reviews;
+    const displayPortfolioImages = editMode ? draftPortfolioImages : tailor?.portfolioImages || [];
+    const displayServices = editMode ? draftServices : tailor?.services || [];
+    const displayCustomTypes = editMode ? draftCustomTypes : tailor?.customizationTypes || [];
+    const displayBio = editMode ? draftBio : (tailor?.bio ?? DEFAULT_TAILOR.bio);
+    const displayPrice = editMode ? draftPrice : (tailor?.startingPrice ?? DEFAULT_TAILOR.startingPrice);
+    const displayProfilePhoto = editMode ? draftProfilePhoto : tailor?.profilePhoto;
+    const reviews = tailor?.reviews || DEFAULT_TAILOR.reviews;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
@@ -499,7 +521,17 @@ export default function TailorProfile() {
                         {/* Name, role, rating */}
                         <div className="flex-1 min-w-0 text-white">
                             <div className="flex flex-wrap items-center gap-2 mb-1">
-                                <h1 className="text-3xl font-extrabold leading-tight">{tailor.name}</h1>
+                                {editMode ? (
+                                    <input
+                                        type="text"
+                                        value={draftName}
+                                        onChange={(e) => setDraftName(e.target.value)}
+                                        className="text-2xl font-extrabold leading-tight bg-white/10 border border-white/20 rounded-xl px-3 py-1 focus:outline-none focus:ring-2 focus:ring-violet-400 w-full max-w-sm"
+                                        placeholder="Your Name"
+                                    />
+                                ) : (
+                                    <h1 className="text-3xl font-extrabold leading-tight">{tailor.name}</h1>
+                                )}
                                 <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold bg-white/15 border border-white/20 backdrop-blur-sm">
                                     ✦ Master Tailor
                                 </span>
@@ -507,8 +539,39 @@ export default function TailorProfile() {
                             <div className="flex flex-wrap items-center gap-4 mt-2">
                                 <div className="flex items-center gap-1.5 bg-white/10 rounded-full px-3 py-1 border border-white/20">
                                     <StarIcon size={14} filled />
-                                    <span className="text-yellow-300 font-bold text-sm">{tailor.rating?.toFixed(1)}</span>
+                                    {editMode ? (
+                                        <input
+                                            type="number"
+                                            step="0.1"
+                                            min="0"
+                                            max="5"
+                                            value={draftRating}
+                                            onChange={(e) => setDraftRating(e.target.value)}
+                                            className="text-yellow-300 font-bold text-sm bg-transparent border-none w-10 focus:outline-none"
+                                        />
+                                    ) : (
+                                        <span className="text-yellow-300 font-bold text-sm">{tailor.rating?.toFixed(1)}</span>
+                                    )}
                                     <span className="text-white/70 text-xs">/ 5.0</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-sm text-white/80">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width={13} height={13} viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    {editMode ? (
+                                        <div className="flex items-center gap-1">
+                                            <input
+                                                type="number"
+                                                value={draftExperience}
+                                                onChange={(e) => setDraftExperience(e.target.value)}
+                                                className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-16"
+                                            />
+                                            <span>yrs exp</span>
+                                        </div>
+                                    ) : (
+                                        <span>{tailor.experience || 0} years exp.</span>
+                                    )}
                                 </div>
                                 <div className="flex items-center gap-1.5 text-sm text-white/80">
                                     <svg xmlns="http://www.w3.org/2000/svg" width={13} height={13} viewBox="0 0 24 24"
@@ -523,7 +586,34 @@ export default function TailorProfile() {
                                         <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                                         <circle cx="12" cy="10" r="3" />
                                     </svg>
-                                    <span>{tailor.location || "Sri Lanka"}</span>
+                                    {editMode ? (
+                                        <input
+                                            type="text"
+                                            value={draftLocation}
+                                            onChange={(e) => setDraftLocation(e.target.value)}
+                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-48"
+                                            placeholder="City, Sri Lanka"
+                                        />
+                                    ) : (
+                                        <span>{tailor.location || "Sri Lanka"}</span>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-1.5 text-sm text-white/80">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width={13} height={13} viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                    </svg>
+                                    {editMode ? (
+                                        <input
+                                            type="text"
+                                            value={draftPhoneNumber}
+                                            onChange={(e) => setDraftPhoneNumber(e.target.value)}
+                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-36"
+                                            placeholder="Contact Phone"
+                                        />
+                                    ) : (
+                                        <span>{tailor.phoneNumber || "Not provided"}</span>
+                                    )}
                                 </div>
                             </div>
                         </div>
