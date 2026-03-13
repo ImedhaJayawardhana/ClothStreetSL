@@ -134,10 +134,10 @@ export default function Cart() {
               {/* Price */}
               <div className="cart-item-price">
                 <p className="cart-item-total">
-                  Rs {(item.unitPrice * item.quantity).toLocaleString()}
+                  Rs {((item.unitPrice ?? 0) * item.quantity).toLocaleString()}
                 </p>
                 <p className="cart-item-unit-price">
-                  Rs {item.unitPrice.toLocaleString()} / metre
+                  Rs {(item.unitPrice ?? 0).toLocaleString()} / metre
                 </p>
               </div>
 
