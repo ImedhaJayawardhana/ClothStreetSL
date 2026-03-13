@@ -127,7 +127,7 @@ function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage, upload
                             {uploading ? "Uploading..." : "Add Photos"}
                         </button>
                         <input ref={fileRef} type="file" accept="image/*" multiple className="hidden"
-                            onChange={(e) => onAddImages(Array.from(e.target.files))} />
+                            onChange={(e) => { onAddImages(Array.from(e.target.files)); e.target.value = ""; }} />
                     </>
                 )}
             </div>
@@ -263,6 +263,7 @@ export default function TailorProfile() {
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
     const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const [draftAvailability, setDraftAvailability] = useState(true);
 
     const profilePhotoRef = useRef();
 
@@ -305,6 +306,7 @@ export default function TailorProfile() {
         setDraftCustomTypes([...(tailor.customizationTypes || [])]);
         setDraftPortfolioImages([...(tailor.portfolioImages || [])]);
         setDraftProfilePhoto(tailor.profilePhoto || "");
+        setDraftAvailability(tailor.availability !== undefined ? tailor.availability : true);
         setEditMode(true);
     };
 
@@ -317,13 +319,16 @@ export default function TailorProfile() {
     const handleProfilePhotoChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        e.target.value = ""; // reset so same file can be re-selected
         setUploadingPhoto(true);
+        setError("");
         try {
             const res = await uploadImage(file, "tailors");
             setDraftProfilePhoto(res.data.url);
         } catch (err) {
             console.error("Photo upload failed:", err);
-            setError("Failed to upload photo. Please try again.");
+            const msg = err.response?.data?.detail || err.message || "Failed to upload photo. Make sure the backend server is running.";
+            setError(msg);
         } finally {
             setUploadingPhoto(false);
         }
@@ -332,12 +337,17 @@ export default function TailorProfile() {
     // ── Upload portfolio images via FastAPI ──
     const handleAddPortfolioImages = async (files) => {
         setUploadingPortfolio(true);
+        setError("");
+        let uploadCount = 0;
         for (const file of files) {
             try {
                 const res = await uploadImage(file, "portfolio");
                 setDraftPortfolioImages((prev) => [...prev, res.data.url]);
+                uploadCount++;
             } catch (err) {
                 console.error("Portfolio upload failed:", err);
+                const msg = err.response?.data?.detail || err.message || "Failed to upload image. Make sure the backend server is running.";
+                setError(msg);
             }
         }
         setUploadingPortfolio(false);
@@ -365,6 +375,7 @@ export default function TailorProfile() {
                 profilePhoto: draftProfilePhoto,
                 experience: Number(draftExperience),
                 rating: Number(draftRating),
+                availability: draftAvailability,
             });
             // Update local state immediately
             setTailor((prev) => ({
@@ -380,6 +391,7 @@ export default function TailorProfile() {
                 profilePhoto: draftProfilePhoto,
                 experience: Number(draftExperience),
                 rating: Number(draftRating),
+                availability: draftAvailability,
             }));
             setEditMode(false);
         } catch (err) {
@@ -535,6 +547,30 @@ export default function TailorProfile() {
                                 <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold bg-white/15 border border-white/20 backdrop-blur-sm">
                                     ✦ Master Tailor
                                 </span>
+                                {/* Availability Status */}
+                                {editMode ? (
+                                    <button
+                                        onClick={() => setDraftAvailability(!draftAvailability)}
+                                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all duration-200 cursor-pointer ${
+                                            draftAvailability
+                                                ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300'
+                                                : 'bg-red-500/20 border-red-400/30 text-red-300'
+                                        }`}
+                                    >
+                                        <span className={`w-2 h-2 rounded-full ${draftAvailability ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                                        {draftAvailability ? 'Available' : 'Unavailable'}
+                                        <span className="text-white/50 ml-0.5">▾</span>
+                                    </button>
+                                ) : (
+                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
+                                        (tailor.availability !== false)
+                                            ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300'
+                                            : 'bg-red-500/20 border-red-400/30 text-red-300'
+                                    }`}>
+                                        <span className={`w-2 h-2 rounded-full ${(tailor.availability !== false) ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                                        {(tailor.availability !== false) ? 'Available' : 'Unavailable'}
+                                    </span>
+                                )}
                             </div>
                             <div className="flex flex-wrap items-center gap-4 mt-2">
                                 <div className="flex items-center gap-1.5 bg-white/10 rounded-full px-3 py-1 border border-white/20">
