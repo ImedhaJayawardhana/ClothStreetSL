@@ -31,7 +31,7 @@ import QuotationInbox from "./pages/QuotationInbox";
 import QuotationResponse from "./pages/QuotationResponse";
 import QuotationReview from "./pages/QuotationReview";
 import OrderTracking from "./pages/OrderTracking";
-
+import AboutUs from "./pages/AboutUs";
 
 function PrivateRoute({ children }) {
   const { user } = useAuth();
@@ -45,6 +45,7 @@ export default function App() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<AboutUs />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

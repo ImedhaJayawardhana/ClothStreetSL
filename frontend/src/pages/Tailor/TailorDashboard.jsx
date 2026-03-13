@@ -11,67 +11,7 @@ const DUMMY_USER = {
     newRequests: 2,
 };
 
-//  Helper: first letter avatar
-function Avatar({ name }) {
-    return (
-        <div className="w-16 h-16 rounded-xl bg-white/20 border-2 border-white/40 flex items-center justify-center text-white text-3xl font-bold shadow-inner select-none flex-shrink-0">
-            {name.charAt(0).toUpperCase()}
-        </div>
-    );
-}
 
-function WelcomeBanner({ user, onProfileClick }) {
-    return (
-        <div className="w-full bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-600 rounded-2xl shadow-lg px-8 py-6 flex items-center gap-5">
-            {/* Avatar */}
-            <Avatar name={user.name} />
-
-            {/* Text block */}
-            <div className="flex-1 min-w-0">
-                <p className="text-purple-200 text-sm font-medium mb-0.5">Welcome back,</p>
-                <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="text-white text-3xl font-extrabold leading-tight truncate">
-                        {user.name}
-                    </h1>
-
-                    {/* Master Tailor badge */}
-                    <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold bg-white/10 text-white border border-white/20 backdrop-blur-sm whitespace-nowrap">
-                        ✦ {user.role}
-                    </span>
-
-                    {/* New requests pill */}
-                    {user.newRequests > 0 && (
-                        <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-bold bg-orange-400 text-white shadow-sm whitespace-nowrap">
-                            {user.newRequests} new requests
-                        </span>
-                    )}
-                </div>
-            </div>
-
-            {/* My Profile button */}
-            <button
-                onClick={onProfileClick}
-                className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/30 border border-white/30 text-white text-sm font-semibold transition-all duration-200 shadow-sm backdrop-blur-sm"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                </svg>
-                My Profile
-            </button>
-        </div>
-    );
-}
 
 const DUMMY_STATS = [
     {
@@ -632,14 +572,47 @@ export default function TailorDashboard() {
         return { ...s, value: countMap[s.label] ?? s.value };
     });
 
-    // Banner still uses dummy until profile Firestore integration
-    const user = DUMMY_USER;
+    const displayName = authUser?.name || authUser?.email || "Tailor";
+    const avatarLetter = displayName.charAt(0).toUpperCase();
+
+    // The order requests might have 'new' status
+    const newReqCount = DUMMY_REQUESTS.filter(r => r.status === "new").length;
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-                {/* ── Banner ── */}
-                <WelcomeBanner user={user} onProfileClick={() => navigate("/tailor-profile")} />
+        <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
+            {/* ── Purple Header Bar ── */}
+            <div className="bg-purple-600 px-6 py-5 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-xl shadow-lg">
+                        {avatarLetter}
+                    </div>
+                    <div>
+                        <p className="text-purple-200 text-sm">
+                            Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"},
+                        </p>
+                        <p className="text-white font-bold text-xl leading-tight">{displayName}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                            <span className="inline-block text-xs bg-purple-500 text-white px-2.5 py-0.5 rounded-full font-medium capitalize">
+                                Master Tailor
+                            </span>
+                            {newReqCount > 0 && (
+                                <span className="inline-block text-xs bg-orange-400 text-white px-2.5 py-0.5 rounded-full font-bold">
+                                    {newReqCount} new request{newReqCount !== 1 ? "s" : ""}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                </div>
+                <button onClick={() => navigate("/tailor-profile")}
+                    className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-4 py-2 rounded-xl text-sm font-semibold transition-colors">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    My Profile
+                </button>
+            </div>
+
+            <main className="max-w-7xl mx-auto px-6 py-8 space-y-8 flex-1 w-full">
 
 
                 {/* ── Stat Cards ── */}
@@ -691,7 +664,7 @@ export default function TailorDashboard() {
 
                 {/* ── Recent Reviews ── */}
                 <RecentReviewsSection reviews={DUMMY_REVIEWS} />
-            </div>
+            </main>
         </div>
     );
 }

@@ -43,6 +43,7 @@ export default function Footer() {
                     <div className="space-y-6 lg:ml-8">
                         <h3 className="text-white font-semibold tracking-wide">Platform</h3>
                         <ul className="space-y-4">
+                            <li><Link to="/about" className="text-sm hover:text-purple-400 transition-colors">About Us</Link></li>
                             <li><Link to="/shop" className="text-sm hover:text-purple-400 transition-colors">Fabric Marketplace</Link></li>
                             <li><Link to="/tailors" className="text-sm hover:text-purple-400 transition-colors">Find Tailors</Link></li>
                             <li><Link to="/recommendations" className="text-sm hover:text-purple-400 transition-colors">AI Recommendations</Link></li>
