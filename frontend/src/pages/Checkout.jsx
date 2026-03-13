@@ -62,13 +62,13 @@ export default function Checkout() {
     const [deliveryMethod, setDeliveryMethod] = useState("home");
     const [selectedTailor, setSelectedTailor] = useState(null);
     const [tailors, setTailors] = useState([]);
-    const [tailorsLoading, setTailorsLoading] = useState(false);
+    //const [tailorsLoading, setTailorsLoading] = useState(false);
 
     useEffect(() => {
         if (currentStep === 2 && tailors.length === 0) {
             getDocs(collection(db, "tailors"))
                 .then((snapshot) => {
-                    setTailorsLoading(true); // ✅ moved inside async callback
+                    //setTailorsLoading(true); // ✅ moved inside async callback
                     const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
                     setTailors(data);
                 })
@@ -76,7 +76,7 @@ export default function Checkout() {
                     console.error("Error fetching tailors:", err);
                     toast.error("Failed to load tailors.");
                 })
-                .finally(() => setTailorsLoading(false));
+            //.finally(() => setTailorsLoading(false));
         }
     }, [currentStep, tailors.length]);
 

@@ -83,6 +83,7 @@ export default function DesignerDashboard() {
       }
     };
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleAccept = async (id) => {
