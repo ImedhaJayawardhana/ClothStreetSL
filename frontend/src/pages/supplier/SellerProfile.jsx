@@ -205,3 +205,93 @@ export default function SellerProfile() {
           </div>
         </div>
         <div className="space-y-6"></div>
+        {/* Account Details Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            Account Details
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <InputField
+              label="Email Address"
+              value={readOnlyData.email}
+              isReadOnly={true}
+            />
+            <InputField
+              label="Phone Number"
+              name="phone"
+              value={formData.phone}
+            />
+            <InputField
+              label="Password"
+              name="password"
+              value={formData.password}
+              type="password"
+              placeholder={isEditing ? "Enter new password (leave blank to keep)" : ""}
+            />
+          </div>
+        </div>
+        {/* Business Details Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            Business Details
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <InputField
+              label="Name of Store / Proprietor"
+              value={readOnlyData.storeName}
+              isReadOnly={true}
+            />
+            <InputField
+              label="National Identity Card (NIC)"
+              value={readOnlyData.nic}
+              isReadOnly={true}
+            />
+            <InputField
+              label="Business Registration Number"
+              name="businessRegNumber"
+              value={formData.businessRegNumber}
+            />
+            <InputField
+              label="Address"
+              name="address"
+              value={formData.address}
+            />
+          </div>
+        </div>
+        {/* Bank Details Card */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            Bank Details
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            <InputField
+              label="Bank Name"
+              name="bankName"
+              value={formData.bankName}
+            />
+            <InputField
+              label="Bank Account Number"
+              name="bankAccount"
+              value={formData.bankAccount}
+            />
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Total Earnings (Upto Date)</label>
+              <div className="px-4 py-2 border rounded-xl bg-green-50 text-green-700 font-bold min-h-[42px] flex items-center">
+                LKR {readOnlyData.totalEarnings.toLocaleString()}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div >
+  );
+}
