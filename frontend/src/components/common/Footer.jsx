@@ -1,6 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function Footer() {
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    const handleListFabrics = (e) => {
+        e.preventDefault();
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+        if (user.role === 'seller') {
+            navigate('/inventory');
+        } else {
+            toast.error('Only suppliers can list fabrics.');
+        }
+    };
+
     return (
         <footer className="bg-[#0B0F19] text-gray-400 py-16 border-t border-gray-800">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,10 +74,10 @@ export default function Footer() {
                     <div className="space-y-6">
                         <h3 className="text-white font-semibold tracking-wide">For Business</h3>
                         <ul className="space-y-4">
-                            <li><Link to="/business/list" className="text-sm hover:text-purple-400 transition-colors">List Your Fabrics</Link></li>
+                            <li><a href="#" onClick={handleListFabrics} className="text-sm hover:text-purple-400 transition-colors">List Your Fabrics</a></li>
                             <li><Link to="/register" className="text-sm hover:text-purple-400 transition-colors">Tailor Registration</Link></li>
-                            <li><Link to="/business/designers" className="text-sm hover:text-purple-400 transition-colors">Designer Portal</Link></li>
-                            <li><Link to="/business/bulk" className="text-sm hover:text-purple-400 transition-colors">Bulk Orders</Link></li>
+                            <li><Link to="/register" className="text-sm hover:text-purple-400 transition-colors">Designer Portal</Link></li>
+
                             <li><Link to="/business/enterprise" className="text-sm hover:text-purple-400 transition-colors">Enterprise Solutions</Link></li>
                         </ul>
                     </div>
