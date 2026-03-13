@@ -48,7 +48,7 @@ export default function Footer() {
                             <li><Link to="/tailors" className="text-sm hover:text-purple-400 transition-colors">Find Tailors</Link></li>
                             <li><Link to="/match" className="text-sm hover:text-purple-400 transition-colors">AI Recommendations</Link></li>
                             <li><Link to="/tracking" className="text-sm hover:text-purple-400 transition-colors">Order Tracking</Link></li>
-                            <li><Link to="/suppliers/join" className="text-sm hover:text-purple-400 transition-colors">Join as Supplier</Link></li>
+                            <li><Link to="/register" className="text-sm hover:text-purple-400 transition-colors">Join as Supplier</Link></li>
                         </ul>
                     </div>
 
@@ -57,7 +57,7 @@ export default function Footer() {
                         <h3 className="text-white font-semibold tracking-wide">For Business</h3>
                         <ul className="space-y-4">
                             <li><Link to="/business/list" className="text-sm hover:text-purple-400 transition-colors">List Your Fabrics</Link></li>
-                            <li><Link to="/business/tailors" className="text-sm hover:text-purple-400 transition-colors">Tailor Registration</Link></li>
+                            <li><Link to="/register" className="text-sm hover:text-purple-400 transition-colors">Tailor Registration</Link></li>
                             <li><Link to="/business/designers" className="text-sm hover:text-purple-400 transition-colors">Designer Portal</Link></li>
                             <li><Link to="/business/bulk" className="text-sm hover:text-purple-400 transition-colors">Bulk Orders</Link></li>
                             <li><Link to="/business/enterprise" className="text-sm hover:text-purple-400 transition-colors">Enterprise Solutions</Link></li>
