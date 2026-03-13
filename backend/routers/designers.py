@@ -10,13 +10,9 @@ router = APIRouter()
 @router.post("")
 def create_designer(profile: DesignerProfile, decoded_token: dict = Depends(verify_token)):
     uid = decoded_token["uid"]
-    db.collection("designers").document(uid).set({
-        "uid": uid,
-        "name": profile.name,
-        "style": profile.style,
-        "portfolio_url": profile.portfolio_url,
-        "price_range": profile.price_range,
-    })
+    data = profile.dict()
+    data["uid"] = uid
+    db.collection("designers").document(uid).set(data)
     return {"message": "Designer profile created", "uid": uid}
 
 

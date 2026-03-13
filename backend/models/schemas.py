@@ -13,6 +13,12 @@ class TailorProfile(BaseModel):
     location: str
     price_range: str
     availability: bool
+    bio: Optional[str] = None
+    startingPrice: Optional[int] = 0
+    services: Optional[List[str]] = []
+    customizationTypes: Optional[List[str]] = []
+    portfolioImages: Optional[List[str]] = []
+    profilePhoto: Optional[str] = None
 
 class TailorProfileUpdate(BaseModel):
     name: Optional[str] = None
@@ -20,18 +26,38 @@ class TailorProfileUpdate(BaseModel):
     location: Optional[str] = None
     price_range: Optional[str] = None
     availability: Optional[bool] = None
+    bio: Optional[str] = None
+    startingPrice: Optional[int] = None
+    services: Optional[List[str]] = None
+    customizationTypes: Optional[List[str]] = None
+    portfolioImages: Optional[List[str]] = None
+    profilePhoto: Optional[str] = None
 
 class DesignerProfile(BaseModel):
     name: str
     style: str
     portfolio_url: Optional[str] = None
     price_range: str
+    location: Optional[str] = "Sri Lanka"
+    bio: Optional[str] = None
+    profilePhoto: Optional[str] = None
+    hourlyRate: Optional[int] = 0
+    services: Optional[List[str]] = []
+    aesthetics: Optional[List[str]] = []
+    portfolioImages: Optional[List[str]] = []
 
 class DesignerProfileUpdate(BaseModel):
     name: Optional[str] = None
     style: Optional[str] = None
     portfolio_url: Optional[str] = None
     price_range: Optional[str] = None
+    location: Optional[str] = None
+    bio: Optional[str] = None
+    profilePhoto: Optional[str] = None
+    hourlyRate: Optional[int] = None
+    services: Optional[List[str]] = None
+    aesthetics: Optional[List[str]] = None
+    portfolioImages: Optional[List[str]] = None
 
 class Fabric(BaseModel):
     name: str

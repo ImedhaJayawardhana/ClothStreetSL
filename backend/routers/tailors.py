@@ -10,16 +10,9 @@ router = APIRouter()
 @router.post("")
 def create_tailor(profile: TailorProfile, decoded_token: dict = Depends(verify_token)):
     uid = decoded_token["uid"]
-    db.collection("tailors").document(uid).set(
-        {
-            "uid": uid,
-            "name": profile.name,
-            "skills": profile.skills,
-            "location": profile.location,
-            "price_range": profile.price_range,
-            "availability": profile.availability,
-        }
-    )
+    data = profile.dict()
+    data["uid"] = uid
+    db.collection("tailors").document(uid).set(data)
     return {"message": "Tailor profile created", "uid": uid}
 
 

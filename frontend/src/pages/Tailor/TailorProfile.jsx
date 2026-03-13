@@ -362,7 +362,8 @@ export default function TailorProfile() {
             setEditMode(false);
         } catch (err) {
             console.error("Save failed:", err);
-            setError("Failed to save changes. Please try again.");
+            const msg = err.response?.data?.detail || "Failed to save changes. Please try again.";
+            setError(msg);
         } finally {
             setSaving(false);
         }
