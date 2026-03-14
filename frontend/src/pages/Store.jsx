@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -15,9 +15,20 @@ export default function Store() {
         if (!sellerId) return;
         const fetchProfile = async () => {
             try {
-                const snap = await getDoc(doc(db, "sellers", sellerId));
-                if (snap.exists()) {
-                    setProfile(snap.data());
+                const sellerSnap = await getDoc(doc(db, "sellers", sellerId));
+                let sellerData = sellerSnap.exists() ? sellerSnap.data() : null;
+
+                const userSnap = await getDoc(doc(db, "users", sellerId));
+                let userData = userSnap.exists() ? userSnap.data() : null;
+
+                if (sellerData || userData) {
+                    setProfile({
+                        ...userData,
+                        ...sellerData,
+                        shopName: sellerData?.shopName || sellerData?.storeName || userData?.name || decodedSellerId,
+                        rating: sellerData?.rating || 4.8,
+                        reviews: sellerData?.reviews || 142
+                    });
                 } else {
                     setProfile({
                         shopName: decodedSellerId,
