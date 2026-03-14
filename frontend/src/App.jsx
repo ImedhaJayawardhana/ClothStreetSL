@@ -31,6 +31,7 @@ import RequestQuote from"./pages/RequestQuote";
 import QuotationInbox from"./pages/QuotationInbox";
 import QuotationResponse from"./pages/QuotationResponse";
 import QuotationReview from"./pages/QuotationReview";
+import QuotationOffers from"./pages/QuotationOffers";
 import OrderTracking from"./pages/OrderTracking";
 import AboutUs from"./pages/AboutUs";
 
@@ -60,6 +61,7 @@ export default function App() {
  <Route path="/quotation-inbox" element={<QuotationInbox />} />
  <Route path="/quotation-response/:quotationId" element={<QuotationResponse />} />
  <Route path="/quotation-review/:quotationId" element={<QuotationReview />} />
+ <Route path="/quotations/offers" element={<PrivateRoute><QuotationOffers /></PrivateRoute>} />
  <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
 
  <Route path="/shop" element={<BrowseMaterials />} />

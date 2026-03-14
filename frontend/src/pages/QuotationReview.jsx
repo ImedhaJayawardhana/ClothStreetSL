@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate} from"react-router-dom";
 import { doc, getDoc, updateDoc, serverTimestamp} from"firebase/firestore";
 import { db} from"../firebase/firebase";
 import { useAuth} from"../context/AuthContext";
+import { useCart} from"../context/CartContext";
 import toast from"react-hot-toast";
 
 export default function QuotationReview() {
@@ -10,6 +11,7 @@ export default function QuotationReview() {
  const location = useLocation();
  const navigate = useNavigate();
  const { user} = useAuth();
+ const { clearCart} = useCart();
 
  const [quotation, setQuotation] = useState(location.state?.quotation || null);
  const [loading, setLoading] = useState(!location.state?.quotation);
@@ -36,12 +38,42 @@ export default function QuotationReview() {
  const handleAccept = async () => {
  setProcessing(true);
  try {
+ // 1. Update quotation status
  await updateDoc(doc(db,"quotations", quotationId), {
  status:"accepted",
  acceptedAt: serverTimestamp(),
  acceptedBy: user?.uid ||"",
  paymentMethod: paymentMethod,
 });
+
+ // 2. Create an order so it shows in the Orders page
+ const orderItems = [
+   ...(quotation.items || []).map((item) => ({
+     name: item.name || "Material",
+     quantity: item.quantity || 1,
+     unit: item.unit || "m",
+     unitPrice: item.unitPrice || 0,
+     image: item.image || "",
+   })),
+   {
+     name: `Service: ${quotation.providerType === "designer" ? "Design" : "Tailoring"} by ${quotation.providerName || "Provider"}`,
+     quantity: 1,
+     unit: "service",
+     unitPrice: (quotation.laborCharge || 0) + (quotation.additionalCharges || 0),
+   },
+ ];
+
+ const { createOrder } = await import("../api");
+ await createOrder({
+   items: orderItems,
+   total_price: grandTotal,
+   status: "pending",
+ });
+
+ // 3. Clear the cart
+ clearCart();
+ try { sessionStorage.removeItem("clothstreet_checkout_cart"); } catch { /* */ }
+
  toast.success("Quotation accepted! Your order is being processed.");
  navigate("/orders");
 } catch (err) {
