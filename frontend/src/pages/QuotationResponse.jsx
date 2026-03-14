@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { getDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { db } from "../firebase/firebase";
-import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
-import { doc, updateDoc, collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { doc, updateDoc, collection, query, where, getDocs, addDoc, serverTimestamp, getDoc } from "firebase/firestore";
 
 export default function QuotationResponse() {
   const { quotationId } = useParams();

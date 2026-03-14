@@ -131,7 +131,7 @@ export default function DesignerDashboard() {
       }
     };
     fetchDashboard();
-  }, [user]);
+  }, [user, setDashboardLoading, setDashboardError]);
 
   // ── NEW: Handler to update project status via API ──
   const handleProjectStatusChange = async (orderId, newStatus) => {
