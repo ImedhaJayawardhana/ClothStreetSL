@@ -68,16 +68,15 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  // ── State ──
+  // ── ALL useState calls must be here at the top ──
   const [fabric, setFabric] = useState(null);
   const [relatedFabrics, setRelatedFabrics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-
   const [activeImg, setActiveImg] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
   const [zoomStyle, setZoomStyle] = useState({ display: "none" });
+  const [qty, setQty] = useState(1); // ← MOVED HERE from inside functions
 
   // ── Fetch fabric from FastAPI ──
   useEffect(() => {
@@ -85,7 +84,6 @@ export default function ProductDetail() {
       setLoading(true);
       setError("");
       try {
-        // Fetch single fabric
         const res = await getFabric(fabricId);
         const data = res.data;
         setFabric({
@@ -107,7 +105,6 @@ export default function ProductDetail() {
           careInstructions: data.careInstructions || "Follow standard care instructions",
         });
 
-        // Fetch related fabrics
         const relRes = await listFabrics();
         const related = (relRes.data || [])
           .filter((f) => f.id !== fabricId)
@@ -144,8 +141,8 @@ export default function ProductDetail() {
 
   const handleMouseLeave = () => setZoomStyle({ display: "none" });
 
+  // ── qty is now available here from useState at top ──
   function handleAddToCart() {
-    const [qty, setQty] = useState(1);
     addToCart({ id: fabric.id, name: fabric.name, unitPrice: fabric.price, quantity: qty });
   }
 
@@ -169,17 +166,16 @@ export default function ProductDetail() {
       </div>
     );
   }
-  const [qty, setQty] = useState(1);
+
+  // ── total uses qty from useState at top ──
   const total = (fabric.price * qty).toLocaleString();
 
-  // Thumbnail colors
   const thumbColors = [
     fabric.bgColor,
     fabric.colors?.[0]?.hex || fabric.bgColor,
     "#2d1b69",
   ];
 
-  // Main image — use real image_url if available, else color block
   const mainImageSrc = fabric.image_url || null;
 
   return (
@@ -378,6 +374,34 @@ export default function ProductDetail() {
             </div>
           </div>
 
+          {/* Quantity selector */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 12,
+            background: C.bgCardAlt, border: `1px solid ${C.border}`,
+            borderRadius: 12, padding: "0.85rem 1.1rem"
+          }}>
+            <span style={{ fontSize: "0.75rem", color: C.textFaint, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Quantity (meters)
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" }}>
+              <button
+                onClick={() => setQty(q => Math.max(1, q - 1))}
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: `1px solid ${C.border}`, background: C.bgCard,
+                  cursor: "pointer", fontWeight: 700, fontSize: "1rem", color: C.text
+                }}>−</button>
+              <span style={{ fontWeight: 700, minWidth: 24, textAlign: "center" }}>{qty}</span>
+              <button
+                onClick={() => setQty(q => q + 1)}
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: `1px solid ${C.border}`, background: C.bgCard,
+                  cursor: "pointer", fontWeight: 700, fontSize: "1rem", color: C.text
+                }}>+</button>
+            </div>
+          </div>
+
           {/* Color */}
           {fabric.color && (
             <div style={{
@@ -491,7 +515,7 @@ export default function ProductDetail() {
               {[
                 { id: "description", label: "Description" },
                 { id: "specs", label: "Specifications" },
-                { id: "reviews", label: `Reviews` },
+                { id: "reviews", label: "Reviews" },
               ].map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                   style={{
@@ -552,7 +576,6 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              {/* Reviews Tab */}
               {/* Reviews Tab */}
               {activeTab === "reviews" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
