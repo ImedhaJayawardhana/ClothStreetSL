@@ -30,16 +30,19 @@ def get_current_user(decoded_token: dict = Depends(verify_token)):
         raise HTTPException(status_code=404, detail="User not found")
     return doc.to_dict()
 
+
 @router.delete("/me")
 def delete_current_user(decoded_token: dict = Depends(verify_token)):
     uid = decoded_token["uid"]
     try:
         # Delete from Firebase Authentication
         auth.delete_user(uid)
-        
+
         # Delete user profile document from Firestore
         db.collection("users").document(uid).delete()
-        
+
         return {"message": "Account successfully deleted"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete account: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to delete account: {str(e)}"
+        )
