@@ -58,8 +58,8 @@ export default function QuotationOffers() {
       try {
         await deleteCartItem(user.uid, q.providerId);
         clearCart();
-      } catch (_) {
-        // Silently ignore cart errors as requested
+      } catch {
+        // Silently ignore cart errors
       }
 
       // 3. UI Updates
@@ -89,13 +89,13 @@ export default function QuotationOffers() {
       setQuotations((prev) =>
         prev.map((item) => (item.id === q.id ? { ...item, status: "declined" } : item))
       );
-    } catch (_) {
+    } catch {
       toast.error("Failed to decline quotation.");
     }
   };
 
   const handleDelete = async (e, id) => {
-    e.stopPropagation(); // prevent clicking the card
+    e.stopPropagation();
     if (!window.confirm("Are you sure you want to delete this quote request?")) return;
     try {
       await deleteQuotation(id);
