@@ -144,26 +144,25 @@ def update_quotation(
                 "name": f"Service: {service_type} by {provider_name}",
                 "quantity": 1,
                 "unit": "service",
-                "unitPrice": data.get("laborCharge", 0)
-                + data.get("additionalCharges", 0),
+                "unitPrice": (
+                    data.get("laborCharge", 0) + data.get("additionalCharges", 0)
+                ),
             }
         )
 
         order_data = {
-            "id": "",  # Will be replaced by doc_ref.id implicitly in firestore, but keeping format clean
+            "id": "",  # replaced by doc_ref.id after Firestore insert
             "customerId": data.get("customerId", ""),
-            "customer_id": data.get(
-                "customerId", ""
-            ),  # legacy field to support existing UI
+            "customer_id": data.get("customerId", ""),  # legacy field for UI
             "providerId": data.get("providerId", ""),
             "quotationId": quotation_id,
             "serviceType": service_type,
             "description": data.get("description", ""),
             "finalPrice": final_price,
-            "total_price": final_price,  # legacy field to support existing UI
+            "total_price": final_price,  # legacy field for UI
             "deadline": data.get("deadline") or data.get("expectedDate", ""),
             "status": "Confirmed",
-            "items": items,  # legacy field for UI
+            "items": items,
             "createdAt": now,
             "created_at": now,  # legacy field
         }
@@ -191,10 +190,11 @@ def delete_quotation(quotation_id: str, decoded_token: dict = Depends(verify_tok
         raise HTTPException(status_code=404, detail="Quotation not found")
 
     data = doc.to_dict()
-    # Only the customer who created it can delete it (or provider if appropriate, but keeping it strict to customer for now)
+    # Only the customer who created it can delete it
     if data.get("customerId") != uid:
         raise HTTPException(
-            status_code=403, detail="You can only delete your own quotation requests"
+            status_code=403,
+            detail="You can only delete your own quotation requests",
         )
 
     if data.get("status") not in ["pending", "rejected", "declined"]:
