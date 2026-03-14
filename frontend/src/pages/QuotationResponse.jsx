@@ -105,7 +105,69 @@ export default function QuotationResponse() {
  console.error("Error declining:", err);
  toast.error("Failed to decline request.");
 }
-};
+ };
+
+  // NEW: Complete Order handler
+  const handleCompleteOrder = async () => {
+    if (!quotation) return;
+    try {
+      const ordersQuery = query(
+        collection(db, "orders"),
+        where("quotationId", "==", quotationId)
+      );
+      const ordersSnap = await getDocs(ordersQuery);
+
+      if (ordersSnap.empty) {
+        // Create an order if none exists
+        const newOrder = {
+          customerId: quotation.customerId || "",
+          customer_id: quotation.customerId || "",
+          providerId: quotation.providerId || "",
+          quotationId: quotationId,
+          serviceType: quotation.serviceType || "Service",
+          description: quotation.description || quotation.requirements || "",
+          customerName: quotation.customerName || "Customer",
+          finalPrice: quotation.proposedPrice || quotation.grandTotal || quotation.budget || 0,
+          total_price: quotation.proposedPrice || quotation.grandTotal || quotation.budget || 0,
+          price: quotation.proposedPrice || quotation.grandTotal || quotation.budget || 0,
+          total: quotation.proposedPrice || quotation.grandTotal || quotation.budget || 0,
+          items: quotation.items || [],
+          status: "completed",
+          createdAt: serverTimestamp(),
+          created_at: new Date().toISOString(),
+        };
+        if (quotation.providerType === "tailor") newOrder.tailorId = quotation.providerId;
+        else newOrder.designerId = quotation.providerId;
+        
+        await addDoc(collection(db, "orders"), newOrder);
+      } else {
+        // Update existing orders
+        for (const orderDoc of ordersSnap.docs) {
+          await updateDoc(doc(db, "orders", orderDoc.id), { status: "completed" });
+        }
+      }
+
+      await updateDoc(doc(db, "quotations", quotationId), { status: "completed" });
+
+      const providerName = quotation.providerName || user?.name || "Your provider";
+      const serviceDesc = quotation.description || quotation.serviceType || "your order";
+      await addDoc(collection(db, "notifications"), {
+        userId: quotation.customerId,
+        type: "order_completed",
+        title: "Order Completed! ✅",
+        message: `${providerName} has completed ${serviceDesc}. Thank you for choosing ClothStreetSL!`,
+        quotationId: quotationId,
+        read: false,
+        createdAt: serverTimestamp(),
+      });
+
+      setQuotation({ ...quotation, status: "completed" });
+      toast.success("Order marked as completed!");
+    } catch (err) {
+      console.error("Complete order error:", err);
+      toast.error("Failed to complete order.");
+    }
+  };
 
  const formatDate = (timestamp) => {
  if (!timestamp?.seconds) return"—";
@@ -139,7 +201,7 @@ export default function QuotationResponse() {
  );
 }
 
- const isAlreadyQuoted = quotation.status ==="quoted" || quotation.status ==="accepted" || quotation.status ==="rejected";
+ const isAlreadyQuoted = quotation.status ==="quoted" || quotation.status ==="accepted" || quotation.status ==="rejected" || quotation.status === "completed";
 
  return (
  <div className="min-h-screen">
@@ -518,14 +580,17 @@ export default function QuotationResponse() {
  <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center ${
  quotation.status ==="quoted" ?"" :
  quotation.status ==="accepted" ?"bg-emerald-50" :
+ quotation.status ==="completed" ?"bg-blue-50" :
 ""
 }`}>
  {quotation.status ==="quoted" ?"💰" :
- quotation.status ==="accepted" ?"✅" :"❌"}
+ quotation.status ==="accepted" ?"✅" :
+ quotation.status ==="completed" ?"📦" : "❌"}
  </div>
  <h3 className="text-lg font-bold mb-1">
  {quotation.status ==="quoted" ?"Quotation Sent" :
  quotation.status ==="accepted" ?"Quotation Accepted!" :
+ quotation.status ==="completed" ?"Order Completed!" :
 "Request Declined"}
  </h3>
  {quotation.grandTotal && (
@@ -534,6 +599,48 @@ export default function QuotationResponse() {
  {quotation.completionDate && (
  <p className="text-sm">Completion by: <span className="font-semibold">{quotation.completionDate}</span></p>
  )}
+
+  {quotation.status === "completed" && (
+    <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 text-left my-6 mx-auto max-w-sm">
+      <p className="text-sm font-bold text-slate-800 mb-3 uppercase tracking-wider">Order Details</p>
+      
+      {/* Items list */}
+      <div className="space-y-2 mb-4">
+        {quotation.items?.length > 0 ? quotation.items.map((item, idx) => (
+          <div key={idx} className="flex justify-between items-start text-sm pb-2 border-b border-slate-100 last:border-0 last:pb-0">
+            <span className="text-slate-600 pr-4">{item.name || item.item || "Custom Item"} <span className="font-semibold text-slate-400">x{item.quantity || 1}</span></span>
+            <span className="font-bold text-slate-800 shrink-0">LKR {(item.unitPrice || item.price || 0).toLocaleString()}</span>
+          </div>
+        )) : (
+          <div className="flex justify-between items-start text-sm">
+            <span className="text-slate-600 pr-4">{quotation.serviceType || "Custom Design Service"}</span>
+            <span className="font-bold text-slate-800 shrink-0">LKR {(quotation.grandTotal || quotation.budget || 0).toLocaleString()}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Additional details */}
+      {(quotation.description || quotation.requirements) && (
+        <div className="text-sm">
+          <p className="font-bold text-slate-700 mb-1">Requirements:</p>
+          <p className="text-slate-600 whitespace-pre-line leading-relaxed">{quotation.description || quotation.requirements}</p>
+        </div>
+      )}
+    </div>
+  )}
+
+  {/* Action buttons for accepted status */}
+  {quotation.status === "accepted" && (
+    <div className="mt-6">
+      <button
+        onClick={handleCompleteOrder}
+        className="w-full sm:w-auto px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors cursor-pointer"
+      >
+        Complete Order Now
+      </button>
+    </div>
+  )}
+
  <button
  onClick={() => navigate("/quotation-inbox")}
  className="mt-4 px-6 py-2 hover: font-semibold rounded-xl text-sm transition-colors cursor-pointer"

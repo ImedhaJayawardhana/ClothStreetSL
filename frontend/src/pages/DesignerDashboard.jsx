@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { db, auth } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+// ── NEW: imports for dashboard API ──
+import { getDesignerDashboard, updateDesignerProjectStatus, updateDesignerProfile } from "../api/designer";
 
 export default function DesignerDashboard() {
   const navigate = useNavigate();
@@ -13,6 +15,18 @@ export default function DesignerDashboard() {
   //const [reviews, setReviews] = useState([]);
   const [stats, setStats] = useState({ active: 0, inProgress: 0, readyToDeliver: 0, completed: 0 });
   const [loading, setLoading] = useState(true);
+
+  // ── NEW: Dashboard API state ──
+  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardLoading, setDashboardLoading] = useState(true);
+  const [dashboardError, setDashboardError] = useState("");
+  // Profile edit form state
+  const [profileForm, setProfileForm] = useState({
+    name: "", bio: "", speciality: "", location: "",
+    priceRange: "", phone: "", experience: "",
+  });
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileMsg, setProfileMsg] = useState("");
 
   // Status badge colors
   const statusColours = {
@@ -55,13 +69,16 @@ export default function DesignerDashboard() {
         const uid = user.uid;
         const ordersSnap = await getDocs(query(collection(db, "orders"), where("designerId", "==", uid)));
         const allOrders = ordersSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
-        const counts = { active: 0, inProgress: 0, readyToDeliver: 0, completed: 0 };
+        const counts = { active: 0, inProgress: 0, readyToDeliver: 0, completed: 0, revenue: 0 };
         allOrders.forEach((o) => {
           const s = (o.status || "").toLowerCase();
-          if (["confirmed", "in progress", "fabric ordered", "ready to deliver"].includes(s)) counts.active++;
+          if (["confirmed", "in progress", "fabric ordered", "ready to deliver", "pending", "in review", "accepted"].includes(s)) counts.active++;
           if (s === "in progress") counts.inProgress++;
           if (s === "ready to deliver") counts.readyToDeliver++;
-          if (s === "completed") counts.completed++;
+          if (s === "completed") {
+            counts.completed++;
+            counts.revenue += Number(o.total || o.price || 0);
+          }
         });
         setStats(counts);
         const sorted = [...allOrders].sort((a, b) => {
@@ -86,6 +103,67 @@ export default function DesignerDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  // ── NEW: Fetch dashboard data from backend API ──
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        if (!auth.currentUser) return;
+        const token = await auth.currentUser.getIdToken();
+        const data = await getDesignerDashboard(token);
+        setDashboardData(data);
+        // Pre-fill profile edit form with current profile data
+        if (data.profile) {
+          setProfileForm({
+            name: data.profile.name || "",
+            bio: data.profile.bio || "",
+            speciality: data.profile.speciality || data.profile.style || "",
+            location: data.profile.location || "",
+            priceRange: data.profile.priceRange || data.profile.price_range || "",
+            phone: data.profile.phoneNumber || data.profile.phone || "",
+            experience: data.profile.experience || "",
+          });
+        }
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+        setDashboardError("Failed to load dashboard data");
+      } finally {
+        setDashboardLoading(false);
+      }
+    };
+    fetchDashboard();
+  }, [user]);
+
+  // ── NEW: Handler to update project status via API ──
+  const handleProjectStatusChange = async (orderId, newStatus) => {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      await updateDesignerProjectStatus(orderId, newStatus, token);
+      // Update local state to reflect the change
+      setOrders((prev) =>
+        prev.map((o) => o.id === orderId ? { ...o, status: newStatus } : o)
+      );
+    } catch (err) {
+      console.error("Status update error:", err);
+      alert("Failed to update project status");
+    }
+  };
+
+  // ── NEW: Handler to save profile via API ──
+  const handleProfileSave = async () => {
+    setProfileSaving(true);
+    setProfileMsg("");
+    try {
+      const token = await auth.currentUser.getIdToken();
+      await updateDesignerProfile(profileForm, token);
+      setProfileMsg("Profile updated successfully!");
+    } catch (err) {
+      console.error("Profile save error:", err);
+      setProfileMsg("Failed to save profile. Please try again.");
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
   const handleAccept = async (id) => {
     try { await updateDoc(doc(db, "jobRequests", id), { status: "Accepted" }); } catch (e) { console.error(e); }
     setJobRequests(prev => prev.map(r => r.id === id ? { ...r, status: "Accepted" } : r));
@@ -100,11 +178,12 @@ export default function DesignerDashboard() {
   const avatarLetter = displayName.charAt(0).toUpperCase();
   const newReqCount = jobRequests.filter(r => (r.status || "").toLowerCase() === "new").length;
 
+  // NEW: use real API data when available, fallback to locally-computed stats
   const statsData = [
-    { label: "Active Orders", value: stats.active, color: "text-blue-600", bg: "bg-blue-50", icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="2" /><path strokeWidth="2" d="M12 6v6l4 2" /></svg> },
-    { label: "In Progress", value: stats.inProgress, color: "text-orange-500", bg: "bg-orange-50", icon: <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /></svg> },
-    { label: "Ready to Deliver", value: stats.readyToDeliver, color: "text-emerald-600", bg: "bg-emerald-50", icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1" strokeWidth="2" /><path strokeWidth="2" d="M16 8h4l3 5v3h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" /></svg> },
-    { label: "Completed", value: stats.completed, color: "text-blue-600", bg: "bg-blue-50", icon: <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="2" /><path strokeWidth="2" d="M9 12l2 2 4-4" /></svg> },
+    { label: "Active Orders", value: dashboardData ? dashboardData.activeProjects : stats.active, color: "text-blue-600", bg: "bg-blue-50", icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="2" /><path strokeWidth="2" d="M12 6v6l4 2" /></svg> },
+    { label: "Pending", value: dashboardData ? dashboardData.pendingProjects : stats.inProgress, color: "text-orange-500", bg: "bg-orange-50", icon: <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /></svg> },
+    { label: "Total Projects", value: dashboardData ? dashboardData.totalProjects : (stats.active + stats.inProgress + stats.readyToDeliver + stats.completed), color: "text-emerald-600", bg: "bg-emerald-50", icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1" strokeWidth="2" /><path strokeWidth="2" d="M16 8h4l3 5v3h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" /></svg> },
+    { label: "Completed", value: dashboardData ? dashboardData.completedProjects : stats.completed, color: "text-blue-600", bg: "bg-blue-50", icon: <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth="2" /><path strokeWidth="2" d="M9 12l2 2 4-4" /></svg> },
   ];
 
   if (loading) return (
@@ -177,8 +256,8 @@ export default function DesignerDashboard() {
                 </svg>
               </div>
               <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1">Project Revenue</p>
-              <h3 className="font-black text-4xl text-slate-900 mb-1">LKR 65,000</h3>
-              <p className="text-sm font-bold text-slate-400 mb-6 italic">from 8 successful collaborations</p>
+              <h3 className="font-black text-4xl text-slate-900 mb-1">LKR {(stats?.revenue || 0).toLocaleString()}</h3>
+              <p className="text-sm font-bold text-slate-400 mb-6 italic">from {stats?.completed || 0} successful collaboration{(stats?.completed === 1) ? '' : 's'}</p>
               <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-full px-4 py-1.5 transition-colors hover:bg-emerald-100">
                 <svg className="w-3.5 h-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
@@ -189,17 +268,20 @@ export default function DesignerDashboard() {
             </div>
           </div>
 
-          {/* Ratings */}
+          {/* Ratings — NEW: Use real data from API when available */}
           <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-900 uppercase tracking-widest text-xs">Portfolio Impact</h3>
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-black text-slate-900">4.9</span>
+                <span className="text-2xl font-black text-slate-900">{dashboardData?.averageRating ?? 4.9}</span>
                 <div className="flex">
                   {[1, 2, 3, 4, 5].map(s => <svg key={s} className="w-3 h-3 text-amber-400 fill-current" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" /></svg>)}
                 </div>
               </div>
             </div>
+            {dashboardData?.totalReviews != null && (
+              <p className="text-[10px] font-bold text-slate-400 mb-3 uppercase">{dashboardData.totalReviews} total review{dashboardData.totalReviews !== 1 ? 's' : ''}</p>
+            )}
             <div className="space-y-3">
               {[{ s: 5, c: 110, p: 95 }, { s: 4, c: 10, p: 8 }, { s: 3, c: 4, p: 3 }].map(row => (
                 <div key={row.s} className="flex items-center gap-4">
@@ -244,13 +326,13 @@ export default function DesignerDashboard() {
                 <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
                 Live Job Requests
               </h2>
-              {jobRequests.length > 0 && <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase">Action Required</span>}
+              {newReqCount > 0 && <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase">Action Required</span>}
             </div>
-            {jobRequests.length === 0 ? (
+            {newReqCount === 0 ? (
               <div className="p-12 text-center text-slate-400 font-bold italic">Clear horizon. No job requests pending.</div>
             ) : (
               <div className="divide-y divide-slate-50">
-                {jobRequests.map((req) => (
+                {jobRequests.filter(req => (req.status || "").toLowerCase() === "new").map((req) => (
                   <div key={req.id} className="p-6 hover:bg-slate-50/50 transition-colors group">
                     <div className="flex items-center justify-between mb-4">
                       <div>
@@ -304,10 +386,45 @@ export default function DesignerDashboard() {
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter truncate">{order.customerName}</p>
                     </div>
                     <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md ${statusColours[order.status] || "bg-slate-100 text-slate-600"}`}>{order.status}</span>
+                    {/* NEW: Status dropdown to change project status */}
+                    <select
+                      className="text-[10px] font-bold border border-slate-200 rounded-lg px-2 py-1 bg-white text-slate-600 cursor-pointer focus:outline-none focus:border-blue-400"
+                      value={order.status?.toLowerCase?.() || "pending"}
+                      onChange={(e) => handleProjectStatusChange(order.id, e.target.value)}
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
                   </div>
                 ))}
               </div>
             </div>
+
+            {/* ── NEW: Recent Reviews from API ── */}
+            {dashboardData?.recentReviews?.length > 0 && (
+              <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                <div className="px-5 py-4 border-b border-slate-50">
+                  <h3 className="font-black text-xs text-slate-400 uppercase tracking-widest">Recent Reviews</h3>
+                </div>
+                <div className="divide-y divide-slate-50">
+                  {dashboardData.recentReviews.map(review => (
+                    <div key={review.id} className="p-4 flex flex-col gap-2">
+                      <div className="flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map(s => (
+                          <svg key={s} className="w-3 h-3" viewBox="0 0 24 24" fill={s <= review.rating ? "#f59e0b" : "none"} stroke="#f59e0b" strokeWidth="1.5">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        ))}
+                      </div>
+                      <p className="text-xs font-bold text-slate-600 italic">&ldquo;{review.comment}&rdquo;</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase">— {review.userName}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>

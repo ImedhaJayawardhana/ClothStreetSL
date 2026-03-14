@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getMyOrders, getMyQuotations } from "../../api";
+// ── NEW: imports for dashboard API + Firebase auth ──
+import { getTailorDashboard, updateTailorOrderStatus, updateTailorProfile } from "../../api/tailor";
+import { auth } from "../../firebase/firebase";
 
 // ─── Keep dummy data only for Earnings, Ratings, Reviews (needs backend later) ───
 const DUMMY_EARNINGS = {
@@ -109,7 +112,7 @@ function RatingsCard({ data }) {
 }
 
 // ─── Active Orders Card ───────────────────────────────────────────────────────
-function ActiveOrdersCard({ orders, loading }) {
+function ActiveOrdersCard({ orders, loading, onStatusChange }) {
   if (loading) {
     return (
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
@@ -176,6 +179,19 @@ function ActiveOrdersCard({ orders, loading }) {
               <p className="font-black text-xs text-slate-900">
                 LKR {order.total_price?.toLocaleString()}
               </p>
+              {/* NEW: Status dropdown to change order status */}
+              {onStatusChange && (
+                <select
+                  className="text-[10px] font-bold border border-slate-200 rounded-lg px-2 py-1 bg-white text-slate-600 cursor-pointer focus:outline-none focus:border-blue-400"
+                  value={order.status?.toLowerCase() || "pending"}
+                  onChange={(e) => onStatusChange(order.id, e.target.value)}
+                >
+                  <option value="pending">Pending</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              )}
             </div>
           </div>
         ))}
@@ -206,7 +222,9 @@ function OrderRequestsCard({ requests, loading, onAccept, onDecline }) {
     );
   }
 
-  if (!requests || requests.length === 0) {
+  const pendingRequests = requests ? requests.filter(r => r.status === "pending") : [];
+
+  if (pendingRequests.length === 0) {
     return (
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
         <h2 className="font-black text-xs text-slate-800 uppercase tracking-widest mb-4">New Job Orders</h2>
@@ -228,11 +246,11 @@ function OrderRequestsCard({ requests, loading, onAccept, onDecline }) {
       <div className="flex items-center justify-between">
         <h2 className="font-black text-xs text-slate-800 uppercase tracking-widest">New Job Orders</h2>
         <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-blue-50 text-blue-600 border border-blue-100/50">
-          {requests.filter((r) => r.status === "pending").length} Pending
+          {pendingRequests.length} Pending
         </span>
       </div>
       <div className="flex flex-col gap-4">
-        {requests.map((req) => (
+        {pendingRequests.map((req) => (
           <div key={req.id} className="flex flex-col gap-4 p-4 border border-slate-50 rounded-2xl hover:bg-slate-50/50 transition-colors">
             <div className="flex items-center justify-between">
               <div>
@@ -324,7 +342,12 @@ export default function TailorDashboard() {
     inProgress: 0,
     readyToDeliver: 0,
     completed: 0,
+    revenue: 0,
   });
+
+  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardLoading, setDashboardLoading] = useState(true);
+  const [dashboardError, setDashboardError] = useState("");
 
   // ── Fetch real orders ──
   useEffect(() => {
@@ -335,13 +358,16 @@ export default function TailorDashboard() {
       .then((res) => {
         const data = res.data || [];
         setOrders(data);
-        // Compute stat counts from real orders
-        const counts = { active: 0, inProgress: 0, readyToDeliver: 0, completed: 0 };
+        const counts = { active: 0, inProgress: 0, readyToDeliver: 0, completed: 0, revenue: 0 };
         data.forEach((o) => {
           const s = (o.status || "").toLowerCase();
-          if (s === "pending") counts.active++;
-          if (s === "processing") counts.inProgress++;
-          if (s === "completed") counts.completed++;
+          if (["pending", "in review", "accepted"].includes(s)) counts.active++;
+          if (["processing", "in progress", "fabric ordered"].includes(s)) counts.inProgress++;
+          if (s === "ready to deliver") counts.readyToDeliver++;
+          if (s === "completed") {
+            counts.completed++;
+            counts.revenue += Number(o.total || o.price || 0);
+          }
         });
         setStatCounts(counts);
       })
@@ -355,6 +381,41 @@ export default function TailorDashboard() {
       .finally(() => setQuotationsLoading(false));
 
   }, [authUser]);
+
+  // ── NEW: Fetch dashboard data from backend API ──
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        if (!auth.currentUser) return;
+        const token = await auth.currentUser.getIdToken();
+        const data = await getTailorDashboard(token);
+        setDashboardData(data);
+      } catch (err) {
+        console.error("Dashboard fetch error:", err);
+        setDashboardError("Failed to load dashboard data");
+      } finally {
+        setDashboardLoading(false);
+      }
+    };
+    fetchDashboard();
+  }, [authUser]);
+
+  // ── NEW: Handler to update order status via API ──
+  const handleOrderStatusChange = async (orderId, newStatus) => {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      await updateTailorOrderStatus(orderId, newStatus, token);
+      // Update local state to reflect the change
+      setOrders((prev) =>
+        prev.map((o) => o.id === orderId ? { ...o, status: newStatus } : o)
+      );
+    } catch (err) {
+      console.error("Status update error:", err);
+      alert("Failed to update order status");
+    }
+  };
+
+
 
   // ── Accept / Decline quotation handlers ──
   const handleAccept = async (quotationId) => {
@@ -379,25 +440,25 @@ export default function TailorDashboard() {
     }
   };
 
-  // ── Stat cards config ──
+  // ── Stat cards config ── (NEW: use real API data when available)
   const stats = [
     {
-      id: 1, label: "Active Orders", value: statCounts.active,
+      id: 1, label: "Active Orders", value: dashboardData ? dashboardData.activeOrders : statCounts.active,
       color: "text-blue-600", bg: "bg-blue-50",
       icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>,
     },
     {
-      id: 2, label: "In Progress", value: statCounts.inProgress,
+      id: 2, label: "Pending", value: dashboardData ? dashboardData.pendingOrders : statCounts.inProgress,
       color: "text-blue-600", bg: "bg-blue-50",
       icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><line x1="20" x2="8.12" y1="4" y2="15.88" /><line x1="14.47" x2="20" y1="14.48" y2="20" /><line x1="8.12" x2="12" y1="8.12" y2="12" /></svg>,
     },
     {
-      id: 3, label: "Ready to Deliver", value: statCounts.readyToDeliver,
+      id: 3, label: "Total Orders", value: dashboardData ? dashboardData.totalOrders : (statCounts.active + statCounts.inProgress + statCounts.readyToDeliver + statCounts.completed),
       color: "text-emerald-600", bg: "bg-emerald-50",
       icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 18H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.19M15 6h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3.19" /><line x1="23" x2="23" y1="13" y2="11" /><polyline points="11 6 7 12 13 12 9 18" /></svg>,
     },
     {
-      id: 4, label: "Completed", value: statCounts.completed,
+      id: 4, label: "Completed", value: dashboardData ? dashboardData.completedOrders : statCounts.completed,
       color: "text-blue-600", bg: "bg-blue-50",
       icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>,
     },
@@ -463,8 +524,17 @@ export default function TailorDashboard() {
 
         {/* ── Earnings + Ratings ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <EarningsCard data={DUMMY_EARNINGS} />
-          <RatingsCard data={DUMMY_RATINGS} />
+          <EarningsCard data={{
+            total: `LKR ${(statCounts.revenue || 0).toLocaleString()}`,
+            fromOrders: statCounts.completed || 0,
+            growthPercent: statCounts.completed > 0 ? 100 : 0
+          }} />
+          {/* NEW: Use real ratings from API when available, fallback to dummy */}
+          <RatingsCard data={dashboardData ? {
+            average: dashboardData.averageRating || DUMMY_RATINGS.average,
+            total: dashboardData.totalReviews || DUMMY_RATINGS.total,
+            breakdown: DUMMY_RATINGS.breakdown,
+          } : DUMMY_RATINGS} />
         </div>
 
         {/* ── Quotation Inbox Hook ── */}
@@ -503,14 +573,26 @@ export default function TailorDashboard() {
           <ActiveOrdersCard
             orders={orders}
             loading={ordersLoading}
+            onStatusChange={handleOrderStatusChange}
           />
         </div>
 
-        {/* ── Reviews ── */}
+        {/* ── Reviews — NEW: Use real reviews from API when available ── */}
         <div className="flex flex-col gap-6">
           <h2 className="font-black text-xs text-slate-800 uppercase tracking-widest">Customer Feedback</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {DUMMY_REVIEWS.map((r) => <ReviewCard key={r.id} review={r} />)}
+            {(dashboardData?.recentReviews?.length > 0
+              ? dashboardData.recentReviews.map((r) => (
+                  <ReviewCard key={r.id} review={{
+                    id: r.id,
+                    stars: r.rating,
+                    quote: r.comment,
+                    name: r.userName,
+                    daysAgo: Math.max(1, Math.floor((Date.now() - new Date(r.createdAt).getTime()) / 86400000)) || 1,
+                  }} />
+                ))
+              : DUMMY_REVIEWS.map((r) => <ReviewCard key={r.id} review={r} />)
+            )}
           </div>
         </div>
 
