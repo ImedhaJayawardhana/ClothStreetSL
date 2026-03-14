@@ -1,8 +1,8 @@
-import { useState, useEffect} from"react";
-import { collection, query, where, getDocs, doc, updateDoc, addDoc, serverTimestamp} from"firebase/firestore";
-import { db} from"../firebase/firebase";
-import { useAuth} from"../context/AuthContext";
-import { useNavigate} from"react-router-dom";
+import { useState, useEffect } from "react";
+import { collection, query, where, getDocs, doc, updateDoc, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const STATUS_MAP = {
   pending: { label: "Pending", bg: "bg-amber-100", text: "text-amber-700", dot: "bg-amber-500" },
@@ -51,8 +51,8 @@ export default function QuotationInbox() {
     e.stopPropagation(); // Prevent navigating to quotation-response page
     try {
       // Get the quotation data first (we need customerId for the notification)
-      const quotationRef = doc(db, "quotations", quotationId);
-      const quotationSnap = await getDocs(query(
+      const _quotationRef = doc(db, "quotations", quotationId);
+      const _quotationSnap = await getDocs(query(
         collection(db, "quotations"),
         where("__name__", "==", quotationId)
       ));
@@ -167,7 +167,7 @@ export default function QuotationInbox() {
         {/* ── Stat Cards ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { label: "Incoming Requests", value: stats.total, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>, bg: "bg-blue-50", accent: "text-blue-600" },
+            { label: "Incoming Requests", value: stats.total, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>, bg: "bg-blue-50", accent: "text-blue-600" },
             { label: "Awaiting Quote", value: stats.pending, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M12 6v6l4 2" /><circle cx="12" cy="12" r="10" strokeWidth="2.5" /></svg>, bg: "bg-amber-50", accent: "text-amber-600" },
             { label: "Negotiating", value: stats.quoted, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.407 2.67 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.407-2.67-1M12 16v1m4-12V3c0-1.105-1.343-2-3-2s-3 .895-3 2v2m0 16v2c0 1.105 1.343 2 3 2s3-.895 3-2v-2" /></svg>, bg: "bg-blue-50", accent: "text-blue-600" },
             { label: "Successful Bids", value: stats.accepted, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="3" d="M5 13l4 4L19 7" /></svg>, bg: "bg-emerald-50", accent: "text-emerald-600" },
@@ -191,7 +191,7 @@ export default function QuotationInbox() {
               className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all cursor-pointer ${activeTab === tab
                 ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
                 : "text-slate-400 hover:text-blue-600 hover:bg-white"
-              }`}
+                }`}
             >
               {tab}
               {tab !== "All" && (

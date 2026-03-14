@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getMyOrders, getMyQuotations } from "../../api";
 // ── NEW: imports for dashboard API + Firebase auth ──
-import { getTailorDashboard, updateTailorOrderStatus, updateTailorProfile } from "../../api/tailor";
+import { getTailorDashboard, updateTailorOrderStatus } from "../../api/tailor";
 import { auth } from "../../firebase/firebase";
 
 // ─── Keep dummy data only for Earnings, Ratings, Reviews (needs backend later) ───
@@ -346,8 +346,8 @@ export default function TailorDashboard() {
   });
 
   const [dashboardData, setDashboardData] = useState(null);
-  const [dashboardLoading, setDashboardLoading] = useState(true);
-  const [dashboardError, setDashboardError] = useState("");
+  const [_dashboardLoading, setDashboardLoading] = useState(true);
+  const [_dashboardError, setDashboardError] = useState("");
 
   // ── Fetch real orders ──
   useEffect(() => {
@@ -583,14 +583,14 @@ export default function TailorDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {(dashboardData?.recentReviews?.length > 0
               ? dashboardData.recentReviews.map((r) => (
-                  <ReviewCard key={r.id} review={{
-                    id: r.id,
-                    stars: r.rating,
-                    quote: r.comment,
-                    name: r.userName,
-                    daysAgo: Math.max(1, Math.floor((Date.now() - new Date(r.createdAt).getTime()) / 86400000)) || 1,
-                  }} />
-                ))
+                <ReviewCard key={r.id} review={{
+                  id: r.id,
+                  stars: r.rating,
+                  quote: r.comment,
+                  name: r.userName,
+                  daysAgo: Math.max(1, Math.floor((Date.now() - new Date(r.createdAt).getTime()) / 86400000)) || 1,
+                }} />
+              ))
               : DUMMY_REVIEWS.map((r) => <ReviewCard key={r.id} review={r} />)
             )}
           </div>
