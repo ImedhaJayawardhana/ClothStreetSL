@@ -550,12 +550,12 @@ export default function DesignerProfile() {
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
                 {/* Back Button */}
-                <button onClick={() => navigate("/browse-designers")}
+                <button onClick={() => navigate(-1)}
                     className="flex items-center gap-2 text-slate-500 hover:text-slate-800 font-medium text-sm mb-6 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>
-                    Back to Designers
+                    Back
                 </button>
 
                 <div className="flex flex-col lg:flex-row gap-6">

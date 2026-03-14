@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
@@ -15,6 +15,7 @@ export default function Register() {
 
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   async function handleRegister(e) {
     e.preventDefault();
@@ -24,7 +25,11 @@ export default function Register() {
     setLoading(true);
     try {
       await register(name, email, password, role);
-      if (role === 'designer') {
+      
+      const returnUrl = location.state?.returnUrl;
+      if (returnUrl) {
+        navigate(returnUrl, { state: location.state });
+      } else if (role === 'designer') {
         navigate('/designer-dashboard');
       } else if (role === 'seller') {
         navigate('/dashboard');
@@ -46,7 +51,11 @@ export default function Register() {
     setLoading(true);
     try {
       await loginWithGoogle(role);
-      if (role === 'designer') {
+      
+      const returnUrl = location.state?.returnUrl;
+      if (returnUrl) {
+        navigate(returnUrl, { state: location.state });
+      } else if (role === 'designer') {
         navigate('/designer-dashboard');
       } else if (role === 'seller') {
         navigate('/dashboard');

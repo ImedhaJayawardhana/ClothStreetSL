@@ -120,9 +120,19 @@ const STEPS = ["Shipping", "Delivery", "Payment", "Confirm", "Complete"];
 
 export default function Checkout() {
     const { cartItems, cartSubtotal, clearCart } = useCart();
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+
+    // ── All hooks must be declared before any early return ──
+
+    // ── Auth redirect effect ──
+    useEffect(() => {
+        if (!loading && !user) {
+            toast.error("Please login or create an account to proceed to checkout.");
+            navigate("/login", { state: { returnUrl: "/checkout", step: location.state?.step || 1 } });
+        }
+    }, [user, loading, navigate, location.state]);
 
     const SHIPPING_COST = 500;
     const total = cartSubtotal + SHIPPING_COST;
@@ -135,6 +145,35 @@ export default function Checkout() {
     const [form, setForm] = useState({
         fullName: "", phoneNumber: "", city: "", streetAddress: "", district: "",
     });
+
+    // ── Step 2: Delivery ──
+    const [deliveryMethod, setDeliveryMethod] = useState("home");
+    const [tailors, setTailors] = useState([]);
+
+    useEffect(() => {
+        if (currentStep === 2 && tailors.length === 0) {
+            listTailors()
+                .then((res) => setTailors(res.data || []))
+                .catch((err) => console.error("Error fetching tailors:", err));
+        }
+    }, [currentStep, tailors.length]);
+
+    // ── Step 3: Payment ──
+    const [paymentMethod, setPaymentMethod] = useState("card");
+    const [cardDetails, setCardDetails] = useState({ number: "", expiry: "", cvv: "" });
+
+    // ── Step 4: Order ID ──
+    const [orderId, setOrderId] = useState(null);
+
+    // ── Early return for auth loading/guard (after all hooks) ──
+    if (loading || !user) {
+        return (
+            <div className="checkout-page flex flex-col items-center justify-center min-h-[60vh]">
+                <div className="w-10 h-10 border-4 border-slate-200 border-t-purple-600 rounded-full animate-spin"></div>
+                <p className="mt-4 text-slate-500 font-medium">Verifying secure access...</p>
+            </div>
+        );
+    }
 
     const isValidPhone = (phone) => {
         const digits = phone.replace(/[\s\-().+]/g, "").replace(/^94/, "0");
@@ -165,26 +204,10 @@ export default function Checkout() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    // ── Step 2: Delivery ──
-    const [deliveryMethod, setDeliveryMethod] = useState("home");
-    const [tailors, setTailors] = useState([]);
-
-    useEffect(() => {
-        if (currentStep === 2 && tailors.length === 0) {
-            listTailors()
-                .then((res) => setTailors(res.data || []))
-                .catch((err) => console.error("Error fetching tailors:", err));
-        }
-    }, [currentStep, tailors.length]);
-
     const handleContinueToPayment = () => {
         setCurrentStep(3);
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
-
-    // ── Step 3: Payment ──
-    const [paymentMethod, setPaymentMethod] = useState("card");
-    const [cardDetails, setCardDetails] = useState({ number: "", expiry: "", cvv: "" });
 
     const handleCardChange = (e) => {
         setCardDetails((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -201,9 +224,6 @@ export default function Checkout() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    // ── Step 4: Place Order via FastAPI ──
-    const [orderId, setOrderId] = useState(null);
-
     const handlePlaceOrder = async () => {
         if (!user) {
             toast.error("Please log in to place an order.");
@@ -213,7 +233,6 @@ export default function Checkout() {
 
         setPlacingOrder(true);
         try {
-            // Build order items from cart
             const items = cartItems.map((item) => ({
                 id: item.id,
                 name: item.name,
@@ -223,7 +242,6 @@ export default function Checkout() {
                 image: item.image || null,
             }));
 
-            // Call FastAPI createOrder
             const res = await createOrder({
                 items,
                 total_price: total,
@@ -242,7 +260,6 @@ export default function Checkout() {
             const newOrderId = res.data.order_id || "ORD-" + Date.now();
             setOrderId(newOrderId);
 
-            // Clear cart
             if (clearCart) clearCart();
 
             toast.success("Order placed successfully!");
