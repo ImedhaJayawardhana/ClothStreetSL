@@ -114,9 +114,9 @@ export default function DesignerOrders() {
  const counts = { total: allOrders.length, active: 0, completed: 0, revenue: 0};
  allOrders.forEach((o) => {
  const s = (o.status ||"").toLowerCase();
- if (["confirmed","in progress","fabric ordered","ready to deliver","pending","in review"].includes(s)) counts.active++;
+ if (["confirmed","in progress","fabric ordered","ready to deliver","pending","in review","accepted"].includes(s)) counts.active++;
  if (s ==="completed") counts.completed++;
- counts.revenue += o.total || o.price || 0;
+ counts.revenue += Number(o.total || o.price || 0);
 });
 
  setStats(counts.total > 0 ? counts : { total: 4, active: 3, completed: 1, revenue: 1230000});
@@ -167,14 +167,14 @@ export default function DesignerOrders() {
  const headers = ["ID","Name","Client","Category","Status","Progress (%)","Designs","Value (LKR )","Due Date"];
  const rows = orders.map((o) => [
  o.id,
- o.name ||"",
- o.client || o.customerName ||"",
- o.category ||"",
+ o.name || o.item ||"",
+ o.client || o.customerName || o.customer ||"",
+ o.category ||"Design",
  o.status ||"",
- o.progress || 0,
- o.designs || 0,
- o.value || 0,
- o.due ||"",
+ o.progress || (o.status?.toLowerCase() === "completed" ? 100 : 0),
+ o.designs || o.items?.length || 1,
+ o.value || o.total || o.price || 0,
+ o.due || o.expectedDate || o.dueDate ||"",
  ]);
  const csvContent = [headers, ...rows].map((r) => r.map((v) =>`"${v}"`).join(",")).join("\n");
  const blob = new Blob([csvContent], { type:"text/csv;charset=utf-8;"});
@@ -377,9 +377,9 @@ export default function DesignerOrders() {
  if (searchTerm.trim()) {
  const q = searchTerm.toLowerCase();
  filtered = filtered.filter((o) =>
- (o.name ||"").toLowerCase().includes(q) ||
- (o.client || o.customerName ||"").toLowerCase().includes(q) ||
- (o.category ||"").toLowerCase().includes(q) ||
+ (o.name || o.item ||"").toLowerCase().includes(q) ||
+ (o.client || o.customerName || o.customer ||"").toLowerCase().includes(q) ||
+ (o.category ||"Design").toLowerCase().includes(q) ||
  (o.id ||"").toLowerCase().includes(q)
  );
 }
@@ -433,10 +433,10 @@ export default function DesignerOrders() {
  />
  <div className="flex-1 min-w-0">
  <h3 className="text-base font-bold truncate">
- {project.name}
+ {project.name || project.item || "Custom Design Order"}
  </h3>
  <p className="text-sm truncate mt-0.5">
- {project.client || project.customerName}
+ {project.client || project.customerName || project.customer}
  </p>
  </div>
  {/* 3-dot menu + Status dropdown */}
@@ -485,30 +485,30 @@ export default function DesignerOrders() {
 
  {/* Order ID + Category badge */}
  <div className="flex items-center gap-2 mb-3">
- <span className="text-xs font-medium">
+ <span className="text-xs font-medium truncate w-24" title={project.id}>
  {project.id}
  </span>
  <span className="text-xs">•</span>
- <span className="text-xs font-bold px-2.5 py-0.5 rounded-full">
- {project.category}
+ <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
+ {project.category || "Design"}
  </span>
  </div>
 
  {/* Description */}
- <p className="text-sm line-clamp-2 mb-5 h-10">
- {project.description}
+ <p className="text-sm line-clamp-2 mb-5 h-10 text-slate-600">
+ {project.description || project.requirements || "Quotation-based custom design"}
  </p>
 
  {/* Progress bar */}
- <div className="mb-5 p-3 rounded-xl border">
+ <div className="mb-5 p-3 rounded-xl border bg-slate-50 border-slate-100">
  <div className="flex justify-between mb-2 items-center">
  <span className="text-xs font-medium">Progress</span>
- <span className={`text-xs font-bold ${progressColor.replace('bg-','text-')}`}>{project.progress}%</span>
+ <span className={`text-xs font-bold ${progressColor.replace('bg-','text-')}`}>{project.progress || (project.status?.toLowerCase() === "completed" ? 100 : 0)}%</span>
  </div>
- <div className="w-full h-1.5 rounded-full overflow-hidden">
+ <div className="w-full h-1.5 rounded-full bg-slate-200 overflow-hidden">
  <div
- className={`h-full rounded-full transition-all duration-700 ${progressColor}`}
- style={{ width:`${project.progress}%`}}
+ className={`h-full rounded-full transition-all duration-700 ${progressColor || "bg-blue-500"}`}
+ style={{ width:`${project.progress || (project.status?.toLowerCase() === "completed" ? 100 : 0)}%`}}
  />
  </div>
  </div>
@@ -519,8 +519,8 @@ export default function DesignerOrders() {
  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
  </svg>
- <span className="text-xs">Designs:</span>
- <span className="text-xs font-bold">{project.designs}</span>
+ <span className="text-xs">Items:</span>
+ <span className="text-xs font-bold">{project.designs || project.items?.length || 1}</span>
  </div>
  <div className="flex items-center gap-1.5">
  <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -528,11 +528,10 @@ export default function DesignerOrders() {
  <path strokeLinecap="round" strokeLinejoin="round" d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
  </svg>
  <span className="text-xs">Value:</span>
- <span className="text-xs font-bold">{formattedValue}</span>
+ <span className="text-xs font-bold">{formattedValue !== "LKR 0" ? formattedValue : `LKR ${(project.total || project.price || 0).toLocaleString()}`}</span>
  </div>
  </div>
 
- {/* Due date + Status badge */}
  <div className="flex items-center justify-between mb-4">
  <div className="flex items-center gap-1.5">
  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -541,7 +540,7 @@ export default function DesignerOrders() {
  <line x1="8" y1="2" x2="8" y2="6" />
  <line x1="3" y1="10" x2="21" y2="10" />
  </svg>
- <span className="text-xs font-medium">Due: <span className="font-bold">{project.due}</span></span>
+ <span className="text-xs font-medium">Due: <span className="font-bold">{project.due || project.expectedDate || project.dueDate || "Not Set"}</span></span>
  </div>
  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${statusStyle.bg}`}>
  <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />

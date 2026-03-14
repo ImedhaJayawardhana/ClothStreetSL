@@ -1,14 +1,15 @@
-import { useState, useEffect} from"react";
-import { collection, query, where, getDocs} from"firebase/firestore";
-import { db} from"../firebase/firebase";
-import { useAuth} from"../context/AuthContext";
-import { useNavigate} from"react-router-dom";
+import { useState, useEffect } from "react";
+import { collection, query, where, getDocs, doc, updateDoc, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const STATUS_MAP = {
   pending: { label: "Pending", bg: "bg-amber-100", text: "text-amber-700", dot: "bg-amber-500" },
   quoted: { label: "Quoted", bg: "bg-blue-100", text: "text-blue-700", dot: "bg-blue-500" },
   accepted: { label: "Accepted", bg: "bg-emerald-100", text: "text-emerald-700", dot: "bg-emerald-500" },
   rejected: { label: "Rejected", bg: "bg-slate-100", text: "text-slate-500", dot: "bg-slate-400" },
+  completed: { label: "Completed", bg: "bg-blue-100", text: "text-blue-700", dot: "bg-blue-700" },
 };
 
 export default function QuotationInbox() {
@@ -45,12 +46,96 @@ export default function QuotationInbox() {
     return q.status?.toLowerCase() === activeTab.toLowerCase();
   });
 
+  // NEW: Handler to mark an accepted quotation's order as completed
+  const handleCompleteOrder = async (e, quotationId) => {
+    e.stopPropagation(); // Prevent navigating to quotation-response page
+    try {
+      // Get the quotation data first (we need customerId for the notification)
+      const _quotationRef = doc(db, "quotations", quotationId);
+      const _quotationSnap = await getDocs(query(
+        collection(db, "quotations"),
+        where("__name__", "==", quotationId)
+      ));
+
+      // Get quotation data from our local state instead
+      const quotationData = quotations.find(q => q.id === quotationId);
+      if (!quotationData) {
+        alert("Quotation not found.");
+        return;
+      }
+
+      // Find the order linked to this quotation
+      const ordersQuery = query(
+        collection(db, "orders"),
+        where("quotationId", "==", quotationId)
+      );
+      const ordersSnap = await getDocs(ordersQuery);
+
+      if (ordersSnap.empty) {
+        // No order exists yet — create one from quotation data, then mark completed
+        const newOrder = {
+          customerId: quotationData.customerId || "",
+          customer_id: quotationData.customerId || "",
+          providerId: quotationData.providerId || "",
+          quotationId: quotationId,
+          serviceType: quotationData.serviceType || "Service",
+          description: quotationData.description || quotationData.requirements || "",
+          customerName: quotationData.customerName || "Customer",
+          finalPrice: quotationData.proposedPrice || quotationData.grandTotal || quotationData.budget || 0,
+          total_price: quotationData.proposedPrice || quotationData.grandTotal || quotationData.budget || 0,
+          price: quotationData.proposedPrice || quotationData.grandTotal || quotationData.budget || 0,
+          total: quotationData.proposedPrice || quotationData.grandTotal || quotationData.budget || 0,
+          items: quotationData.items || [],
+          status: "completed",
+          createdAt: serverTimestamp(),
+          created_at: new Date().toISOString(),
+        };
+        // Add tailorId or designerId based on provider type
+        if (quotationData.providerType === "tailor") {
+          newOrder.tailorId = quotationData.providerId;
+        } else {
+          newOrder.designerId = quotationData.providerId;
+        }
+        await addDoc(collection(db, "orders"), newOrder);
+      } else {
+        // Update all matching orders to "completed"
+        for (const orderDoc of ordersSnap.docs) {
+          await updateDoc(doc(db, "orders", orderDoc.id), { status: "completed" });
+        }
+      }
+
+      // Update the quotation status to "completed"
+      await updateDoc(doc(db, "quotations", quotationId), { status: "completed" });
+
+      // Send a notification to the customer
+      const providerName = quotationData.providerName || user?.name || "Your provider";
+      const serviceDesc = quotationData.description || quotationData.serviceType || "your order";
+      await addDoc(collection(db, "notifications"), {
+        userId: quotationData.customerId,
+        type: "order_completed",
+        title: "Order Completed! ✅",
+        message: `${providerName} has completed ${serviceDesc}. Thank you for choosing ClothStreetSL!`,
+        quotationId: quotationId,
+        read: false,
+        createdAt: serverTimestamp(),
+      });
+
+      // Update local state so UI reflects immediately
+      setQuotations((prev) =>
+        prev.map((q) => q.id === quotationId ? { ...q, status: "completed" } : q)
+      );
+    } catch (err) {
+      console.error("Complete order error:", err);
+      alert("Failed to complete order. Please try again.");
+    }
+  };
+
   const stats = {
-    total: quotations.length,
     pending: quotations.filter((q) => q.status === "pending").length,
     quoted: quotations.filter((q) => q.status === "quoted").length,
-    accepted: quotations.filter((q) => q.status === "accepted").length,
+    accepted: quotations.filter((q) => q.status === "accepted" || q.status === "completed").length,
   };
+  stats.total = stats.pending; // Incoming Requests only counts pending/new orders
 
   const formatDate = (timestamp) => {
     if (!timestamp?.seconds) return "—";
@@ -82,7 +167,7 @@ export default function QuotationInbox() {
         {/* ── Stat Cards ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { label: "Incoming Requests", value: stats.total, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>, bg: "bg-blue-50", accent: "text-blue-600" },
+            { label: "Incoming Requests", value: stats.total, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>, bg: "bg-blue-50", accent: "text-blue-600" },
             { label: "Awaiting Quote", value: stats.pending, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M12 6v6l4 2" /><circle cx="12" cy="12" r="10" strokeWidth="2.5" /></svg>, bg: "bg-amber-50", accent: "text-amber-600" },
             { label: "Negotiating", value: stats.quoted, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.407 2.67 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.407-2.67-1M12 16v1m4-12V3c0-1.105-1.343-2-3-2s-3 .895-3 2v2m0 16v2c0 1.105 1.343 2 3 2s3-.895 3-2v-2" /></svg>, bg: "bg-blue-50", accent: "text-blue-600" },
             { label: "Successful Bids", value: stats.accepted, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="3" d="M5 13l4 4L19 7" /></svg>, bg: "bg-emerald-50", accent: "text-emerald-600" },
@@ -99,14 +184,14 @@ export default function QuotationInbox() {
 
         {/* ── Interactive Filters ── */}
         <div className="bg-slate-50/50 p-2 rounded-2xl border border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar">
-          {["All", "Pending", "Quoted", "Accepted", "Rejected"].map((tab) => (
+          {["All", "Pending", "Quoted", "Accepted", "Completed", "Rejected"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all cursor-pointer ${activeTab === tab
                 ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
                 : "text-slate-400 hover:text-blue-600 hover:bg-white"
-              }`}
+                }`}
             >
               {tab}
               {tab !== "All" && (
@@ -204,6 +289,33 @@ export default function QuotationInbox() {
                       </div>
                     </div>
                   </div>
+
+                  {/* NEW: Complete Order button for accepted quotations */}
+                  {q.status === "accepted" && (
+                    <div className="px-8 pb-6 pt-0">
+                      <button
+                        onClick={(e) => handleCompleteOrder(e, q.id)}
+                        className="w-full py-3 bg-emerald-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Complete Order
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Show completed badge for completed quotations */}
+                  {q.status === "completed" && (
+                    <div className="px-8 pb-6 pt-0">
+                      <div className="w-full py-3 bg-blue-50 text-blue-700 text-xs font-black uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 border border-blue-100">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Order Completed
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
