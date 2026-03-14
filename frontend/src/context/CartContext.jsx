@@ -66,6 +66,7 @@ export function CartProvider({ children }) {
       nextCart = loadCartFromStorage(null);
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCartItems(nextCart);
   }, [user?.uid]);
 
