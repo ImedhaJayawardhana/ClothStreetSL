@@ -146,9 +146,7 @@ def get_designer_dashboard(decoded_token: dict = Depends(verify_token)):
                 "customerName": p.get("customerName", "Unknown"),
                 "description": p.get("description")
                 or (
-                    p.get("items", [{}])[0].get("name")
-                    if p.get("items")
-                    else "Project"
+                    p.get("items", [{}])[0].get("name") if p.get("items") else "Project"
                 ),
                 "status": p.get("status", "pending"),
                 "budget": p.get("total_price") or p.get("budget") or 0,

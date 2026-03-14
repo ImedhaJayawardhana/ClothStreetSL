@@ -125,11 +125,7 @@ def get_tailor_dashboard(decoded_token: dict = Depends(verify_token)):
                 "id": o.get("id"),
                 "customerName": o.get("customerName", "Unknown"),
                 "description": o.get("description")
-                or (
-                    o.get("items", [{}])[0].get("name")
-                    if o.get("items")
-                    else "Order"
-                ),
+                or (o.get("items", [{}])[0].get("name") if o.get("items") else "Order"),
                 "status": o.get("status", "pending"),
                 "createdAt": str(o.get("createdAt") or o.get("created_at") or ""),
             }
@@ -250,9 +246,7 @@ def update_tailor_order_status(
 
     order_data = order_doc.to_dict()
     if order_data.get("tailorId") != uid:
-        raise HTTPException(
-            status_code=403, detail="This order is not assigned to you"
-        )
+        raise HTTPException(status_code=403, detail="This order is not assigned to you")
 
     order_ref.update({"status": body.status})
     return {"message": f"Order status updated to {body.status}"}
