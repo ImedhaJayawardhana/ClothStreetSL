@@ -3,9 +3,10 @@ import { Link, useNavigate} from"react-router-dom";
 import { useAuth} from"../context/AuthContext";
 import { auth, storage} from"../firebase/firebase";
 import { ref, uploadBytes, getDownloadURL} from"firebase/storage";
-import { sendPasswordResetEmail, deleteUser} from"firebase/auth";
-import toast from"react-hot-toast";
-import"./CustomerProfile.css";
+import { sendPasswordResetEmail } from "firebase/auth";
+import toast from "react-hot-toast";
+import { deleteAccount } from "../api";
+import "./CustomerProfile.css";
 
 // --- Mock Data for Dashboard Widgets ---
 const mockOrders = [
@@ -20,9 +21,9 @@ const mockTailors = [
 ];
 
 export default function CustomerProfile() {
- const { user, updateProfile} = useAuth();
- const navigate = useNavigate();
- const [isEditing, setIsEditing] = useState(false);
+  const { user, updateProfile, logout } = useAuth();
+  const navigate = useNavigate();
+  const [isEditing, setIsEditing] = useState(false);
  const [isSaving, setIsSaving] = useState(false);
 
  // Section-level edit toggles
@@ -178,16 +179,19 @@ export default function CustomerProfile() {
 }
 };
 
- const handleDeleteAccount = async () => {
- if (window.confirm("Are you sure? This cannot be undone and will permanently delete your account.")) {
- try {
- await deleteUser(auth.currentUser);
- toast.success("Account deleted");
-} catch {
- toast.error("Failed to save profile");
-}
-}
-};
+  const handleDeleteAccount = async () => {
+    if (window.confirm("Are you sure? This cannot be undone and will permanently delete your account.")) {
+      try {
+        await deleteAccount();
+        await logout();
+        navigate("/");
+        toast.success("Account deleted");
+      } catch (error) {
+        console.error("Delete failed", error);
+        toast.error("Failed to delete account. Please log in again to verify.");
+      }
+    }
+  };
 
  // ==================== PROFILE VIEW ====================
  if (!isEditing) {

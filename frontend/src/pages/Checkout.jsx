@@ -120,9 +120,25 @@ const STEPS = ["Shipping", "Delivery", "Payment", "Confirm", "Complete"];
 
 export default function Checkout() {
     const { cartItems, cartSubtotal, clearCart } = useCart();
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+
+    useEffect(() => {
+        if (!loading && !user) {
+            toast.error("Please login or create an account to proceed to checkout.");
+            navigate("/login", { state: { returnUrl: "/checkout", step: location.state?.step || 1 } });
+        }
+    }, [user, loading, navigate, location.state]);
+
+    if (loading || !user) {
+        return (
+            <div className="checkout-page flex flex-col items-center justify-center min-h-[60vh]">
+                <div className="w-10 h-10 border-4 border-slate-200 border-t-purple-600 rounded-full animate-spin"></div>
+                <p className="mt-4 text-slate-500 font-medium">Verifying secure access...</p>
+            </div>
+        );
+    }
 
     const SHIPPING_COST = 500;
     const total = cartSubtotal + SHIPPING_COST;

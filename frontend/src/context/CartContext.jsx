@@ -1,34 +1,75 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
-const CART_STORAGE_KEY = "clothstreet_cart";
+const BASE_CART_STORAGE_KEY = "clothstreet_cart";
 
-function loadCartFromStorage() {
+function getCartStorageKey(userId) {
+  return userId ? `${BASE_CART_STORAGE_KEY}_${userId}` : BASE_CART_STORAGE_KEY;
+}
+
+function loadCartFromStorage(userId) {
   try {
-    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    const key = getCartStorageKey(userId);
+    const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : [];
   } catch {
     return [];
   }
 }
 
-function saveCartToStorage(items) {
+function saveCartToStorage(userId, items) {
   try {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    const key = getCartStorageKey(userId);
+    localStorage.setItem(key, JSON.stringify(items));
   } catch {
-    // Storage full or unavailable — silently fail
+    // Storage full or unavailable
   }
 }
 
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState(loadCartFromStorage);
+  const { user } = useAuth();
+  
+  // Initialize with current user's cart (or guest cart)
+  const [cartItems, setCartItems] = useState(() => loadCartFromStorage(user?.uid));
+
+  // Switch cart when user logs in or out and merge guest cart if applicable
+  useEffect(() => {
+    if (user?.uid) {
+      const guestCart = loadCartFromStorage(null);
+      let userCart = loadCartFromStorage(user.uid);
+      
+      if (guestCart.length > 0) {
+        // Merge guest cart into user cart
+        const merged = [...userCart];
+        guestCart.forEach(guestItem => {
+          const existing = merged.find(i => i.id === guestItem.id);
+          if (existing) {
+            existing.quantity += (guestItem.quantity || 1);
+          } else {
+            merged.push(guestItem);
+          }
+        });
+        
+        userCart = merged;
+        saveCartToStorage(user.uid, userCart);
+        
+        // Clear the guest cart now that it's merged
+        localStorage.removeItem(getCartStorageKey(null));
+      }
+      
+      setCartItems(userCart);
+    } else {
+      setCartItems(loadCartFromStorage(null));
+    }
+  }, [user?.uid]);
 
   // Persist to localStorage whenever cartItems changes
   useEffect(() => {
-    saveCartToStorage(cartItems);
-  }, [cartItems]);
+    saveCartToStorage(user?.uid, cartItems);
+  }, [cartItems, user?.uid]);
 
   const addToCart = useCallback((item) => {
     setCartItems((prev) => {

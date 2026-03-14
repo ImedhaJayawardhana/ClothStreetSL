@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -114,7 +115,9 @@ def update_quotation(
         )
 
     # Build update dict from non-None fields
-    update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_data: Dict[str, Any] = {
+        k: v for k, v in update.model_dump().items() if v is not None
+    }
     update_data["updatedAt"] = datetime.utcnow().isoformat()
 
     order_id_str = None

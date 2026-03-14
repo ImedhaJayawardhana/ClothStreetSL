@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getCurrentUser } from "../api";
 
@@ -12,6 +12,7 @@ export default function Login() {
 
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -24,7 +25,10 @@ export default function Login() {
       const res = await getCurrentUser();
       const role = res.data.role;
 
-      if (role === 'designer') {
+      const returnUrl = location.state?.returnUrl;
+      if (returnUrl) {
+        navigate(returnUrl, { state: location.state });
+      } else if (role === 'designer') {
         navigate('/designer-dashboard');
       } else if (role === 'seller') {
         navigate('/dashboard');
@@ -52,7 +56,10 @@ export default function Login() {
       const res = await getCurrentUser();
       const role = res?.data?.role || 'customer';
 
-      if (role === 'designer') {
+      const returnUrl = location.state?.returnUrl;
+      if (returnUrl) {
+        navigate(returnUrl, { state: location.state });
+      } else if (role === 'designer') {
         navigate('/designer-dashboard');
       } else if (role === 'seller') {
         navigate('/dashboard');
