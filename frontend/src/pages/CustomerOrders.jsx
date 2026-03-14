@@ -344,7 +344,7 @@ export default function CustomerOrders() {
                             filteredOrders.map((order) => {
                                 const ss = STATUS_STYLES[order.status] || STATUS_STYLES.pending;
                                 const itemNames = order.items?.map((i) => i.name).join(", ") || "Order";
-                                const firstItem = order.items?.[0];
+                                const [, ...rest] = someArray;
 
                                 return (
                                     <div key={order.id} className="border rounded-2xl p-6 hover:-translate-y-1 hover:shadow-lg transition-all"

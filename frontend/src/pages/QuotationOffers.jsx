@@ -49,7 +49,7 @@ export default function QuotationOffers() {
     e.stopPropagation();
     if (isProcessing) return;
     setIsProcessing(true);
-    
+
     try {
       // 1. Update status to Accepted which internally triggers order creation in backend
       await updateQuotationStatus(q.id, "Accepted");
@@ -58,13 +58,13 @@ export default function QuotationOffers() {
       try {
         await deleteCartItem(user.uid, q.providerId);
         clearCart();
-      } catch (cartErr) {
+      } catch (_cartErr) {
         // Silently ignore cart errors as requested
       }
 
       // 3. UI Updates
       toast.success("Order confirmed! Your order has been placed.");
-      setQuotations((prev) => 
+      setQuotations((prev) =>
         prev.map((item) => (item.id === q.id ? { ...item, status: "accepted" } : item))
       );
 
@@ -72,7 +72,7 @@ export default function QuotationOffers() {
       setTimeout(() => {
         navigate("/orders");
       }, 2000);
-      
+
     } catch (err) {
       setIsProcessing(false);
       toast.error(err.response?.data?.detail || "Failed to accept quotation.");
@@ -82,14 +82,14 @@ export default function QuotationOffers() {
   const handleDeclineOffer = async (e, q) => {
     e.stopPropagation();
     if (isProcessing) return;
-    
+
     try {
       await updateQuotationStatus(q.id, "Declined");
       toast.success("Quotation declined.");
-      setQuotations((prev) => 
+      setQuotations((prev) =>
         prev.map((item) => (item.id === q.id ? { ...item, status: "declined" } : item))
       );
-    } catch (err) {
+    } catch (_err) {
       toast.error("Failed to decline quotation.");
     }
   };
@@ -151,7 +151,7 @@ export default function QuotationOffers() {
         {/* ── Stat Cards ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { label: "Total Requests", value: stats.total, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>, bg: "bg-blue-50", accent: "text-blue-600" },
+            { label: "Total Requests", value: stats.total, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>, bg: "bg-blue-50", accent: "text-blue-600" },
             { label: "Awaiting Quote", value: stats.pending, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M12 6v6l4 2" /><circle cx="12" cy="12" r="10" strokeWidth="2.5" /></svg>, bg: "bg-amber-50", accent: "text-amber-600" },
             { label: "Quotes Received", value: stats.quoted, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8v1m0 8v1" /></svg>, bg: "bg-blue-50", accent: "text-blue-600" },
             { label: "Accepted", value: stats.accepted, icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="3" d="M5 13l4 4L19 7" /></svg>, bg: "bg-emerald-50", accent: "text-emerald-600" },
@@ -175,7 +175,7 @@ export default function QuotationOffers() {
               className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all cursor-pointer ${activeTab === tab
                 ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
                 : "text-slate-400 hover:text-blue-600 hover:bg-white"
-              }`}
+                }`}
             >
               {tab}
               {tab !== "All" && (
@@ -219,11 +219,10 @@ export default function QuotationOffers() {
                   <div className="p-8">
                     <div className="flex items-start gap-6">
                       {/* Provider Avatar */}
-                      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center font-black text-2xl text-white shrink-0 shadow-xl shadow-slate-200 group-hover:scale-105 transition-transform ${
-                        q.providerType === "designer"
-                          ? "bg-gradient-to-br from-rose-500 to-pink-600"
-                          : "bg-gradient-to-br from-violet-500 to-purple-600"
-                      }`}>
+                      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center font-black text-2xl text-white shrink-0 shadow-xl shadow-slate-200 group-hover:scale-105 transition-transform ${q.providerType === "designer"
+                        ? "bg-gradient-to-br from-rose-500 to-pink-600"
+                        : "bg-gradient-to-br from-violet-500 to-purple-600"
+                        }`}>
                         {q.providerName?.charAt(0) || "?"}
                       </div>
 
@@ -314,7 +313,7 @@ export default function QuotationOffers() {
                             title="Delete Quotation"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                               <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                           </button>
                         )}
