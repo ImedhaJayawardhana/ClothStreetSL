@@ -9,7 +9,7 @@ export default function Store() {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [storeProducts, setStoreProducts] = useState([]);
-    const [fabricsLoading, setFabricsLoading] = useState(true);
+    const [_fabricsLoading, setFabricsLoading] = useState(true);
     const decodedSellerId = decodeURIComponent(sellerId);
     useEffect(() => {
         if (!sellerId) return;

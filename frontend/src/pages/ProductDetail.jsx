@@ -145,6 +145,7 @@ export default function ProductDetail() {
   const handleMouseLeave = () => setZoomStyle({ display: "none" });
 
   function handleAddToCart() {
+    const [qty, setQty] = useState(1);
     addToCart({ id: fabric.id, name: fabric.name, unitPrice: fabric.price, quantity: qty });
   }
 
@@ -168,7 +169,7 @@ export default function ProductDetail() {
       </div>
     );
   }
-
+  const [qty, setQty] = useState(1);
   const total = (fabric.price * qty).toLocaleString();
 
   // Thumbnail colors
