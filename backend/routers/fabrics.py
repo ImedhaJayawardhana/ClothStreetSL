@@ -11,17 +11,18 @@ router = APIRouter()
 
 # ── Schemas ───────────────────────────────────────────────────
 
+
 class FabricCreate(BaseModel):
     name: str
     type: Optional[str] = ""
-    color: Optional[str] = ""           # e.g. "Blue", "Multi-color"
-    category: Optional[str] = ""        # location e.g. "Colombo"
+    color: Optional[str] = ""  # e.g. "Blue", "Multi-color"
+    category: Optional[str] = ""  # location e.g. "Colombo"
     price: Optional[float] = 0
     stock: Optional[float] = 0
-    colors: Optional[List[str]] = []    # hex color swatches
-    image_url: Optional[str] = None     # image URL
+    colors: Optional[List[str]] = []  # hex color swatches
+    image_url: Optional[str] = None  # image URL
     hidden: Optional[bool] = False
-    supplier_id: Optional[str] = None   # Firebase user uid of seller
+    supplier_id: Optional[str] = None  # Firebase user uid of seller
 
 
 class FabricUpdate(BaseModel):
@@ -85,7 +86,7 @@ def create_fabric(fabric: FabricCreate):
         "type": fabric.type,
         "color": fabric.color,
         "category": fabric.category,
-        "location": fabric.category,     # BrowseMaterials uses "location"
+        "location": fabric.category,  # BrowseMaterials uses "location"
         "price": fabric.price,
         "stock": stock,
         "stockStatus": get_stock_status(stock),
@@ -110,7 +111,9 @@ def update_fabric(fabric_id: str, fabric: FabricUpdate):
         raise HTTPException(status_code=404, detail="Fabric not found")
 
     # Only update fields that were actually sent (not None)
-    updates: dict[str, Any] = {k: v for k, v in fabric.model_dump().items() if v is not None}
+    updates: dict[str, Any] = {
+        k: v for k, v in fabric.model_dump().items() if v is not None
+    }
 
     # Keep location in sync with category
     if "category" in updates:
