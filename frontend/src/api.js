@@ -43,7 +43,9 @@ export const updateDesigner = (id, data) => api.patch(`/designers/${id}`, data);
 export const createFabric = (data) => api.post("/fabrics", data);
 export const listFabrics = () => api.get("/fabrics");
 export const getFabric = (id) => api.get(`/fabrics/${id}`);
+export const getFabricById = getFabric; // Alias used by ProductDetail.jsx
 export const updateFabric = (id, data) => api.patch(`/fabrics/${id}`, data);
+export const deleteFabric = (id) => api.delete(`/fabrics/${id}`);
 
 // ─── Quotations ──────────────────────────────────────
 export const createQuotation = (data) => api.post("/quotations", data);
