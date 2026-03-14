@@ -18,15 +18,15 @@ export default function DesignerDashboard() {
 
   // ── NEW: Dashboard API state ──
   const [dashboardData, setDashboardData] = useState(null);
-  const [dashboardLoading, setDashboardLoading] = useState(true);
-  const [dashboardError, setDashboardError] = useState("");
+  const [setDashboardLoading] = useState(true);
+  const [setDashboardError] = useState("");
   // Profile edit form state
   const [profileForm, setProfileForm] = useState({
     name: "", bio: "", speciality: "", location: "",
     priceRange: "", phone: "", experience: "",
   });
-  const [profileSaving, setProfileSaving] = useState(false);
-  const [profileMsg, setProfileMsg] = useState("");
+  const [setProfileSaving] = useState(false);
+  const [setProfileMsg] = useState("");
 
   // Status badge colors
   const statusColours = {
@@ -149,7 +149,7 @@ export default function DesignerDashboard() {
   };
 
   // ── NEW: Handler to save profile via API ──
-  const handleProfileSave = async () => {
+  const _handleProfileSave = async () => {
     setProfileSaving(true);
     setProfileMsg("");
     try {
