@@ -1,27 +1,16 @@
-import { useState, useEffect} from"react";
+﻿import { useState, useEffect} from"react";
 import { useParams, useNavigate} from"react-router-dom";
 import { db} from"../firebase/firebase";
 import { doc, getDoc} from"firebase/firestore";
-/* ─── Shared fabric data (dummy data for now) ─── */
-const FABRICS = [
- { id:"fab_001", name:"Premium Cotton Twill", type:"Cotton", supplier:"Lanka Fabrics Co.", rating: 4.8, reviewCount: 142, price: 850, inStock: true, bgColor:"#d4c5a9"},
- { id:"fab_002", name:"Silk Satin Blend", type:"Silk", supplier:"Royal Fabrics Ltd.", rating: 4.9, reviewCount: 218, price: 2300, inStock: true, bgColor:"#e8d5c4"},
- { id:"fab_003", name:"Linen Canvas", type:"Linen", supplier:"Natural Fibers", rating: 4.7, reviewCount: 98, price: 1200, inStock: true, bgColor:"#c8bfa9"},
- { id:"fab_004", name:"Polyester Georgette", type:"Polyester", supplier:"Modern Textiles", rating: 4.5, reviewCount: 77, price: 650, inStock: true, bgColor:"#d5c4d9"},
- { id:"fab_005", name:"Denim Heavy Weight", type:"Denim", supplier:"Blue Star Fabrics", rating: 4.8, reviewCount: 163, price: 950, inStock: true, bgColor:"#8ba4c4"},
- { id:"fab_006", name:"Chiffon Deluxe", type:"Chiffon", supplier:"Elegant Fabrics", rating: 4.6, reviewCount: 54, price: 1800, inStock: false, bgColor:"#f0ccd4"},
- { id:"fab_007", name:"Wool Blend Suiting", type:"Wool", supplier:"Premium Cloths", rating: 4.8, reviewCount: 89, price: 1250, inStock: true, bgColor:"#b8a99a"},
- { id:"fab_008", name:"Rayon Printed", type:"Rayon", supplier:"Color Works Textiles", rating: 4.4, reviewCount: 61, price: 780, inStock: true, bgColor:"#c7b8d4"},
-];
+import { listFabrics } from"../api";
 export default function Store() {
  const { sellerId} = useParams();
  const navigate = useNavigate();
  const [profile, setProfile] = useState(null);
  const [loading, setLoading] = useState(true);
- // Filter products by the current store (sellerId)
- // For the dummy data layout,`sellerId` matches the`supplier` string.
+ const [storeProducts, setStoreProducts] = useState([]);
+ const [fabricsLoading, setFabricsLoading] = useState(true);
  const decodedSellerId = decodeURIComponent(sellerId);
- const storeProducts = FABRICS.filter((f) => f.supplier === decodedSellerId);
  useEffect(() => {
  if (!sellerId) return;
  const fetchProfile = async () => {
@@ -48,7 +37,21 @@ export default function Store() {
 }
 };
  fetchProfile();
-}, [sellerId , decodedSellerId]);
+ }, [sellerId , decodedSellerId]);
+ useEffect(() => {
+  const fetchFabrics = async () => {
+   try {
+    const res = await listFabrics();
+    const filtered = res.data.filter((f) => f.supplier_id === sellerId);
+    setStoreProducts(filtered);
+   } catch (err) {
+    console.error("Error fetching fabrics", err);
+   } finally {
+    setFabricsLoading(false);
+   }
+  };
+  fetchFabrics();
+ }, [sellerId]);
  const displayName = profile?.shopName ||"Seller Store";
  const avatarLetter = displayName.charAt(0).toUpperCase();
  if (loading) {
@@ -203,7 +206,7 @@ export default function Store() {
  </div>
  <div className="flex items-center justify-between mt-auto">
  <span className="text-lg font-extrabold tracking-tight">
- LKR {item.price.toLocaleString()}
+ LKR {item.price?.toLocaleString()}
  </span>
  <div className="w-8 h-8 rounded-full flex items-center justify-center group-hover: transition-colors">
  <svg className="w-4 h-4 group-hover: transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
