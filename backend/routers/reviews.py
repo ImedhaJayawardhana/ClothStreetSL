@@ -7,12 +7,13 @@ from firebase.admin import db
 
 router = APIRouter()
 
+
 # ── What a review looks like when submitted ──────────────────
 class ReviewCreate(BaseModel):
-    targetType: str      # "product", "tailor", or "designer"
-    targetId:   str      # ID of the product/tailor/designer
-    rating:     int      # 1 to 5
-    comment:    Optional[str] = ""
+    targetType: str  # "product", "tailor", or "designer"
+    targetId: str  # ID of the product/tailor/designer
+    rating: int  # 1 to 5
+    comment: Optional[str] = ""
 
 
 # ────────────────────────────────────────────────────────────
@@ -26,24 +27,26 @@ def submit_review(data: ReviewCreate, current_user: dict = Depends(verify_token)
         raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
 
     # 2. Check customer hasn't already reviewed this target
-    existing = db.collection("reviews")\
-        .where("targetId", "==", data.targetId)\
-        .where("customerId", "==", current_user["uid"])\
-        .where("isDeleted", "==", False)\
+    existing = (
+        db.collection("reviews")
+        .where("targetId", "==", data.targetId)
+        .where("customerId", "==", current_user["uid"])
+        .where("isDeleted", "==", False)
         .get()
+    )
     if len(existing) > 0:
         raise HTTPException(status_code=400, detail="You already reviewed this")
 
     # 3. Save the review to Firestore
     review = {
-        "targetType":   data.targetType,
-        "targetId":     data.targetId,
-        "customerId":   current_user["uid"],
+        "targetType": data.targetType,
+        "targetId": data.targetId,
+        "customerId": current_user["uid"],
         "customerName": current_user.get("name", "Anonymous"),
-        "rating":       data.rating,
-        "comment":      data.comment,
-        "createdAt":    datetime.utcnow().isoformat(),
-        "isDeleted":    False,
+        "rating": data.rating,
+        "comment": data.comment,
+        "createdAt": datetime.utcnow().isoformat(),
+        "isDeleted": False,
     }
     doc_ref = db.collection("reviews").add(review)
     review_id = doc_ref[1].id
@@ -63,11 +66,13 @@ def submit_review(data: ReviewCreate, current_user: dict = Depends(verify_token)
 # ────────────────────────────────────────────────────────────
 @router.get("/{targetType}/{targetId}")
 def get_reviews(targetType: str, targetId: str):
-    docs = db.collection("reviews")\
-        .where("targetId", "==", targetId)\
-        .where("targetType", "==", targetType)\
-        .where("isDeleted", "==", False)\
+    docs = (
+        db.collection("reviews")
+        .where("targetId", "==", targetId)
+        .where("targetType", "==", targetType)
+        .where("isDeleted", "==", False)
         .stream()
+    )
 
     reviews = [{"id": d.id, **d.to_dict()} for d in docs]
     return reviews
@@ -87,7 +92,9 @@ def delete_review(reviewId: str, current_user: dict = Depends(verify_token)):
 
     # Only the person who wrote it can delete it
     if review["customerId"] != current_user["uid"]:
-        raise HTTPException(status_code=403, detail="You can only delete your own reviews")
+        raise HTTPException(
+            status_code=403, detail="You can only delete your own reviews"
+        )
 
     # Soft delete — keep the data but mark as deleted
     db.collection("reviews").document(reviewId).update({"isDeleted": True})
@@ -104,13 +111,15 @@ def delete_review(reviewId: str, current_user: dict = Depends(verify_token)):
 # ────────────────────────────────────────────────────────────
 @router.get("/summary/{targetType}/{targetId}")
 def get_summary(targetType: str, targetId: str):
-    docs = db.collection("reviews")\
-        .where("targetId", "==", targetId)\
-        .where("isDeleted", "==", False)\
+    docs = (
+        db.collection("reviews")
+        .where("targetId", "==", targetId)
+        .where("isDeleted", "==", False)
         .stream()
+    )
 
     ratings = [d.to_dict()["rating"] for d in docs]
-    total   = len(ratings)
+    total = len(ratings)
     average = round(sum(ratings) / total, 1) if total > 0 else 0.0
 
     return {"averageRating": average, "totalReviews": total}
@@ -125,10 +134,12 @@ def supplier_notifications(current_user: dict = Depends(verify_token)):
     if current_user.get("role") not in ["supplier", "admin"]:
         raise HTTPException(status_code=403, detail="Suppliers only")
 
-    docs = db.collection("users")\
-        .document(current_user["uid"])\
-        .collection("notifications")\
+    docs = (
+        db.collection("users")
+        .document(current_user["uid"])
+        .collection("notifications")
         .stream()
+    )
 
     return [{"id": d.id, **d.to_dict()} for d in docs]
 
@@ -137,27 +148,28 @@ def supplier_notifications(current_user: dict = Depends(verify_token)):
 # HELPER: Recalculate and save average rating on target doc
 # ────────────────────────────────────────────────────────────
 def recalculate_rating(targetType: str, targetId: str):
-    docs = db.collection("reviews")\
-        .where("targetId", "==", targetId)\
-        .where("isDeleted", "==", False)\
+    docs = (
+        db.collection("reviews")
+        .where("targetId", "==", targetId)
+        .where("isDeleted", "==", False)
         .stream()
+    )
 
     ratings = [d.to_dict()["rating"] for d in docs]
-    total   = len(ratings)
+    total = len(ratings)
     average = round(sum(ratings) / total, 1) if total > 0 else 0.0
 
     # Save to the correct collection
     collection_map = {
-        "product":  "fabrics",
-        "tailor":   "tailors",
+        "product": "fabrics",
+        "tailor": "tailors",
         "designer": "designers",
     }
     collection = collection_map.get(targetType)
     if collection:
-        db.collection(collection).document(targetId).update({
-            "averageRating": average,
-            "totalReviews":  total
-        })
+        db.collection(collection).document(targetId).update(
+            {"averageRating": average, "totalReviews": total}
+        )
 
 
 # ────────────────────────────────────────────────────────────
@@ -169,19 +181,19 @@ def notify_supplier(productId: str, reviewId: str, review: dict):
     if not product_doc.exists:
         return
 
-    product   = product_doc.to_dict()
+    product = product_doc.to_dict()
     supplier_id = product.get("supplierId")
     if not supplier_id:
         return
 
     # Save notification under the supplier's profile
-    db.collection("users")\
-      .document(supplier_id)\
-      .collection("notifications")\
-      .document(reviewId)\
-      .set({
-          **review,
-          "type":      "product_review",
-          "productId": productId,
-          "read":      False,
-      })
+    db.collection("users").document(supplier_id).collection("notifications").document(
+        reviewId
+    ).set(
+        {
+            **review,
+            "type": "product_review",
+            "productId": productId,
+            "read": False,
+        }
+    )

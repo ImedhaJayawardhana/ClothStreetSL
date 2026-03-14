@@ -9,7 +9,7 @@ export default function Store() {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [storeProducts, setStoreProducts] = useState([]);
-    const [setFabricsLoading] = useState(true);
+    const [fabricsLoading, setFabricsLoading] = useState(true);
     const decodedSellerId = decodeURIComponent(sellerId);
     useEffect(() => {
         if (!sellerId) return;
@@ -51,7 +51,7 @@ export default function Store() {
             }
         };
         fetchFabrics();
-    }, [sellerId]);
+    }, [sellerId, setFabricsLoading]);
     const displayName = profile?.shopName || "Seller Store";
     const avatarLetter = displayName.charAt(0).toUpperCase();
     if (loading) {
