@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { getFabric, listFabrics } from "../api";
+import ReviewSection from "../components/common/ReviewSection";
 
 /* ─── Style tokens ─────────────────────────────────────────── */
 const C = {
@@ -71,23 +72,10 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [qty] = useState(1);
+  const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
   const [zoomStyle, setZoomStyle] = useState({ display: "none" });
-
-  const [reviewsList, setReviewsList] = useState([
-    { id: 1, name: "Ayesh Perera", initial: "A", rating: 5, date: "2 days ago",
-      title: "Excellent quality fabric",
-      text: "The drape on this material is phenomenal. Ordered 50 meters for a boutique collection and my clients absolutely love the feel.",
-      bg: C.purpleMuted, color: C.purpleDark, border: false },
-    { id: 2, name: "Samadhi W.", initial: "S", rating: 4, date: "1 week ago",
-      title: "Very good, colour slightly darker",
-      text: "Great texture. The color is slightly darker in person than on my screen, but still beautiful. Delivery was very fast.",
-      bg: C.bgCardAlt, color: C.text, border: true },
-  ]);
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const [reviewForm, setReviewForm] = useState({ name: "", rating: 5, title: "", text: "" });
 
   // ── Fetch fabric from FastAPI ──
   useEffect(() => {
@@ -448,7 +436,7 @@ export default function ProductDetail() {
               {[
                 { id: "description", label: "Description" },
                 { id: "specs", label: "Specifications" },
-                { id: "reviews", label: `Reviews (${fabric.reviewCount || reviewsList.length})` },
+                { id: "reviews", label: `Reviews` },
               ].map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                   style={{ padding: "0 0 12px 0", background: "none", border: "none",
@@ -504,152 +492,10 @@ export default function ProductDetail() {
               )}
 
               {/* Reviews Tab */}
+              {/* Reviews Tab */}
               {activeTab === "reviews" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                  <div style={{ display: "flex", gap: 32, alignItems: "center",
-                    background: C.bgCardAlt, padding: 24, borderRadius: 16,
-                    border: `1px solid ${C.border}` }}>
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: "3rem", fontWeight: 800, color: C.text, lineHeight: 1 }}>
-                        {fabric.rating?.toFixed(1)}
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "center", margin: "8px 0" }}>
-                        <Stars rating={fabric.rating} />
-                      </div>
-                      <div style={{ fontSize: "0.8rem", color: C.textMuted }}>
-                        Based on {fabric.reviewCount || reviewsList.length} reviews
-                      </div>
-                    </div>
-                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
-                      {[5, 4, 3, 2, 1].map(star => {
-                        const pct = star === 5 ? 70 : star === 4 ? 20 : star === 3 ? 5 : star === 2 ? 3 : 2;
-                        return (
-                          <div key={star} style={{ display: "flex", alignItems: "center",
-                            gap: 10, fontSize: "0.8rem", color: C.textMuted }}>
-                            <span style={{ width: 12 }}>{star}</span>
-                            <span style={{ color: C.yellow }}>★</span>
-                            <div style={{ flex: 1, height: 6, background: C.border,
-                              borderRadius: 3, overflow: "hidden" }}>
-                              <div style={{ width: `${pct}%`, height: "100%",
-                                background: C.yellow, borderRadius: 3 }} />
-                            </div>
-                            <span style={{ width: 24, textAlign: "right" }}>{pct}%</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <div>
-                      <button onClick={() => setShowReviewForm(!showReviewForm)}
-                        style={{ padding: "10px 20px", borderRadius: 8, background: C.text,
-                          color: C.white, border: "none", fontWeight: 600, cursor: "pointer" }}>
-                        {showReviewForm ? "Cancel Review" : "Write a Review"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Review Form */}
-                  {showReviewForm && (
-                    <div style={{ background: C.bgCardAlt, padding: 24, borderRadius: 16,
-                      border: `1px solid ${C.border}` }}>
-                      <h3 style={{ margin: "0 0 16px", fontSize: "1.1rem" }}>Write your review</h3>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                          <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Your Name</label>
-                            <input type="text" value={reviewForm.name}
-                              onChange={e => setReviewForm({ ...reviewForm, name: e.target.value })}
-                              placeholder="e.g. John Doe"
-                              style={{ width: "100%", padding: "10px 14px", borderRadius: 8,
-                                border: `1px solid ${C.border}`, fontSize: "0.9rem",
-                                outline: "none", boxSizing: "border-box" }} />
-                          </div>
-                          <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Rating</label>
-                            <select value={reviewForm.rating}
-                              onChange={e => setReviewForm({ ...reviewForm, rating: Number(e.target.value) })}
-                              style={{ width: "100%", padding: "10px 14px", borderRadius: 8,
-                                border: `1px solid ${C.border}`, fontSize: "0.9rem",
-                                outline: "none", background: C.bgCard, boxSizing: "border-box" }}>
-                              <option value="5">5 Stars - Excellent</option>
-                              <option value="4">4 Stars - Very Good</option>
-                              <option value="3">3 Stars - Average</option>
-                              <option value="2">2 Stars - Poor</option>
-                              <option value="1">1 Star - Terrible</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div>
-                          <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Review Title</label>
-                          <input type="text" value={reviewForm.title}
-                            onChange={e => setReviewForm({ ...reviewForm, title: e.target.value })}
-                            placeholder="Summary of your experience"
-                            style={{ width: "100%", padding: "10px 14px", borderRadius: 8,
-                              border: `1px solid ${C.border}`, fontSize: "0.9rem",
-                              outline: "none", boxSizing: "border-box" }} />
-                        </div>
-                        <div>
-                          <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Review Content</label>
-                          <textarea value={reviewForm.text}
-                            onChange={e => setReviewForm({ ...reviewForm, text: e.target.value })}
-                            placeholder="What did you like or dislike?" rows="4"
-                            style={{ width: "100%", padding: "10px 14px", borderRadius: 8,
-                              border: `1px solid ${C.border}`, fontSize: "0.9rem",
-                              outline: "none", resize: "vertical", fontFamily: "inherit",
-                              boxSizing: "border-box" }} />
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                          <button onClick={() => {
-                            if (!reviewForm.name || !reviewForm.text) {
-                              alert("Please fill in your name and review content.");
-                              return;
-                            }
-                            setReviewsList([{
-                              id: Date.now(), name: reviewForm.name,
-                              initial: reviewForm.name.charAt(0).toUpperCase(),
-                              rating: reviewForm.rating, date: "Just now",
-                              title: reviewForm.title || "User Review",
-                              text: reviewForm.text, bg: C.purpleMuted,
-                              color: C.purpleDark, border: false,
-                            }, ...reviewsList]);
-                            setReviewForm({ name: "", rating: 5, title: "", text: "" });
-                            setShowReviewForm(false);
-                          }}
-                            style={{ padding: "10px 24px", borderRadius: 8, background: C.purple,
-                              color: C.white, border: "none", fontWeight: 700, cursor: "pointer",
-                              boxShadow: "0 2px 8px rgba(124,58,237,0.3)" }}>
-                            Submit Review
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Reviews list */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                    <h3 style={{ fontSize: "1.1rem", margin: "0 0 8px" }}>Recent Customer Reviews</h3>
-                    {reviewsList.map(review => (
-                      <div key={review.id} style={{ borderBottom: `1px solid ${C.border}`, paddingBottom: 16 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                            <div style={{ width: 36, height: 36, borderRadius: "50%",
-                              background: review.bg, color: review.color,
-                              display: "flex", alignItems: "center", justifyContent: "center",
-                              fontWeight: 700 }}>{review.initial}</div>
-                            <div>
-                              <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>{review.name}</div>
-                              <div style={{ fontSize: "0.75rem", color: C.green }}>✓ Verified Buyer</div>
-                            </div>
-                          </div>
-                          <span style={{ fontSize: "0.8rem", color: C.textFaint }}>{review.date}</span>
-                        </div>
-                        <Stars rating={review.rating} />
-                        <div style={{ fontWeight: 700, fontSize: "0.95rem", marginTop: 8 }}>{review.title}</div>
-                        <p style={{ margin: "4px 0 0", fontSize: "0.9rem", color: C.textMuted, lineHeight: 1.6 }}>
-                          {review.text}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+                  <ReviewSection targetType="product" targetId={fabricId} />
                 </div>
               )}
             </div>
