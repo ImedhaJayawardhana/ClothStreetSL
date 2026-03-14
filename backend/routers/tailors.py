@@ -1,10 +1,31 @@
+from typing import Optional as _Optional
+
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel as _BaseModel
 
 from firebase.admin import db
 from firebase.auth_verify import verify_token
 from models.schemas import TailorProfile, TailorProfileUpdate
 
 router = APIRouter()
+
+
+class _TailorProfileBody(_BaseModel):
+    """Request body for tailor profile update (dashboard)."""
+
+    name: _Optional[str] = None
+    bio: _Optional[str] = None
+    speciality: _Optional[str] = None
+    location: _Optional[str] = None
+    pricePerItem: _Optional[float] = None
+    phone: _Optional[str] = None
+    experience: _Optional[int] = None
+
+
+class _OrderStatusBody(_BaseModel):
+    """Request body for order status update."""
+
+    status: str
 
 
 @router.post("")
@@ -104,7 +125,11 @@ def get_tailor_dashboard(decoded_token: dict = Depends(verify_token)):
                 "id": o.get("id"),
                 "customerName": o.get("customerName", "Unknown"),
                 "description": o.get("description")
-                or (o.get("items", [{}])[0].get("name") if o.get("items") else "Order"),
+                or (
+                    o.get("items", [{}])[0].get("name")
+                    if o.get("items")
+                    else "Order"
+                ),
                 "status": o.get("status", "pending"),
                 "createdAt": str(o.get("createdAt") or o.get("created_at") or ""),
             }
@@ -170,23 +195,6 @@ def get_tailor_dashboard(decoded_token: dict = Depends(verify_token)):
     }
 
 
-# ── Pydantic models for new endpoints ──
-from pydantic import BaseModel as _BaseModel
-from typing import Optional as _Optional
-
-
-class _TailorProfileBody(_BaseModel):
-    """Request body for tailor profile update (dashboard)."""
-
-    name: _Optional[str] = None
-    bio: _Optional[str] = None
-    speciality: _Optional[str] = None
-    location: _Optional[str] = None
-    pricePerItem: _Optional[float] = None
-    phone: _Optional[str] = None
-    experience: _Optional[int] = None
-
-
 @router.put("/profile")
 def update_tailor_own_profile(
     body: _TailorProfileBody,
@@ -211,12 +219,6 @@ def update_tailor_own_profile(
         doc_ref.set(update_data)
 
     return {"message": "Tailor profile updated successfully"}
-
-
-class _OrderStatusBody(_BaseModel):
-    """Request body for order status update."""
-
-    status: str
 
 
 @router.patch("/orders/{order_id}/status")
@@ -248,7 +250,9 @@ def update_tailor_order_status(
 
     order_data = order_doc.to_dict()
     if order_data.get("tailorId") != uid:
-        raise HTTPException(status_code=403, detail="This order is not assigned to you")
+        raise HTTPException(
+            status_code=403, detail="This order is not assigned to you"
+        )
 
     order_ref.update({"status": body.status})
     return {"message": f"Order status updated to {body.status}"}

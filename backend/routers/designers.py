@@ -1,10 +1,32 @@
+from typing import List as _List, Optional as _Optional
+
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel as _BaseModel
 
 from firebase.admin import db
 from firebase.auth_verify import verify_token
 from models.schemas import DesignerProfile, DesignerProfileUpdate
 
 router = APIRouter()
+
+
+class _DesignerProfileBody(_BaseModel):
+    """Request body for designer profile update (dashboard)."""
+
+    name: _Optional[str] = None
+    bio: _Optional[str] = None
+    speciality: _Optional[str] = None
+    location: _Optional[str] = None
+    priceRange: _Optional[str] = None
+    phone: _Optional[str] = None
+    experience: _Optional[int] = None
+    portfolioLinks: _Optional[_List[str]] = None
+
+
+class _ProjectStatusBody(_BaseModel):
+    """Request body for project/order status update."""
+
+    status: str
 
 
 @router.post("")
@@ -73,29 +95,6 @@ def delete_designer(
 
 # ─── NEW ENDPOINTS (added for dashboard integration) ─────────────────────────
 
-# ── Pydantic models for new endpoints ──
-from pydantic import BaseModel as _BaseModel
-from typing import Optional as _Optional, List as _List
-
-
-class _DesignerProfileBody(_BaseModel):
-    """Request body for designer profile update (dashboard)."""
-
-    name: _Optional[str] = None
-    bio: _Optional[str] = None
-    speciality: _Optional[str] = None
-    location: _Optional[str] = None
-    priceRange: _Optional[str] = None
-    phone: _Optional[str] = None
-    experience: _Optional[int] = None
-    portfolioLinks: _Optional[_List[str]] = None
-
-
-class _ProjectStatusBody(_BaseModel):
-    """Request body for project/order status update."""
-
-    status: str
-
 
 @router.get("/dashboard")
 def get_designer_dashboard(decoded_token: dict = Depends(verify_token)):
@@ -147,7 +146,9 @@ def get_designer_dashboard(decoded_token: dict = Depends(verify_token)):
                 "customerName": p.get("customerName", "Unknown"),
                 "description": p.get("description")
                 or (
-                    p.get("items", [{}])[0].get("name") if p.get("items") else "Project"
+                    p.get("items", [{}])[0].get("name")
+                    if p.get("items")
+                    else "Project"
                 ),
                 "status": p.get("status", "pending"),
                 "budget": p.get("total_price") or p.get("budget") or 0,
@@ -222,7 +223,8 @@ def update_designer_own_profile(
 ):
     """
     Designer updates their own profile in the 'designers' collection.
-    Accepts: name, bio, speciality, location, priceRange, phone, experience, portfolioLinks.
+    Accepts: name, bio, speciality, location, priceRange, phone,
+    experience, portfolioLinks.
     """
     uid = decoded_token["uid"]
     update_data = {k: v for k, v in body.dict().items() if v is not None}
