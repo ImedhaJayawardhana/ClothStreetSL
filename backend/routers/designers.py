@@ -80,6 +80,7 @@ from typing import Optional as _Optional, List as _List
 
 class _DesignerProfileBody(_BaseModel):
     """Request body for designer profile update (dashboard)."""
+
     name: _Optional[str] = None
     bio: _Optional[str] = None
     speciality: _Optional[str] = None
@@ -92,6 +93,7 @@ class _DesignerProfileBody(_BaseModel):
 
 class _ProjectStatusBody(_BaseModel):
     """Request body for project/order status update."""
+
     status: str
 
 
@@ -114,9 +116,18 @@ def get_designer_dashboard(decoded_token: dict = Depends(verify_token)):
 
     # ── Count projects by status ──
     total_projects = len(all_projects)
-    pending_projects = sum(1 for p in all_projects if (p.get("status") or "").lower() == "pending")
-    active_projects = sum(1 for p in all_projects if (p.get("status") or "").lower() in ("processing", "in_progress", "in progress"))
-    completed_projects = sum(1 for p in all_projects if (p.get("status") or "").lower() == "completed")
+    pending_projects = sum(
+        1 for p in all_projects if (p.get("status") or "").lower() == "pending"
+    )
+    active_projects = sum(
+        1
+        for p in all_projects
+        if (p.get("status") or "").lower()
+        in ("processing", "in_progress", "in progress")
+    )
+    completed_projects = sum(
+        1 for p in all_projects if (p.get("status") or "").lower() == "completed"
+    )
 
     # ── Recent projects (last 5, sorted by createdAt descending) ──
     def get_timestamp(project):
@@ -130,14 +141,19 @@ def get_designer_dashboard(decoded_token: dict = Depends(verify_token)):
     sorted_projects = sorted(all_projects, key=get_timestamp, reverse=True)
     recent_projects = []
     for p in sorted_projects[:5]:
-        recent_projects.append({
-            "id": p.get("id"),
-            "customerName": p.get("customerName", "Unknown"),
-            "description": p.get("description") or (p.get("items", [{}])[0].get("name") if p.get("items") else "Project"),
-            "status": p.get("status", "pending"),
-            "budget": p.get("total_price") or p.get("budget") or 0,
-            "createdAt": str(p.get("createdAt") or p.get("created_at") or ""),
-        })
+        recent_projects.append(
+            {
+                "id": p.get("id"),
+                "customerName": p.get("customerName", "Unknown"),
+                "description": p.get("description")
+                or (
+                    p.get("items", [{}])[0].get("name") if p.get("items") else "Project"
+                ),
+                "status": p.get("status", "pending"),
+                "budget": p.get("total_price") or p.get("budget") or 0,
+                "createdAt": str(p.get("createdAt") or p.get("created_at") or ""),
+            }
+        )
 
     # ── Fetch reviews for this designer ──
     reviews_ref = (
@@ -154,7 +170,9 @@ def get_designer_dashboard(decoded_token: dict = Depends(verify_token)):
     total_reviews = len(all_reviews)
     average_rating = 0.0
     if total_reviews > 0:
-        average_rating = round(sum(r.get("rating", 0) for r in all_reviews) / total_reviews, 1)
+        average_rating = round(
+            sum(r.get("rating", 0) for r in all_reviews) / total_reviews, 1
+        )
 
     # Recent reviews (last 3)
     def get_review_timestamp(review):
@@ -168,13 +186,15 @@ def get_designer_dashboard(decoded_token: dict = Depends(verify_token)):
     sorted_reviews = sorted(all_reviews, key=get_review_timestamp, reverse=True)
     recent_reviews = []
     for r in sorted_reviews[:3]:
-        recent_reviews.append({
-            "id": r.get("id"),
-            "rating": r.get("rating", 0),
-            "comment": r.get("comment", ""),
-            "userName": r.get("userName", "Anonymous"),
-            "createdAt": str(r.get("createdAt") or ""),
-        })
+        recent_reviews.append(
+            {
+                "id": r.get("id"),
+                "rating": r.get("rating", 0),
+                "comment": r.get("comment", ""),
+                "userName": r.get("userName", "Anonymous"),
+                "createdAt": str(r.get("createdAt") or ""),
+            }
+        )
 
     # ── Fetch the designer's own profile (for the edit form) ──
     profile_data = {}

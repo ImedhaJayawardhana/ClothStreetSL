@@ -74,9 +74,18 @@ def get_tailor_dashboard(decoded_token: dict = Depends(verify_token)):
 
     # ── Count orders by status ──
     total_orders = len(all_orders)
-    pending_orders = sum(1 for o in all_orders if (o.get("status") or "").lower() == "pending")
-    active_orders = sum(1 for o in all_orders if (o.get("status") or "").lower() in ("processing", "in_progress", "in progress"))
-    completed_orders = sum(1 for o in all_orders if (o.get("status") or "").lower() == "completed")
+    pending_orders = sum(
+        1 for o in all_orders if (o.get("status") or "").lower() == "pending"
+    )
+    active_orders = sum(
+        1
+        for o in all_orders
+        if (o.get("status") or "").lower()
+        in ("processing", "in_progress", "in progress")
+    )
+    completed_orders = sum(
+        1 for o in all_orders if (o.get("status") or "").lower() == "completed"
+    )
 
     # ── Recent orders (last 5, sorted by createdAt descending) ──
     def get_timestamp(order):
@@ -90,13 +99,16 @@ def get_tailor_dashboard(decoded_token: dict = Depends(verify_token)):
     sorted_orders = sorted(all_orders, key=get_timestamp, reverse=True)
     recent_orders = []
     for o in sorted_orders[:5]:
-        recent_orders.append({
-            "id": o.get("id"),
-            "customerName": o.get("customerName", "Unknown"),
-            "description": o.get("description") or (o.get("items", [{}])[0].get("name") if o.get("items") else "Order"),
-            "status": o.get("status", "pending"),
-            "createdAt": str(o.get("createdAt") or o.get("created_at") or ""),
-        })
+        recent_orders.append(
+            {
+                "id": o.get("id"),
+                "customerName": o.get("customerName", "Unknown"),
+                "description": o.get("description")
+                or (o.get("items", [{}])[0].get("name") if o.get("items") else "Order"),
+                "status": o.get("status", "pending"),
+                "createdAt": str(o.get("createdAt") or o.get("created_at") or ""),
+            }
+        )
 
     # ── Fetch reviews for this tailor ──
     reviews_ref = (
@@ -113,7 +125,9 @@ def get_tailor_dashboard(decoded_token: dict = Depends(verify_token)):
     total_reviews = len(all_reviews)
     average_rating = 0.0
     if total_reviews > 0:
-        average_rating = round(sum(r.get("rating", 0) for r in all_reviews) / total_reviews, 1)
+        average_rating = round(
+            sum(r.get("rating", 0) for r in all_reviews) / total_reviews, 1
+        )
 
     # Recent reviews (last 3)
     def get_review_timestamp(review):
@@ -127,13 +141,15 @@ def get_tailor_dashboard(decoded_token: dict = Depends(verify_token)):
     sorted_reviews = sorted(all_reviews, key=get_review_timestamp, reverse=True)
     recent_reviews = []
     for r in sorted_reviews[:3]:
-        recent_reviews.append({
-            "id": r.get("id"),
-            "rating": r.get("rating", 0),
-            "comment": r.get("comment", ""),
-            "userName": r.get("userName", "Anonymous"),
-            "createdAt": str(r.get("createdAt") or ""),
-        })
+        recent_reviews.append(
+            {
+                "id": r.get("id"),
+                "rating": r.get("rating", 0),
+                "comment": r.get("comment", ""),
+                "userName": r.get("userName", "Anonymous"),
+                "createdAt": str(r.get("createdAt") or ""),
+            }
+        )
 
     # ── Fetch the tailor's own profile (for the edit form) ──
     profile_data = {}
@@ -153,6 +169,7 @@ def get_tailor_dashboard(decoded_token: dict = Depends(verify_token)):
         "profile": profile_data,
     }
 
+
 # ── Pydantic models for new endpoints ──
 from pydantic import BaseModel as _BaseModel
 from typing import Optional as _Optional
@@ -160,6 +177,7 @@ from typing import Optional as _Optional
 
 class _TailorProfileBody(_BaseModel):
     """Request body for tailor profile update (dashboard)."""
+
     name: _Optional[str] = None
     bio: _Optional[str] = None
     speciality: _Optional[str] = None
@@ -197,6 +215,7 @@ def update_tailor_own_profile(
 
 class _OrderStatusBody(_BaseModel):
     """Request body for order status update."""
+
     status: str
 
 
@@ -229,9 +248,7 @@ def update_tailor_order_status(
 
     order_data = order_doc.to_dict()
     if order_data.get("tailorId") != uid:
-        raise HTTPException(
-            status_code=403, detail="This order is not assigned to you"
-        )
+        raise HTTPException(status_code=403, detail="This order is not assigned to you")
 
     order_ref.update({"status": body.status})
     return {"message": f"Order status updated to {body.status}"}
