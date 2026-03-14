@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getTailor, updateTailor, uploadImage } from "../../api";
+import ReviewSection from "../../components/common/ReviewSection";
 
 // ─── Default / placeholder tailor data ───────────────────────────────────────
 const DEFAULT_TAILOR = {
@@ -195,28 +196,7 @@ function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage, upload
 }
 
 // ─── Review Card ──────────────────────────────────────────────────────────────
-function ReviewCard({ review }) {
-    return (
-        <div className="border rounded-2xl p-5 shadow-sm flex flex-col gap-3 hover:shadow-md transition-all duration-200">
-            <StarRow count={review.rating} size={14} />
-            <p className="text-sm leading-relaxed font-medium flex-1">
-                &ldquo;{review.text}&rdquo;
-            </p>
-            <div className="flex items-center gap-2.5 pt-1 border-t">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-400 to-purple-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
-                    {review.reviewer?.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                    <p className="font-semibold text-sm">{review.reviewer}</p>
-                    <div className="flex items-center gap-1">
-                        <StarIcon size={10} filled />
-                        <span className="text-yellow-500 text-xs font-bold">{review.rating}.0</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
+// Removed original ReviewCard
 
 // ─── Tag pill ─────────────────────────────────────────────────────────────────
 function Tag({ label, onRemove, editMode }) {
@@ -710,30 +690,8 @@ export default function TailorProfile() {
                         />
 
                         {/* Reviews section */}
-                        <div>
-                            <div className="flex items-center gap-2 mb-4">
-                                <div className="w-7 h-7 rounded-lg bg-yellow-50 flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width={13} height={13} viewBox="0 0 24 24"
-                                        fill="#f59e0b" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>
-                                </div>
-                                <h2 className="font-bold text-sm">Customer Reviews</h2>
-                                <div className="flex items-center gap-1.5 ml-1 px-2.5 py-0.5 rounded-full bg-yellow-50 border border-yellow-100">
-                                    <StarIcon size={10} filled />
-                                    <span className="text-yellow-600 font-bold text-xs">{tailor.rating?.toFixed(1)}</span>
-                                    <span className="text-yellow-500 text-xs">· {reviews.length} reviews</span>
-                                </div>
-                            </div>
-                            {reviews.length === 0 ? (
-                                <p className="text-sm text-slate-400 text-center py-8">No reviews yet</p>
-                            ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {reviews.map((review, idx) => (
-                                        <ReviewCard key={review.id ?? idx} review={review} />
-                                    ))}
-                                </div>
-                            )}
+                        <div className="mt-4">
+                            <ReviewSection targetType="tailor" targetId={resolvedTailorId} />
                         </div>
                     </div>
 

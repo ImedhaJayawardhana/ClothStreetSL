@@ -7,6 +7,7 @@ from routers.quotations import router as quotations_router
 from routers.designers import router as designers_router
 from routers.orders import router as orders_router
 from routers.storage import router as storage_router
+from routers.reviews import router as reviews_router
 
 app = FastAPI(
     title="ClothStreet API",
@@ -36,6 +37,7 @@ app.include_router(quotations_router, prefix="/quotations", tags=["Quotations"])
 app.include_router(designers_router, prefix="/designers", tags=["Designers"])
 app.include_router(orders_router, prefix="/orders", tags=["Orders"])
 app.include_router(storage_router, prefix="/storage", tags=["Storage"])
+app.include_router(reviews_router, prefix="/reviews", tags=["Reviews"])
 
 
 @app.get("/")

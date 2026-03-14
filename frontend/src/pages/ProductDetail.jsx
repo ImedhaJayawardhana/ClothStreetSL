@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { getFabric, listFabrics } from "../api";
+import ReviewSection from "../components/common/ReviewSection";
 
 /* ─── Style tokens ─────────────────────────────────────────── */
 const C = {
@@ -46,8 +47,10 @@ function Stars({ rating }) {
 /* ─── Loading Skeleton ─────────────────────────────────────── */
 function ProductSkeleton() {
   return (
-    <div style={{ maxWidth: 1100, margin: "1.5rem auto", padding: "0 1.5rem",
-      display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem" }}>
+    <div style={{
+      maxWidth: 1100, margin: "1.5rem auto", padding: "0 1.5rem",
+      display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem"
+    }}>
       <div style={{ borderRadius: 16, height: 480, background: "#f1f5f9", animation: "pulse 1.5s ease-in-out infinite" }} />
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {[80, 200, 60, 120, 80, 60].map((h, i) => (
@@ -65,29 +68,15 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  // ── State ──
+  // ── ALL useState calls must be here at the top ──
   const [fabric, setFabric] = useState(null);
   const [relatedFabrics, setRelatedFabrics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const [qty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
   const [zoomStyle, setZoomStyle] = useState({ display: "none" });
-
-  const [reviewsList, setReviewsList] = useState([
-    { id: 1, name: "Ayesh Perera", initial: "A", rating: 5, date: "2 days ago",
-      title: "Excellent quality fabric",
-      text: "The drape on this material is phenomenal. Ordered 50 meters for a boutique collection and my clients absolutely love the feel.",
-      bg: C.purpleMuted, color: C.purpleDark, border: false },
-    { id: 2, name: "Samadhi W.", initial: "S", rating: 4, date: "1 week ago",
-      title: "Very good, colour slightly darker",
-      text: "Great texture. The color is slightly darker in person than on my screen, but still beautiful. Delivery was very fast.",
-      bg: C.bgCardAlt, color: C.text, border: true },
-  ]);
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const [reviewForm, setReviewForm] = useState({ name: "", rating: 5, title: "", text: "" });
+  const [qty, setQty] = useState(1); // ← MOVED HERE from inside functions
 
   // ── Fetch fabric from FastAPI ──
   useEffect(() => {
@@ -95,7 +84,6 @@ export default function ProductDetail() {
       setLoading(true);
       setError("");
       try {
-        // Fetch single fabric
         const res = await getFabric(fabricId);
         const data = res.data;
         setFabric({
@@ -117,7 +105,6 @@ export default function ProductDetail() {
           careInstructions: data.careInstructions || "Follow standard care instructions",
         });
 
-        // Fetch related fabrics
         const relRes = await listFabrics();
         const related = (relRes.data || [])
           .filter((f) => f.id !== fabricId)
@@ -154,6 +141,7 @@ export default function ProductDetail() {
 
   const handleMouseLeave = () => setZoomStyle({ display: "none" });
 
+  // ── qty is now available here from useState at top ──
   function handleAddToCart() {
     addToCart({ id: fabric.id, name: fabric.name, unitPrice: fabric.price, quantity: qty });
   }
@@ -164,9 +152,11 @@ export default function ProductDetail() {
   // ── Error / not found ──
   if (error || !fabric) {
     return (
-      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center",
+      <div style={{
+        minHeight: "60vh", display: "flex", alignItems: "center",
         justifyContent: "center", background: C.bgPage, color: C.text,
-        flexDirection: "column", gap: 16 }}>
+        flexDirection: "column", gap: 16
+      }}>
         <p style={{ fontSize: "1.3rem", fontWeight: 700 }}>
           {error || "Fabric not found"}
         </p>
@@ -177,28 +167,31 @@ export default function ProductDetail() {
     );
   }
 
+  // ── total uses qty from useState at top ──
   const total = (fabric.price * qty).toLocaleString();
 
-  // Thumbnail colors
   const thumbColors = [
     fabric.bgColor,
     fabric.colors?.[0]?.hex || fabric.bgColor,
     "#2d1b69",
   ];
 
-  // Main image — use real image_url if available, else color block
   const mainImageSrc = fabric.image_url || null;
 
   return (
-    <div className="pd-page" style={{ minHeight: "100vh", color: C.text,
-      fontFamily: "inherit", paddingBottom: "3rem" }}>
+    <div className="pd-page" style={{
+      minHeight: "100vh", color: C.text,
+      fontFamily: "inherit", paddingBottom: "3rem"
+    }}>
 
       {/* ── Back breadcrumb ── */}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "1.25rem 1.5rem 0" }}>
         <button onClick={() => navigate(-1)}
-          style={{ display: "inline-flex", alignItems: "center", gap: 6,
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
             background: "none", border: "none", cursor: "pointer",
-            color: C.textMuted, fontSize: "0.85rem", padding: 0, transition: "color 0.2s" }}
+            color: C.textMuted, fontSize: "0.85rem", padding: 0, transition: "color 0.2s"
+          }}
           onMouseEnter={e => e.currentTarget.style.color = C.purple}
           onMouseLeave={e => e.currentTarget.style.color = C.textMuted}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -210,9 +203,11 @@ export default function ProductDetail() {
       </div>
 
       {/* ── Main content grid ── */}
-      <div style={{ maxWidth: 1100, margin: "1.5rem auto 4rem", padding: "0 1.5rem",
+      <div style={{
+        maxWidth: 1100, margin: "1.5rem auto 4rem", padding: "0 1.5rem",
         display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem",
-        alignItems: "flex-start" }} className="pd-grid">
+        alignItems: "flex-start"
+      }} className="pd-grid">
 
         {/* ═══════════ LEFT — Image Gallery ═══════════ */}
         <div style={{ position: "sticky", top: "2rem" }}>
@@ -221,55 +216,67 @@ export default function ProductDetail() {
             <div style={{ display: "flex", flexDirection: "column", gap: 10, width: 80 }}>
               {thumbColors.map((bg, i) => (
                 <button key={i} onClick={() => setActiveImg(i)}
-                  style={{ width: "100%", height: 80, borderRadius: 10,
+                  style={{
+                    width: "100%", height: 80, borderRadius: 10,
                     background: mainImageSrc && i === 0 ? `url(${mainImageSrc}) center/cover` : bg,
                     border: i === activeImg ? `2px solid ${C.purple}` : `1px solid ${C.border}`,
                     cursor: "pointer", overflow: "hidden",
                     boxShadow: i === activeImg ? `0 0 0 3px rgba(124,58,237,0.15)` : "none",
                     transition: "border 0.2s, transform 0.2s",
-                    transform: i === activeImg ? "scale(1.02)" : "scale(1)" }} />
+                    transform: i === activeImg ? "scale(1.02)" : "scale(1)"
+                  }} />
               ))}
             </div>
 
             {/* Main image */}
             <div onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}
-              style={{ flex: 1, borderRadius: 16, overflow: "hidden", position: "relative",
+              style={{
+                flex: 1, borderRadius: 16, overflow: "hidden", position: "relative",
                 height: 480, background: mainImageSrc ? `url(${mainImageSrc}) center/cover` : thumbColors[activeImg],
-                border: `1px solid ${C.border}`, cursor: "crosshair" }}>
+                border: `1px solid ${C.border}`, cursor: "crosshair"
+              }}>
 
               {/* Zoom overlay */}
-              <div style={{ ...zoomStyle, position: "absolute", inset: 0, pointerEvents: "none",
+              <div style={{
+                ...zoomStyle, position: "absolute", inset: 0, pointerEvents: "none",
                 backgroundImage: mainImageSrc ? `url(${mainImageSrc})` : `none`,
                 backgroundColor: thumbColors[activeImg],
-                backgroundSize: "200%", zIndex: 10 }} />
+                backgroundSize: "200%", zIndex: 10
+              }} />
 
               {/* In-stock badge */}
               {fabric.inStock && (
-                <span style={{ position: "absolute", top: 14, left: 14, zIndex: 20,
+                <span style={{
+                  position: "absolute", top: 14, left: 14, zIndex: 20,
                   background: C.greenBg, border: `1px solid ${C.greenBorder}`,
                   color: C.green, fontSize: "0.7rem", fontWeight: 700,
                   padding: "4px 10px", borderRadius: 999,
-                  textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  textTransform: "uppercase", letterSpacing: "0.06em"
+                }}>
                   ● IN STOCK
                 </span>
               )}
               {!fabric.inStock && (
-                <span style={{ position: "absolute", top: 14, left: 14, zIndex: 20,
+                <span style={{
+                  position: "absolute", top: 14, left: 14, zIndex: 20,
                   background: "#fef2f2", border: "1px solid #fecaca",
                   color: "#dc2626", fontSize: "0.7rem", fontWeight: 700,
                   padding: "4px 10px", borderRadius: 999,
-                  textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  textTransform: "uppercase", letterSpacing: "0.06em"
+                }}>
                   ● OUT OF STOCK
                 </span>
               )}
 
               {/* Wishlist */}
-              <button style={{ position: "absolute", top: 14, right: 14, zIndex: 20,
+              <button style={{
+                position: "absolute", top: 14, right: 14, zIndex: 20,
                 width: 36, height: 36, borderRadius: "50%",
                 background: "rgba(255,255,255,0.9)", border: `1px solid ${C.border}`,
                 cursor: "pointer", color: C.textMuted, display: "flex",
                 alignItems: "center", justifyContent: "center",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.1)", transition: "color 0.2s" }}
+                boxShadow: "0 1px 4px rgba(0,0,0,0.1)", transition: "color 0.2s"
+              }}
                 onMouseEnter={e => e.currentTarget.style.color = "#ef4444"}
                 onMouseLeave={e => e.currentTarget.style.color = C.textMuted}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -287,9 +294,11 @@ export default function ProductDetail() {
               { icon: "🚚", label: "Fast Delivery", sub: "Island-wide" },
               { icon: "↩️", label: "Easy Returns", sub: "7-day policy" },
             ].map((b) => (
-              <div key={b.label} style={{ background: C.bgCard, border: `1px solid ${C.border}`,
+              <div key={b.label} style={{
+                background: C.bgCard, border: `1px solid ${C.border}`,
                 borderRadius: 10, padding: "16px 8px", textAlign: "center",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.02)" }}>
+                boxShadow: "0 1px 4px rgba(0,0,0,0.02)"
+              }}>
                 <div style={{ fontSize: "1.2rem", marginBottom: 6 }}>{b.icon}</div>
                 <div style={{ fontSize: "0.75rem", fontWeight: 700, color: C.text }}>{b.label}</div>
                 <div style={{ fontSize: "0.65rem", color: C.textMuted, marginTop: 2 }}>{b.sub}</div>
@@ -304,16 +313,20 @@ export default function ProductDetail() {
           {/* Tags */}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {fabric.tags.map((tag) => (
-              <span key={tag} style={{ padding: "4px 12px", borderRadius: 999,
+              <span key={tag} style={{
+                padding: "4px 12px", borderRadius: 999,
                 fontSize: "0.72rem", fontWeight: 600,
                 background: C.purpleMuted, border: `1px solid ${C.borderPurple}`,
-                color: C.purple }}>{tag}</span>
+                color: C.purple
+              }}>{tag}</span>
             ))}
           </div>
 
           {/* Name */}
-          <h1 style={{ margin: 0, fontSize: "clamp(1.6rem, 3vw, 2.1rem)", fontWeight: 800,
-            letterSpacing: "-0.02em", color: C.text, lineHeight: 1.2 }}>
+          <h1 style={{
+            margin: 0, fontSize: "clamp(1.6rem, 3vw, 2.1rem)", fontWeight: 800,
+            letterSpacing: "-0.02em", color: C.text, lineHeight: 1.2
+          }}>
             {fabric.name}
           </h1>
 
@@ -329,22 +342,30 @@ export default function ProductDetail() {
           </div>
 
           {/* Price box */}
-          <div style={{ background: C.bgCardAlt, border: `1px solid ${C.border}`,
+          <div style={{
+            background: C.bgCardAlt, border: `1px solid ${C.border}`,
             borderRadius: 12, padding: "1rem 1.25rem",
-            display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+            display: "flex", justifyContent: "space-between", alignItems: "flex-end"
+          }}>
             <div>
-              <div style={{ fontSize: "0.65rem", color: C.textFaint,
-                textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>
+              <div style={{
+                fontSize: "0.65rem", color: C.textFaint,
+                textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4
+              }}>
                 Price Per Meter
               </div>
-              <div style={{ fontSize: "1.8rem", fontWeight: 800, color: C.purple,
-                letterSpacing: "-0.02em" }}>
+              <div style={{
+                fontSize: "1.8rem", fontWeight: 800, color: C.purple,
+                letterSpacing: "-0.02em"
+              }}>
                 LKR {fabric.price?.toLocaleString()}
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: "0.65rem", color: C.textFaint,
-                textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>
+              <div style={{
+                fontSize: "0.65rem", color: C.textFaint,
+                textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4
+              }}>
                 Stock Available
               </div>
               <div style={{ fontSize: "1.1rem", fontWeight: 700, color: C.text }}>
@@ -353,19 +374,53 @@ export default function ProductDetail() {
             </div>
           </div>
 
+          {/* Quantity selector */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 12,
+            background: C.bgCardAlt, border: `1px solid ${C.border}`,
+            borderRadius: 12, padding: "0.85rem 1.1rem"
+          }}>
+            <span style={{ fontSize: "0.75rem", color: C.textFaint, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              Quantity (meters)
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" }}>
+              <button
+                onClick={() => setQty(q => Math.max(1, q - 1))}
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: `1px solid ${C.border}`, background: C.bgCard,
+                  cursor: "pointer", fontWeight: 700, fontSize: "1rem", color: C.text
+                }}>−</button>
+              <span style={{ fontWeight: 700, minWidth: 24, textAlign: "center" }}>{qty}</span>
+              <button
+                onClick={() => setQty(q => q + 1)}
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: `1px solid ${C.border}`, background: C.bgCard,
+                  cursor: "pointer", fontWeight: 700, fontSize: "1rem", color: C.text
+                }}>+</button>
+            </div>
+          </div>
+
           {/* Color */}
           {fabric.color && (
-            <div style={{ background: C.bgCardAlt, border: `1px solid ${C.border}`,
-              borderRadius: 12, padding: "0.85rem 1.1rem" }}>
-              <div style={{ fontSize: "0.75rem", color: C.textFaint, marginBottom: 6,
-                textTransform: "uppercase", letterSpacing: "0.05em" }}>Color</div>
+            <div style={{
+              background: C.bgCardAlt, border: `1px solid ${C.border}`,
+              borderRadius: 12, padding: "0.85rem 1.1rem"
+            }}>
+              <div style={{
+                fontSize: "0.75rem", color: C.textFaint, marginBottom: 6,
+                textTransform: "uppercase", letterSpacing: "0.05em"
+              }}>Color</div>
               <div style={{ fontWeight: 600, color: C.text }}>{fabric.color}</div>
               {fabric.colors && fabric.colors.length > 0 && (
                 <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                   {fabric.colors.map((c, i) => (
-                    <span key={i} style={{ width: 24, height: 24, borderRadius: "50%",
+                    <span key={i} style={{
+                      width: 24, height: 24, borderRadius: "50%",
                       background: c.hex || c, border: `1px solid ${C.border}`,
-                      display: "inline-block" }} title={c.name || c} />
+                      display: "inline-block"
+                    }} title={c.name || c} />
                   ))}
                 </div>
               )}
@@ -373,19 +428,25 @@ export default function ProductDetail() {
           )}
 
           {/* Supplier */}
-          <div style={{ background: C.bgCardAlt, border: `1px solid ${C.border}`,
+          <div style={{
+            background: C.bgCardAlt, border: `1px solid ${C.border}`,
             borderRadius: 12, padding: "0.85rem 1.1rem",
-            display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 10,
+            display: "flex", alignItems: "center", gap: 12
+          }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: 10,
               background: `linear-gradient(135deg, ${C.purple}, ${C.purpleDark})`,
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "1.1rem", flexShrink: 0 }}>🏭</div>
+              fontSize: "1.1rem", flexShrink: 0
+            }}>🏭</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 700, color: C.text, fontSize: "0.92rem" }}>
                 {fabric.supplier}
               </div>
-              <div style={{ fontSize: "0.75rem", color: C.textMuted,
-                display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+              <div style={{
+                fontSize: "0.75rem", color: C.textMuted,
+                display: "flex", alignItems: "center", gap: 4, marginTop: 2
+              }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" strokeWidth="2">
                   <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
@@ -394,9 +455,11 @@ export default function ProductDetail() {
                 {fabric.supplierLocation}
               </div>
             </div>
-            <span style={{ fontSize: "0.68rem", fontWeight: 700,
+            <span style={{
+              fontSize: "0.68rem", fontWeight: 700,
               background: C.greenBg, border: `1px solid ${C.greenBorder}`,
-              color: C.green, padding: "3px 10px", borderRadius: 999 }}>
+              color: C.green, padding: "3px 10px", borderRadius: 999
+            }}>
               ★ Verified Supplier
             </span>
           </div>
@@ -404,7 +467,8 @@ export default function ProductDetail() {
           {/* CTA Buttons */}
           <div style={{ display: "flex", gap: 12 }}>
             <button disabled={!fabric.inStock} onClick={handleAddToCart}
-              style={{ flex: 1, padding: "1rem", borderRadius: 12,
+              style={{
+                flex: 1, padding: "1rem", borderRadius: 12,
                 background: fabric.inStock
                   ? `linear-gradient(135deg, ${C.purple}, ${C.purpleDark})`
                   : "#d1d5db",
@@ -413,7 +477,8 @@ export default function ProductDetail() {
                 fontWeight: 700, fontSize: "1rem",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                 boxShadow: fabric.inStock ? "0 4px 24px rgba(124,58,237,0.4)" : "none",
-                transition: "opacity 0.2s" }}
+                transition: "opacity 0.2s"
+              }}
               onMouseEnter={e => { if (fabric.inStock) e.currentTarget.style.opacity = "0.9"; }}
               onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -424,10 +489,12 @@ export default function ProductDetail() {
               {fabric.inStock ? `Add to Cart · LKR ${total}` : "Out of Stock"}
             </button>
             <button onClick={handleShare}
-              style={{ width: 56, height: 56, borderRadius: 12, background: C.bgCard,
+              style={{
+                width: 56, height: 56, borderRadius: 12, background: C.bgCard,
                 border: `1px solid ${C.border}`, color: C.textMuted, cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                flexShrink: 0, transition: "color 0.2s, border 0.2s" }}
+                flexShrink: 0, transition: "color 0.2s, border 0.2s"
+              }}
               title="Share Product"
               onMouseEnter={e => { e.currentTarget.style.color = C.purple; e.currentTarget.style.borderColor = C.purpleMuted; }}
               onMouseLeave={e => { e.currentTarget.style.color = C.textMuted; e.currentTarget.style.borderColor = C.border; }}>
@@ -448,15 +515,17 @@ export default function ProductDetail() {
               {[
                 { id: "description", label: "Description" },
                 { id: "specs", label: "Specifications" },
-                { id: "reviews", label: `Reviews (${fabric.reviewCount || reviewsList.length})` },
+                { id: "reviews", label: "Reviews" },
               ].map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                  style={{ padding: "0 0 12px 0", background: "none", border: "none",
+                  style={{
+                    padding: "0 0 12px 0", background: "none", border: "none",
                     fontWeight: activeTab === tab.id ? 700 : 600, fontSize: "0.9rem",
                     cursor: "pointer",
                     color: activeTab === tab.id ? C.purpleDark : C.textMuted,
                     borderBottom: activeTab === tab.id ? `3px solid ${C.purple}` : "3px solid transparent",
-                    transition: "all 0.2s" }}>
+                    transition: "all 0.2s"
+                  }}>
                   {tab.label}
                 </button>
               ))}
@@ -489,10 +558,14 @@ export default function ProductDetail() {
                     { label: "Care Instructions", value: fabric.careInstructions || "Standard care" },
                     { label: "Stock Available", value: `${fabric.stock} Meters` },
                   ].map((s) => (
-                    <div key={s.label} style={{ background: C.bgCardAlt,
-                      border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 16px" }}>
-                      <div style={{ fontSize: "0.7rem", color: C.textFaint,
-                        textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
+                    <div key={s.label} style={{
+                      background: C.bgCardAlt,
+                      border: `1px solid ${C.border}`, borderRadius: 10, padding: "12px 16px"
+                    }}>
+                      <div style={{
+                        fontSize: "0.7rem", color: C.textFaint,
+                        textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6
+                      }}>
                         {s.label}
                       </div>
                       <div style={{ fontSize: "0.95rem", fontWeight: 600, color: C.text }}>
@@ -506,150 +579,7 @@ export default function ProductDetail() {
               {/* Reviews Tab */}
               {activeTab === "reviews" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                  <div style={{ display: "flex", gap: 32, alignItems: "center",
-                    background: C.bgCardAlt, padding: 24, borderRadius: 16,
-                    border: `1px solid ${C.border}` }}>
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: "3rem", fontWeight: 800, color: C.text, lineHeight: 1 }}>
-                        {fabric.rating?.toFixed(1)}
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "center", margin: "8px 0" }}>
-                        <Stars rating={fabric.rating} />
-                      </div>
-                      <div style={{ fontSize: "0.8rem", color: C.textMuted }}>
-                        Based on {fabric.reviewCount || reviewsList.length} reviews
-                      </div>
-                    </div>
-                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
-                      {[5, 4, 3, 2, 1].map(star => {
-                        const pct = star === 5 ? 70 : star === 4 ? 20 : star === 3 ? 5 : star === 2 ? 3 : 2;
-                        return (
-                          <div key={star} style={{ display: "flex", alignItems: "center",
-                            gap: 10, fontSize: "0.8rem", color: C.textMuted }}>
-                            <span style={{ width: 12 }}>{star}</span>
-                            <span style={{ color: C.yellow }}>★</span>
-                            <div style={{ flex: 1, height: 6, background: C.border,
-                              borderRadius: 3, overflow: "hidden" }}>
-                              <div style={{ width: `${pct}%`, height: "100%",
-                                background: C.yellow, borderRadius: 3 }} />
-                            </div>
-                            <span style={{ width: 24, textAlign: "right" }}>{pct}%</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <div>
-                      <button onClick={() => setShowReviewForm(!showReviewForm)}
-                        style={{ padding: "10px 20px", borderRadius: 8, background: C.text,
-                          color: C.white, border: "none", fontWeight: 600, cursor: "pointer" }}>
-                        {showReviewForm ? "Cancel Review" : "Write a Review"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Review Form */}
-                  {showReviewForm && (
-                    <div style={{ background: C.bgCardAlt, padding: 24, borderRadius: 16,
-                      border: `1px solid ${C.border}` }}>
-                      <h3 style={{ margin: "0 0 16px", fontSize: "1.1rem" }}>Write your review</h3>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                          <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Your Name</label>
-                            <input type="text" value={reviewForm.name}
-                              onChange={e => setReviewForm({ ...reviewForm, name: e.target.value })}
-                              placeholder="e.g. John Doe"
-                              style={{ width: "100%", padding: "10px 14px", borderRadius: 8,
-                                border: `1px solid ${C.border}`, fontSize: "0.9rem",
-                                outline: "none", boxSizing: "border-box" }} />
-                          </div>
-                          <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Rating</label>
-                            <select value={reviewForm.rating}
-                              onChange={e => setReviewForm({ ...reviewForm, rating: Number(e.target.value) })}
-                              style={{ width: "100%", padding: "10px 14px", borderRadius: 8,
-                                border: `1px solid ${C.border}`, fontSize: "0.9rem",
-                                outline: "none", background: C.bgCard, boxSizing: "border-box" }}>
-                              <option value="5">5 Stars - Excellent</option>
-                              <option value="4">4 Stars - Very Good</option>
-                              <option value="3">3 Stars - Average</option>
-                              <option value="2">2 Stars - Poor</option>
-                              <option value="1">1 Star - Terrible</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div>
-                          <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Review Title</label>
-                          <input type="text" value={reviewForm.title}
-                            onChange={e => setReviewForm({ ...reviewForm, title: e.target.value })}
-                            placeholder="Summary of your experience"
-                            style={{ width: "100%", padding: "10px 14px", borderRadius: 8,
-                              border: `1px solid ${C.border}`, fontSize: "0.9rem",
-                              outline: "none", boxSizing: "border-box" }} />
-                        </div>
-                        <div>
-                          <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, marginBottom: 6 }}>Review Content</label>
-                          <textarea value={reviewForm.text}
-                            onChange={e => setReviewForm({ ...reviewForm, text: e.target.value })}
-                            placeholder="What did you like or dislike?" rows="4"
-                            style={{ width: "100%", padding: "10px 14px", borderRadius: 8,
-                              border: `1px solid ${C.border}`, fontSize: "0.9rem",
-                              outline: "none", resize: "vertical", fontFamily: "inherit",
-                              boxSizing: "border-box" }} />
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                          <button onClick={() => {
-                            if (!reviewForm.name || !reviewForm.text) {
-                              alert("Please fill in your name and review content.");
-                              return;
-                            }
-                            setReviewsList([{
-                              id: Date.now(), name: reviewForm.name,
-                              initial: reviewForm.name.charAt(0).toUpperCase(),
-                              rating: reviewForm.rating, date: "Just now",
-                              title: reviewForm.title || "User Review",
-                              text: reviewForm.text, bg: C.purpleMuted,
-                              color: C.purpleDark, border: false,
-                            }, ...reviewsList]);
-                            setReviewForm({ name: "", rating: 5, title: "", text: "" });
-                            setShowReviewForm(false);
-                          }}
-                            style={{ padding: "10px 24px", borderRadius: 8, background: C.purple,
-                              color: C.white, border: "none", fontWeight: 700, cursor: "pointer",
-                              boxShadow: "0 2px 8px rgba(124,58,237,0.3)" }}>
-                            Submit Review
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Reviews list */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                    <h3 style={{ fontSize: "1.1rem", margin: "0 0 8px" }}>Recent Customer Reviews</h3>
-                    {reviewsList.map(review => (
-                      <div key={review.id} style={{ borderBottom: `1px solid ${C.border}`, paddingBottom: 16 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                            <div style={{ width: 36, height: 36, borderRadius: "50%",
-                              background: review.bg, color: review.color,
-                              display: "flex", alignItems: "center", justifyContent: "center",
-                              fontWeight: 700 }}>{review.initial}</div>
-                            <div>
-                              <div style={{ fontWeight: 600, fontSize: "0.9rem" }}>{review.name}</div>
-                              <div style={{ fontSize: "0.75rem", color: C.green }}>✓ Verified Buyer</div>
-                            </div>
-                          </div>
-                          <span style={{ fontSize: "0.8rem", color: C.textFaint }}>{review.date}</span>
-                        </div>
-                        <Stars rating={review.rating} />
-                        <div style={{ fontWeight: 700, fontSize: "0.95rem", marginTop: 8 }}>{review.title}</div>
-                        <p style={{ margin: "4px 0 0", fontSize: "0.9rem", color: C.textMuted, lineHeight: 1.6 }}>
-                          {review.text}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+                  <ReviewSection targetType="product" targetId={fabricId} />
                 </div>
               )}
             </div>
@@ -666,28 +596,38 @@ export default function ProductDetail() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 20 }}>
             {relatedFabrics.map((rel, idx) => (
               <Link key={rel.id} to={`/shop/${rel.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-                <div style={{ background: C.bgCard, borderRadius: 12,
+                <div style={{
+                  background: C.bgCard, borderRadius: 12,
                   border: `1px solid ${C.border}`, overflow: "hidden",
-                  transition: "transform 0.2s, box-shadow 0.2s", cursor: "pointer" }}
+                  transition: "transform 0.2s, box-shadow 0.2s", cursor: "pointer"
+                }}
                   onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.05)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
-                  <div style={{ height: 160,
+                  <div style={{
+                    height: 160,
                     background: rel.image_url ? `url(${rel.image_url}) center/cover` : BG_COLORS[idx % BG_COLORS.length],
-                    position: "relative" }}>
+                    position: "relative"
+                  }}>
                     {rel.inStock && (
-                      <span style={{ position: "absolute", top: 10, left: 10,
+                      <span style={{
+                        position: "absolute", top: 10, left: 10,
                         background: C.greenBg, border: `1px solid ${C.greenBorder}`,
                         color: C.green, fontSize: "0.6rem", fontWeight: 700,
-                        padding: "2px 8px", borderRadius: 999 }}>IN STOCK</span>
+                        padding: "2px 8px", borderRadius: 999
+                      }}>IN STOCK</span>
                     )}
                   </div>
                   <div style={{ padding: 16 }}>
-                    <div style={{ fontSize: "0.7rem", color: C.purple, fontWeight: 700,
-                      marginBottom: 4, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                    <div style={{
+                      fontSize: "0.7rem", color: C.purple, fontWeight: 700,
+                      marginBottom: 4, letterSpacing: "0.05em", textTransform: "uppercase"
+                    }}>
                       {rel.type}
                     </div>
-                    <div style={{ fontWeight: 700, fontSize: "0.95rem", color: C.text,
-                      marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div style={{
+                      fontWeight: 700, fontSize: "0.95rem", color: C.text,
+                      marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"
+                    }}>
                       {rel.name}
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
