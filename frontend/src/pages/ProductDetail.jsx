@@ -96,6 +96,7 @@ export default function ProductDetail() {
           reviewCount: data.reviewCount || 0,
           minOrder: data.minOrder || data.min_order || 10,
           supplier: data.supplier || "ClothStreet Supplier",
+          supplierId: data.supplier_id || data.sellerId || "default",
           supplierLocation: data.supplierLocation || "Sri Lanka",
           description: data.description || `Premium ${data.type} fabric available at ClothStreet.`,
           material: data.material || data.type,
@@ -455,13 +456,30 @@ export default function ProductDetail() {
                 {fabric.supplierLocation}
               </div>
             </div>
-            <span style={{
-              fontSize: "0.68rem", fontWeight: 700,
-              background: C.greenBg, border: `1px solid ${C.greenBorder}`,
-              color: C.green, padding: "3px 10px", borderRadius: 999
-            }}>
-              ★ Verified Supplier
-            </span>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
+              <span style={{
+                fontSize: "0.68rem", fontWeight: 700,
+                background: C.greenBg, border: `1px solid ${C.greenBorder}`,
+                color: C.green, padding: "3px 10px", borderRadius: 999
+              }}>
+                ★ Verified Supplier
+              </span>
+              <button 
+                onClick={() => navigate(`/store/${fabric.supplierId}`)}
+                style={{
+                  padding: "6px 14px",
+                  borderRadius: 8,
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  background: C.purpleMuted, 
+                  border: `1px solid ${C.borderPurple}`,
+                  color: C.purple,
+                  cursor: "pointer",
+                  whiteSpace: "nowrap"
+                }}>
+                View Store
+              </button>
+            </div>
           </div>
 
           {/* CTA Buttons */}
