@@ -58,7 +58,7 @@ export default function QuotationOffers() {
       try {
         await deleteCartItem(user.uid, q.providerId);
         clearCart();
-      } catch (_cartErr) {
+      } catch (_) {
         // Silently ignore cart errors as requested
       }
 
@@ -89,7 +89,7 @@ export default function QuotationOffers() {
       setQuotations((prev) =>
         prev.map((item) => (item.id === q.id ? { ...item, status: "declined" } : item))
       );
-    } catch (_err) {
+    } catch (_) {
       toast.error("Failed to decline quotation.");
     }
   };
