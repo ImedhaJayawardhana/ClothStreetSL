@@ -50,9 +50,18 @@ export const deleteFabric = (id) => api.delete(`/fabrics/${id}`);
 // ─── Quotations ──────────────────────────────────────
 export const createQuotation = (data) => api.post("/quotations", data);
 export const getMyQuotations = () => api.get("/quotations/my");
+export const getQuotationInbox = () => api.get("/quotations/inbox");
+export const getQuotationOffers = () => api.get("/quotations/offers");
 export const getQuotation = (id) => api.get(`/quotations/${id}`);
+export const updateQuotation = (id, data) =>
+    api.patch(`/quotations/${id}`, data);
 export const updateQuotationStatus = (id, status) =>
-    api.patch(`/quotations/${id}/status`, { status });
+    api.patch(`/quotations/${id}`, { status });
+export const deleteQuotation = (id) => api.delete(`/quotations/${id}`);
+
+// ─── Cart ────────────────────────────────────────────
+export const deleteCartItem = (customerId, providerId) =>
+    api.delete(`/cart/${customerId}/item/${providerId}`);
 
 // ─── Orders ──────────────────────────────────────────
 export const createOrder = (data) => api.post("/orders", data);

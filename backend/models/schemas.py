@@ -96,14 +96,41 @@ class FabricUpdate(BaseModel):
 
 
 class Quotation(BaseModel):
-    tailor_id: str
-    fabric_id: str
-    description: str
-    price: float
+    providerId: str
+    providerName: Optional[str] = None
+    providerType: Optional[str] = None
+    serviceType: Optional[str] = None
+    description: Optional[str] = None
+    budget: Optional[float] = None
+    deadline: Optional[str] = None
+    referenceImageUrl: Optional[str] = None
+    requirements: Optional[str] = None
+    gender: Optional[str] = None
+    expectedDate: Optional[str] = None
+    items: Optional[List[dict]] = []
+    measurements: Optional[dict] = {}
+    designImages: Optional[List[str]] = []
+    customerName: Optional[str] = None
+    customerEmail: Optional[str] = None
+
+
+class QuotationUpdate(BaseModel):
+    status: Optional[
+        Literal["pending", "quoted", "accepted", "rejected", "declined"]
+    ] = None
+    providerResponse: Optional[str] = None
+    proposedPrice: Optional[float] = None
+    laborCharge: Optional[float] = None
+    additionalCharges: Optional[float] = None
+    additionalNote: Optional[str] = None
+    completionDate: Optional[str] = None
+    providerRemarks: Optional[str] = None
+    grandTotal: Optional[float] = None
+    paymentMethod: Optional[str] = None
 
 
 class QuotationStatusUpdate(BaseModel):
-    status: Literal["pending", "accepted", "completed"]
+    status: Literal["pending", "quoted", "accepted", "rejected", "declined"]
 
 
 class Order(BaseModel):

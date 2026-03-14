@@ -9,26 +9,39 @@ export default function FindTailorDesigner() {
  const [activeTab, setActiveTab] = useState("All");
  const [searchQuery, setSearchQuery] = useState("");
  const [tailors, setTailors] = useState([]);
+ const [dbDesigners, setDbDesigners] = useState([]);
  const [loading, setLoading] = useState(true);
 
- // Fetch tailors from Firestore
+ // Fetch tailors and designers from Firestore
  useEffect(() => {
- async function fetchTailors() {
+ async function fetchProviders() {
  try {
- const snapshot = await getDocs(collection(db,"tailors"));
- const data = snapshot.docs.map((doc) => ({
+ const [tailorsSnap, designersSnap] = await Promise.all([
+   getDocs(collection(db,"tailors")),
+   getDocs(collection(db,"designers"))
+ ]);
+ 
+ const tailorsData = tailorsSnap.docs.map((doc) => ({
  id: doc.id,
  ...doc.data(),
  providerType:"tailor",
 }));
- setTailors(data);
+
+ const designersData = designersSnap.docs.map((doc) => ({
+ id: doc.id,
+ ...doc.data(),
+ providerType:"designer",
+}));
+
+ setTailors(tailorsData);
+ setDbDesigners(designersData);
 } catch (err) {
- console.error("Error fetching tailors:", err);
+ console.error("Error fetching providers:", err);
 } finally {
  setLoading(false);
 }
 }
- fetchTailors();
+ fetchProviders();
 }, []);
 
  // Map designers to a consistent shape
@@ -46,9 +59,9 @@ export default function FindTailorDesigner() {
  providerType:"designer",
 }));
 
- // All providers combined
  const allProviders = [
  ...tailors,
+ ...dbDesigners,
  ...designers,
  ];
 
