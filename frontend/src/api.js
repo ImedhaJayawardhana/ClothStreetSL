@@ -58,6 +58,7 @@ export const updateQuotation = (id, data) =>
     api.patch(`/quotations/${id}`, data);
 export const updateQuotationStatus = (id, status) =>
     api.patch(`/quotations/${id}`, { status });
+export const updateQuotationDeliverables = (quotationId, files, message = "") => api.patch(`/quotations/${quotationId}/deliver`, { files, message });
 export const deleteQuotation = (id) => api.delete(`/quotations/${id}`);
 
 // ─── Cart ────────────────────────────────────────────

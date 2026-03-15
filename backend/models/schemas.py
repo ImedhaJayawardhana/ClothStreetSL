@@ -112,11 +112,27 @@ class Quotation(BaseModel):
     designImages: Optional[List[str]] = []
     customerName: Optional[str] = None
     customerEmail: Optional[str] = None
+    serviceMode: Optional[str] = None
+    linkedQuotationId: Optional[str] = None
+    comboTailorId: Optional[str] = None
+    comboTailorName: Optional[str] = None
 
 
 class QuotationUpdate(BaseModel):
     status: Optional[
-        Literal["pending", "quoted", "accepted", "rejected", "declined"]
+        Literal[
+            "pending",
+            "quoted",
+            "accepted",
+            "rejected",
+            "declined",
+            "design_in_progress",
+            "design_completed",
+            "design_delivered",
+            "completed",
+            "cancelled",
+            "hibernated",
+        ]
     ] = None
     providerResponse: Optional[str] = None
     proposedPrice: Optional[float] = None
@@ -127,10 +143,23 @@ class QuotationUpdate(BaseModel):
     providerRemarks: Optional[str] = None
     grandTotal: Optional[float] = None
     paymentMethod: Optional[str] = None
+    designDeliverables: Optional[List[str]] = []
 
 
 class QuotationStatusUpdate(BaseModel):
-    status: Literal["pending", "quoted", "accepted", "rejected", "declined"]
+    status: Literal[
+        "pending",
+        "quoted",
+        "accepted",
+        "rejected",
+        "declined",
+        "design_in_progress",
+        "design_completed",
+        "design_delivered",
+        "completed",
+        "cancelled",
+        "hibernated",
+    ]
 
 
 class Order(BaseModel):

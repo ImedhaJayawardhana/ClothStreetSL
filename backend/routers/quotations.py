@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from firebase.admin import db
 from firebase.auth_verify import verify_token
 from models.schemas import Quotation, QuotationUpdate
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -24,6 +25,8 @@ def create_quotation(quotation: Quotation, decoded_token: dict = Depends(verify_
         "providerName": quotation.providerName or "",
         "providerType": quotation.providerType or "",
         "serviceType": quotation.serviceType or "",
+        "serviceMode": quotation.serviceMode or "",
+        "linkedQuotationId": quotation.linkedQuotationId or "",
         "description": quotation.description or "",
         "budget": quotation.budget or 0,
         "deadline": quotation.deadline or "",
@@ -121,26 +124,39 @@ def update_quotation(
     update_data["updatedAt"] = datetime.utcnow().isoformat()
 
     order_id_str = None
-    if update_data.get("status", "").lower() == "accepted":
+    new_status = update_data.get("status", "").lower()
+    if new_status in ["accepted", "design_in_progress"]:
         now = datetime.utcnow().isoformat()
+        is_designer = data.get("providerType") == "designer"
 
-        # Determine final price (fallback to proposed or grandTotal or 0)
-        final_price = data.get("proposedPrice") or data.get("grandTotal") or 0
+        # Determine final price
+        service_charge = data.get("laborCharge", 0) + data.get("additionalCharges", 0)
+        final_price = (
+            service_charge
+            if is_designer
+            else (data.get("proposedPrice") or data.get("grandTotal") or 0)
+        )
+
         service_type = data.get("serviceType") or "Tailoring"
         provider_name = data.get("providerName") or "Provider"
 
         # Build items list to match existing frontend expectations
         items = []
-        for item in data.get("items", []):
-            items.append(
-                {
-                    "name": item.get("name", "Material"),
-                    "quantity": item.get("quantity", 1),
-                    "unit": item.get("unit", "m"),
-                    "unitPrice": item.get("unitPrice", 0),
-                    "image": item.get("image", ""),
-                }
-            )
+        if not is_designer:
+            for item in data.get("items", []):
+                items.append(
+                    {
+                        "name": item.get("name", "Material"),
+                        "quantity": item.get("quantity", 1),
+                        "unit": item.get("unit", "m"),
+                        "unitPrice": item.get("unitPrice", 0),
+                        "image": (
+                            item.image
+                            if hasattr(item, "image")
+                            else item.get("image", "")
+                        ),
+                    }
+                )
 
         items.append(
             {
@@ -181,6 +197,43 @@ def update_quotation(
     if order_id_str:
         res["orderId"] = order_id_str
     return res
+
+
+# ─── PATCH /{quotation_id}/deliver  →  Upload design deliverables ─
+class DeliverablesUpdate(BaseModel):
+    files: list[str] = []
+    message: str = ""
+
+
+@router.patch("/{quotation_id}/deliver")
+def deliver_design(
+    quotation_id: str,
+    update: DeliverablesUpdate,
+    decoded_token: dict = Depends(verify_token),
+):
+    uid = decoded_token["uid"]
+    doc_ref = db.collection("quotations").document(quotation_id)
+    doc = doc_ref.get()
+
+    if not doc.exists:
+        raise HTTPException(status_code=404, detail="Quotation not found")
+
+    data = doc.to_dict()
+    if data.get("providerId") != uid:
+        raise HTTPException(
+            status_code=403, detail="Only the provider can deliver designs"
+        )
+
+    update_data = {
+        "designDeliverables": update.files,
+        "designDeliveryMessage": update.message,
+        "status": "design_delivered",
+        "designDeliveredAt": datetime.utcnow().isoformat(),
+        "updatedAt": datetime.utcnow().isoformat(),
+    }
+
+    doc_ref.update(update_data)
+    return {"message": "Designs delivered successfully"}
 
 
 # ─── DELETE /{quotation_id}  →  Delete quotation ─────────

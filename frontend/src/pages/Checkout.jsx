@@ -114,6 +114,28 @@ const CHECKOUT_STYLES = `
 .checkout-success-btn-primary { display: flex; align-items: center; gap: 8px; background: var(--clr-primary); color: #fff; border: none; padding: 12px 32px; border-radius: 50px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(124,58,237,0.25); }
 .checkout-success-btn-primary:hover { background: var(--clr-primary-2); transform: translateY(-1px); }
 @keyframes skeletonPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── Service Selection Modal ── */
+.service-modal-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.45); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 24px; animation: svcFadeIn 0.2s ease; }
+@keyframes svcFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes svcSlideUp { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.service-modal { background: #fff; border-radius: 24px; max-width: 520px; width: 100%; padding: 36px 32px 32px; box-shadow: 0 24px 64px rgba(0,0,0,0.18); animation: svcSlideUp 0.3s ease; position: relative; }
+.service-modal-close { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid #e5e7eb; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #71717a; transition: all 0.15s; }
+.service-modal-close:hover { background: #f4f4f5; color: #18181b; }
+.service-modal-title { font-size: 1.4rem; font-weight: 800; color: #18181b; margin: 0 0 6px; text-align: center; }
+.service-modal-desc { font-size: 0.88rem; color: #71717a; margin: 0 0 28px; text-align: center; }
+.service-modal-options { display: flex; flex-direction: column; gap: 14px; }
+.service-modal-option { display: flex; align-items: center; gap: 16px; padding: 20px 22px; border: 2px solid #e5e7eb; border-radius: 18px; cursor: pointer; transition: all 0.2s; background: #fff; }
+.service-modal-option:hover { border-color: var(--clr-glow); background: #faf5ff; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,0.1); }
+.service-modal-option-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.5rem; }
+.service-modal-option-icon.tailor { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
+.service-modal-option-icon.designer { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
+.service-modal-option-icon.both { background: linear-gradient(135deg, #ede9fe, #fce7f3); }
+.service-modal-option-info { flex: 1; min-width: 0; }
+.service-modal-option-name { font-size: 1rem; font-weight: 700; color: #18181b; margin: 0 0 3px; }
+.service-modal-option-desc { font-size: 0.82rem; color: #71717a; margin: 0; }
+.service-modal-option-arrow { width: 32px; height: 32px; border-radius: 50%; background: #f4f4f5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #a1a1aa; transition: all 0.15s; }
+.service-modal-option:hover .service-modal-option-arrow { background: var(--clr-primary); color: #fff; }
 `;
 
 const STEPS = ["Shipping", "Delivery", "Payment", "Confirm", "Complete"];
@@ -147,6 +169,9 @@ export default function Checkout() {
     // ── Multi-step state ──
     const [currentStep, setCurrentStep] = useState(location.state?.step || 1);
     const [placingOrder, setPlacingOrder] = useState(false);
+
+    // ── Service Selection Modal ──
+    const [showServiceModal, setShowServiceModal] = useState(false);
 
     // ── Step 1: Shipping ──
     const [form, setForm] = useState({
@@ -431,7 +456,7 @@ export default function Checkout() {
                                 style={{ border: "2px solid transparent", background: "linear-gradient(#fff,#fff) padding-box, linear-gradient(135deg,#7c3aed,#db2777) border-box" }}
                                 onClick={() => {
                                     sessionStorage.setItem("clothstreet_checkout_cart", JSON.stringify(selectedCartItems));
-                                    navigate("/find-tailor-designer");
+                                    setShowServiceModal(true);
                                 }}>
                                 <div className="checkout-delivery-option-icon"
                                     style={{ background: "linear-gradient(135deg,#ede9fe,#fce7f3)" }}>
@@ -731,6 +756,78 @@ export default function Checkout() {
                     </div>
                 )}
             </div>
+
+            {/* ══ SERVICE SELECTION MODAL ══ */}
+            {showServiceModal && (
+                <div className="service-modal-overlay" onClick={() => setShowServiceModal(false)}>
+                    <div className="service-modal" onClick={(e) => e.stopPropagation()}>
+                        <button className="service-modal-close" onClick={() => setShowServiceModal(false)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
+                        </button>
+
+                        <h2 className="service-modal-title">What do you need?</h2>
+                        <p className="service-modal-desc">Choose the type of service for your fabrics</p>
+
+                        <div className="service-modal-options">
+                            {/* Option 1: Tailor Only */}
+                            <div className="service-modal-option" onClick={() => {
+                                sessionStorage.setItem("clothstreet_service_mode", "tailor");
+                                setShowServiceModal(false);
+                                navigate("/find-tailor-designer?mode=tailor");
+                            }}>
+                                <div className="service-modal-option-icon tailor">✂️</div>
+                                <div className="service-modal-option-info">
+                                    <p className="service-modal-option-name">Need Only a Tailor</p>
+                                    <p className="service-modal-option-desc">Get your fabric stitched into a custom outfit</p>
+                                </div>
+                                <div className="service-modal-option-arrow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            {/* Option 2: Designer Only */}
+                            <div className="service-modal-option" onClick={() => {
+                                sessionStorage.setItem("clothstreet_service_mode", "designer");
+                                setShowServiceModal(false);
+                                navigate("/find-tailor-designer?mode=designer");
+                            }}>
+                                <div className="service-modal-option-icon designer">🎨</div>
+                                <div className="service-modal-option-info">
+                                    <p className="service-modal-option-name">Need Only a Designer</p>
+                                    <p className="service-modal-option-desc">Get a professional design for your fabric</p>
+                                </div>
+                                <div className="service-modal-option-arrow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            {/* Option 3: Designer + Tailor */}
+                            <div className="service-modal-option" onClick={() => {
+                                sessionStorage.setItem("clothstreet_service_mode", "both");
+                                setShowServiceModal(false);
+                                navigate("/find-tailor-designer?mode=both");
+                            }}>
+                                <div className="service-modal-option-icon both">🎨✂️</div>
+                                <div className="service-modal-option-info">
+                                    <p className="service-modal-option-name">Need a Designer & a Tailor</p>
+                                    <p className="service-modal-option-desc">Get a custom design, then have it tailored</p>
+                                </div>
+                                <div className="service-modal-option-arrow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

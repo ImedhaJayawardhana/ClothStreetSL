@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { uploadImage, updateQuotationDeliverables } from "../api";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { db } from "../firebase/firebase";
@@ -21,7 +22,13 @@ export default function QuotationResponse() {
   const [completionDate, setCompletionDate] = useState("");
   const [remarks, setRemarks] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [showBillPreview, setShowBillPreview] = useState(false);
+
+  /* ── Action States ── */
+  const [actionMode, setActionMode] = useState(null); // "hibernate", "cancel", "upload"
+  const [actionReason, setActionReason] = useState("");
+  const [uploadFiles, setUploadFiles] = useState([]);
+  const [uploadMessage, setUploadMessage] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   /* ── Fetch from Firestore if not passed via state ── */
   useEffect(() => {
@@ -169,6 +176,55 @@ export default function QuotationResponse() {
     }
   };
 
+  const handleStatusChange = async (newStatus) => {
+    if ((newStatus === "hibernated" || newStatus === "cancelled") && !actionReason) {
+      toast.error("Please provide a reason.");
+      return;
+    }
+    if (!window.confirm(`Are you sure you want to change status to ${newStatus}?`)) return;
+    
+    try {
+      setSubmitting(true);
+      await updateDoc(doc(db, "quotations", quotationId), {
+        status: newStatus,
+        statusReason: actionReason || "",
+        updatedAt: serverTimestamp()
+      });
+      toast.success(`Order marked as ${newStatus}.`);
+      setQuotation(prev => ({ ...prev, status: newStatus, statusReason: actionReason }));
+      setActionMode(null);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update status.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDesignerDelivery = async () => {
+    if (uploadFiles.length === 0 && !uploadMessage.trim()) {
+      toast.error("Please provide at least a file or a message.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const urls = [];
+      for (const file of Array.from(uploadFiles)) {
+        const res = await uploadImage(file, "designs");
+        if (res.data && res.data.url) urls.push(res.data.url);
+      }
+      await updateQuotationDeliverables(quotationId, urls, uploadMessage);
+      toast.success("Design delivered successfully!");
+      setQuotation(prev => ({ ...prev, status: "design_delivered", designDeliverables: urls, designDeliveryMessage: uploadMessage }));
+      setActionMode(null);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to deliver designs.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const formatDate = (timestamp) => {
     if (!timestamp?.seconds) return "—";
     return new Date(timestamp.seconds * 1000).toLocaleDateString("en-GB", {
@@ -201,7 +257,10 @@ export default function QuotationResponse() {
     );
   }
 
-  const isAlreadyQuoted = quotation.status === "quoted" || quotation.status === "accepted" || quotation.status === "rejected" || quotation.status === "completed";
+  const isAlreadyQuoted = quotation.status !== "pending";
+
+  const isDesigner = quotation.providerType === "designer";
+  const isInProgress = quotation.status === "accepted" || quotation.status === "design_in_progress";
 
   return (
     <div className="min-h-screen">
@@ -210,14 +269,14 @@ export default function QuotationResponse() {
         <div className="max-w-4xl mx-auto flex items-center gap-3">
           <button
             onClick={() => navigate("/quotation-inbox")}
-            className="w-9 h-9 rounded-xl hover: border flex items-center justify-center transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-xl hover: border flex items-center justify-center transition-colors cursor-pointer text-white"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <div>
-            <h1 className="text-xl font-bold">Quote Request Details</h1>
+          <div className="text-white">
+            <h1 className="text-xl font-bold">Order Details</h1>
             <p className="text-sm">{quotation.customerName || "Customer"} · {formatDate(quotation.createdAt)}</p>
           </div>
         </div>
@@ -228,18 +287,21 @@ export default function QuotationResponse() {
         {/* ══════════ CUSTOMER INFO ══════════ */}
         <div className="rounded-2xl border shadow-sm p-6">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center font-bold text-xl shrink-0">
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xl shrink-0">
               {quotation.customerName?.charAt(0) || "?"}
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-lg font-bold">{quotation.customerName}</h2>
               <p className="text-sm">{quotation.customerEmail}</p>
             </div>
-            <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase ${quotation.status === "pending" ? "bg-amber-100 text-amber-700" :
-              quotation.status === "quoted" ? "" :
-                quotation.status === "accepted" ? "bg-emerald-100 text-emerald-700" :
-                  ""
-              }`}>
+            <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase ${
+              quotation.status === "pending" ? "bg-amber-100 text-amber-700" :
+              quotation.status === "quoted" ? "bg-blue-100 text-blue-700" :
+              isInProgress ? "bg-violet-100 text-violet-700" :
+              quotation.status === "design_delivered" || quotation.status === "completed" ? "bg-emerald-100 text-emerald-700" :
+              quotation.status === "hibernated" ? "bg-amber-100 text-amber-700" :
+              "bg-rose-100 text-rose-700"
+            }`}>
               {quotation.status}
             </span>
           </div>
@@ -291,78 +353,8 @@ export default function QuotationResponse() {
           </div>
         )}
 
-        {/* ══════════ REQUIREMENTS ══════════ */}
-        {quotation.requirements && (
-          <div className="rounded-2xl border shadow-sm p-6">
-            <h3 className="text-base font-bold mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-              </svg>
-              Customer Requirements
-            </h3>
-            <p className="text-sm leading-relaxed rounded-xl p-4 border whitespace-pre-wrap">
-              {quotation.requirements}
-            </p>
-          </div>
-        )}
-
-        {/* ══════════ DESIGN IMAGES ══════════ */}
-        {quotation.designImages?.length > 0 && (
-          <div className="rounded-2xl border shadow-sm p-6">
-            <h3 className="text-base font-bold mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <polyline points="21 15 16 10 5 21" />
-              </svg>
-              Reference Images ({quotation.designImages.length})
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {quotation.designImages.map((url, idx) => (
-                <a
-                  key={idx}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-xl overflow-hidden aspect-square border hover:shadow-lg transition-shadow"
-                >
-                  <img src={url} alt={`Design ${idx + 1}`} className="w-full h-full object-cover" />
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ══════════ MEASUREMENTS ══════════ */}
-        {quotation.measurements && Object.keys(quotation.measurements).length > 0 && (
-          <div className="rounded-2xl border shadow-sm p-6">
-            <h3 className="text-base font-bold mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" />
-              </svg>
-              Body Measurements
-              <span className="text-xs font-normal capitalize">({quotation.gender})</span>
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {Object.entries(quotation.measurements)
-                .filter(([, val]) => val)
-                .map(([key, val]) => (
-                  <div key={key} className="rounded-xl p-3 border text-center">
-                    <p className="text-xs font-medium capitalize mb-1">{key.replace(/([A-Z])/g, " $1")}</p>
-                    <p className="text-lg font-bold">
-                      {val}<span className="text-xs ml-0.5">in</span>
-                    </p>
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
-
         {/* ══════════ PRICING FORM (only if pending) ══════════ */}
-        {!isAlreadyQuoted ? (
+        {!isAlreadyQuoted && (
           <>
             <div className="rounded-2xl border-2 border-violet-200 shadow-sm p-6">
               <h3 className="text-lg font-bold mb-1 flex items-center gap-2">
@@ -456,195 +448,214 @@ export default function QuotationResponse() {
               </div>
             </div>
 
-            {/* ── Bill Preview Toggle ── */}
-            <button
-              onClick={() => setShowBillPreview(!showBillPreview)}
-              className="w-full border hover: rounded-2xl p-4 flex items-center justify-between transition-colors cursor-pointer"
-            >
-              <span className="flex items-center gap-2 text-sm font-bold">
-                <svg className="w-5 h-5 text-violet-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Preview Bill
-              </span>
-              <svg className={`w-5 h-5 transition-transform ${showBillPreview ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {/* ── Bill Preview ── */}
-            {showBillPreview && (
-              <div className="rounded-2xl border shadow-lg p-6">
-                <div className="text-center mb-6">
-                  <h3 className="text-lg font-bold">Quotation Bill Preview</h3>
-                  <p className="text-xs mt-1">This is what the customer will see</p>
-                </div>
-
-                <div className="border rounded-xl overflow-hidden">
-                  {/* Bill header */}
-                  <div className="bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-xs text-violet-200 uppercase tracking-wider font-semibold">Quotation From</p>
-                        <p className="text-base font-bold">{quotation.providerName || user?.displayName || "Provider"}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-violet-200 uppercase tracking-wider font-semibold">Date</p>
-                        <p className="text-sm font-semibold">{new Date().toLocaleDateString("en-GB")}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bill body */}
-                  <div className="px-6 py-4 space-y-3">
-                    {/* Material items */}
-                    <div className="text-xs font-bold uppercase tracking-wider mb-2">Materials</div>
-                    {quotation.items?.map((item, idx) => (
-                      <div key={idx} className="flex justify-between items-center text-sm">
-                        <span className="">{item.name} × {item.quantity} {item.unit || "m"}</span>
-                        <span className="font-semibold">LKR {((item.unitPrice || 0) * (item.quantity || 1)).toLocaleString()}</span>
-                      </div>
-                    ))}
-
-                    <hr className="my-2" />
-
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="">Material Subtotal</span>
-                      <span className="font-semibold">LKR {materialTotal.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="">Labor / Service Charge</span>
-                      <span className="font-semibold">LKR {labor.toLocaleString()}</span>
-                    </div>
-                    {additional > 0 && (
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="">
-                          Additional{additionalNote ? ` (${additionalNote})` : ""}
-                        </span>
-                        <span className="font-semibold">LKR {additional.toLocaleString()}</span>
-                      </div>
-                    )}
-
-                    <hr className="my-2" />
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-base font-bold">Grand Total</span>
-                      <span className="text-xl font-extrabold text-violet-600">LKR {grandTotal.toLocaleString()}</span>
-                    </div>
-                  </div>
-
-                  {/* Completion date footer */}
-                  <div className="px-6 py-3 border-t flex justify-between items-center text-sm">
-                    <span className="">Est. Completion</span>
-                    <span className="font-bold">{completionDate || "Not set"}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* ── Action Buttons ── */}
             <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="flex-1 flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 font-bold rounded-2xl text-sm transition-all shadow-lg shadow-violet-200 hover:shadow-xl hover:shadow-violet-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              >
-                {submitting ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <line x1="22" y1="2" x2="11" y2="13" />
-                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                    </svg>
-                    Send Quotation
-                  </>
-                )}
-              </button>
-
-              <button
-                onClick={handleDecline}
-                className="px-8 py-4 border hover: font-bold rounded-2xl text-sm transition-colors cursor-pointer"
-              >
-                Decline Request
-              </button>
-            </div>
+               <button
+                 onClick={handleSubmit}
+                 disabled={submitting}
+                 className="flex-1 flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 font-bold rounded-2xl text-sm transition-all shadow-lg shadow-violet-200 hover:shadow-xl hover:shadow-violet-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white"
+               >
+                 {submitting ? "Sending..." : "Send Quotation"}
+               </button>
+               <button
+                 onClick={handleDecline}
+                 className="px-8 py-4 border hover: font-bold rounded-2xl text-sm transition-colors cursor-pointer"
+               >
+                 Decline Request
+               </button>
+             </div>
           </>
-        ) : (
-          /* ── Already responded card ── */
+        )}
+
+        {/* ══════════ ALREADY RESPONDED ACTIONS ══════════ */}
+        {isAlreadyQuoted && (
           <div className="rounded-2xl border shadow-sm p-6 text-center">
-            <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center ${quotation.status === "quoted" ? "" :
-              quotation.status === "accepted" ? "bg-emerald-50" :
-                quotation.status === "completed" ? "bg-blue-50" :
-                  ""
-              }`}>
-              {quotation.status === "quoted" ? "💰" :
-                quotation.status === "accepted" ? "✅" :
-                  quotation.status === "completed" ? "📦" : "❌"}
-            </div>
-            <h3 className="text-lg font-bold mb-1">
-              {quotation.status === "quoted" ? "Quotation Sent" :
-                quotation.status === "accepted" ? "Quotation Accepted!" :
-                  quotation.status === "completed" ? "Order Completed!" :
-                    "Request Declined"}
-            </h3>
+            
+            <h3 className="text-xl font-bold mb-2">Order Management</h3>
             {quotation.grandTotal && (
-              <p className="text-2xl font-extrabold text-violet-600 mb-2">LKR {quotation.grandTotal.toLocaleString()}</p>
-            )}
-            {quotation.completionDate && (
-              <p className="text-sm">Completion by: <span className="font-semibold">{quotation.completionDate}</span></p>
+              <p className="text-xl font-bold text-violet-600 mb-6">Total Value: LKR {quotation.grandTotal.toLocaleString()}</p>
             )}
 
-            {quotation.status === "completed" && (
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 text-left my-6 mx-auto max-w-sm">
-                <p className="text-sm font-bold text-slate-800 mb-3 uppercase tracking-wider">Order Details</p>
-
-                {/* Items list */}
-                <div className="space-y-2 mb-4">
-                  {quotation.items?.length > 0 ? quotation.items.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-start text-sm pb-2 border-b border-slate-100 last:border-0 last:pb-0">
-                      <span className="text-slate-600 pr-4">{item.name || item.item || "Custom Item"} <span className="font-semibold text-slate-400">x{item.quantity || 1}</span></span>
-                      <span className="font-bold text-slate-800 shrink-0">LKR {(item.unitPrice || item.price || 0).toLocaleString()}</span>
-                    </div>
-                  )) : (
-                    <div className="flex justify-between items-start text-sm">
-                      <span className="text-slate-600 pr-4">{quotation.serviceType || "Custom Design Service"}</span>
-                      <span className="font-bold text-slate-800 shrink-0">LKR {(quotation.grandTotal || quotation.budget || 0).toLocaleString()}</span>
-                    </div>
-                  )}
+            {/* STATUS TIMELINE */}
+            <div className="mb-8 bg-slate-50 border border-slate-100 rounded-2xl p-6 text-left relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[100px] -z-0 opacity-50"></div>
+              <h4 className="text-sm font-bold text-slate-800 mb-6 uppercase tracking-wider relative z-10 flex items-center justify-between">
+                Order Timeline
+                {quotation.completionDate && (
+                  <span className="bg-white px-3 py-1 rounded-full text-xs text-indigo-700 border border-indigo-100 shadow-sm flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Deadline: {quotation.completionDate}
+                  </span>
+                )}
+              </h4>
+              <div className="relative pl-6 space-y-6 z-10 before:absolute before:inset-y-2 before:left-2.5 before:-ml-px before:w-0.5 before:bg-slate-200">
+                
+                {/* Step 1: Request Received */}
+                <div className="relative">
+                  <div className="absolute -left-[30px] rounded-full w-5 h-5 bg-violet-500 border-4 border-white shadow shadow-violet-200"></div>
+                  <div>
+                    <span className="text-xs font-semibold text-violet-600 block mb-0.5">Step 1</span>
+                    <h5 className="font-bold text-slate-800 text-sm">Request Received</h5>
+                    <p className="text-xs text-slate-500 mt-1">{formatDate(quotation.createdAt)}</p>
+                  </div>
                 </div>
 
-                {/* Additional details */}
-                {(quotation.description || quotation.requirements) && (
-                  <div className="text-sm">
-                    <p className="font-bold text-slate-700 mb-1">Requirements:</p>
-                    <p className="text-slate-600 whitespace-pre-line leading-relaxed">{quotation.description || quotation.requirements}</p>
+                {/* Step 2: Quoted */}
+                <div className="relative opacity-100">
+                  <div className={`absolute -left-[30px] rounded-full w-5 h-5 border-4 border-white shadow ${quotation.quotedAt ? "bg-violet-500 shadow-violet-200" : "bg-slate-300 shadow-slate-200"}`}></div>
+                  <div>
+                    <span className={`text-xs font-semibold block mb-0.5 ${quotation.quotedAt ? "text-violet-600" : "text-slate-400"}`}>Step 2</span>
+                    <h5 className={`font-bold text-sm ${quotation.quotedAt ? "text-slate-800" : "text-slate-400"}`}>Quotation Sent</h5>
+                    {quotation.quotedAt && <p className="text-xs text-slate-500 mt-1">{formatDate(quotation.quotedAt)}</p>}
+                  </div>
+                </div>
+
+                {/* Step 3: Accepted / In Progress */}
+                {(quotation.status === "accepted" || quotation.status === "design_in_progress" || quotation.status === "completed" || quotation.status === "design_delivered") && (
+                  <div className="relative opacity-100">
+                    <div className="absolute -left-[30px] rounded-full w-5 h-5 bg-violet-500 border-4 border-white shadow shadow-violet-200"></div>
+                    <div>
+                      <span className="text-xs font-semibold text-violet-600 block mb-0.5">Step 3</span>
+                      <h5 className="font-bold text-slate-800 text-sm">Customer Accepted Payment</h5>
+                      {quotation.acceptedAt && <p className="text-xs text-slate-500 mt-1">{formatDate(quotation.acceptedAt)}</p>}
+                    </div>
                   </div>
                 )}
-              </div>
-            )}
 
-            {/* Action buttons for accepted status */}
-            {quotation.status === "accepted" && (
-              <div className="mt-6">
+                {/* Step 4: Finished / Cancelled */}
+                {(quotation.status === "completed" || quotation.status === "design_delivered" || quotation.status === "cancelled" || quotation.status === "hibernated") && (
+                  <div className="relative opacity-100">
+                    <div className={`absolute -left-[30px] rounded-full w-5 h-5 border-4 border-white shadow ${(quotation.status === "completed" || quotation.status === "design_delivered") ? "bg-emerald-500 shadow-emerald-200" : "bg-rose-500 shadow-rose-200"}`}></div>
+                    <div>
+                      <span className={`text-xs font-semibold block mb-0.5 ${(quotation.status === "completed" || quotation.status === "design_delivered") ? "text-emerald-600" : "text-rose-600"}`}>Final Step</span>
+                      <h5 className="font-bold text-slate-800 text-sm">
+                        {quotation.status === "completed" ? "Order Completed" : 
+                         quotation.status === "design_delivered" ? "Design Delivered" : 
+                         quotation.status === "hibernated" ? "Hibernated" : "Cancelled"}
+                      </h5>
+                      <p className="text-xs text-slate-500 mt-1">{formatDate(quotation.updatedAt)}</p>
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            </div>
+
+            {/* IN PROGRESS ACTIONS */}
+            {isInProgress && !actionMode && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t pt-6">
                 <button
-                  onClick={handleCompleteOrder}
-                  className="w-full sm:w-auto px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-colors cursor-pointer"
+                  onClick={() => setActionMode("upload")}
+                  className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-emerald-100 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold transition-all"
                 >
-                  Complete Order Now
+                  <span className="text-2xl">{isDesigner ? "📥" : "✅"}</span>
+                  {isDesigner ? "Deliver Designs" : "Mark as Completed"}
+                </button>
+                <button
+                  onClick={() => setActionMode("hibernate")}
+                  className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-amber-100 bg-amber-50 text-amber-700 hover:bg-amber-100 font-bold transition-all"
+                >
+                  <span className="text-2xl">💤</span>
+                  Hibernate Order
+                </button>
+                <button
+                  onClick={() => setActionMode("cancel")}
+                  className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-rose-100 bg-rose-50 text-rose-700 hover:bg-rose-100 font-bold transition-all"
+                >
+                  <span className="text-2xl">❌</span>
+                  Cancel Order
                 </button>
               </div>
             )}
 
-            <button
-              onClick={() => navigate("/quotation-inbox")}
-              className="mt-4 px-6 py-2 hover: font-semibold rounded-xl text-sm transition-colors cursor-pointer"
-            >
-              ← Back to Inbox
-            </button>
+            {/* ACTION FORMS */}
+            {actionMode === "upload" && (
+              <div className="mt-6 border-t pt-6 text-left">
+                <h4 className="font-bold mb-4">{isDesigner ? "Upload Design Deliverables" : "Complete Order"}</h4>
+                {isDesigner ? (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-slate-700">Attach Files (Optional)</label>
+                      <input 
+                        type="file" 
+                        multiple 
+                        className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:border-violet-500 bg-white"
+                        onChange={(e) => setUploadFiles(Array.from(e.target.files))}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-slate-700">Message / Link to Designs</label>
+                      <textarea
+                        className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:border-violet-500 min-h-[100px] bg-white resize-y"
+                        placeholder="e.g. Here is the link to the Figma file: https://..."
+                        value={uploadMessage}
+                        onChange={(e) => setUploadMessage(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                      <button onClick={handleDesignerDelivery} disabled={uploading} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex-1 transition-colors disabled:opacity-50">
+                        {uploading ? "Delivering..." : "Upload & Deliver"}
+                      </button>
+                      <button onClick={() => setActionMode(null)} disabled={uploading} className="border border-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-colors disabled:opacity-50 text-slate-700">Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex gap-3 mt-4">
+                    <button onClick={handleCompleteOrder} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-xl font-bold flex-1">Confirm Completion</button>
+                    <button onClick={() => setActionMode(null)} className="border px-6 py-2 rounded-xl font-bold hover:">Back</button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {(actionMode === "hibernate" || actionMode === "cancel") && (
+              <div className="mt-6 border-t pt-6 text-left">
+                <h4 className="font-bold mb-4 text-rose-600">{actionMode === "cancel" ? "Cancel Order" : "Hibernate Order"}</h4>
+                <div className="space-y-4">
+                  <select 
+                    className="w-full border p-3 rounded-xl focus:outline-none focus:border-violet-500"
+                    value={actionReason}
+                    onChange={(e) => setActionReason(e.target.value)}
+                  >
+                    <option value="">Select a reason...</option>
+                    {actionMode === "cancel" ? (
+                      <>
+                        <option value="Customer requested cancellation">Customer requested cancellation</option>
+                        <option value="Material out of stock">Material out of stock</option>
+                        <option value="Unable to meet deadline">Unable to meet deadline</option>
+                        <option value="Other">Other</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="Awaiting customer details">Awaiting customer details</option>
+                        <option value="Awaiting fabric delivery">Awaiting fabric delivery</option>
+                        <option value="Delayed by third party">Delayed by third party</option>
+                        <option value="Other">Other</option>
+                      </>
+                    )}
+                  </select>
+                  <div className="flex gap-3">
+                    <button 
+                      onClick={() => handleStatusChange(actionMode === "cancel" ? "cancelled" : "hibernated")} 
+                      disabled={submitting} 
+                      className={`${actionMode === "cancel" ? "bg-rose-600 hover:bg-rose-700" : "bg-amber-600 hover:bg-amber-700"} text-white px-6 py-2 rounded-xl font-bold flex-1`}
+                    >
+                      {submitting ? "Saving..." : "Confirm"}
+                    </button>
+                    <button onClick={() => { setActionMode(null); setActionReason(""); }} className="border px-6 py-2 rounded-xl font-bold hover:">Go Back</button>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {quotation.statusReason && (
+               <div className="mt-4 p-4 border border-rose-100 bg-rose-50 rounded-xl text-left">
+                  <p className="text-sm font-bold text-rose-800">Reason: <span className="font-normal">{quotation.statusReason}</span></p>
+               </div>
+            )}
+
           </div>
         )}
       </div>

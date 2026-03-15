@@ -3,8 +3,10 @@ import { collection, query, where, getDocs, doc, updateDoc } from "firebase/fire
 import { db, auth } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 // ── NEW: imports for dashboard API ──
 import { getDesignerDashboard, updateDesignerProjectStatus, updateDesignerProfile } from "../api/designer";
+import { getQuotationInbox, uploadImage, updateQuotationDeliverables } from "../api";
 
 export default function DesignerDashboard() {
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ export default function DesignerDashboard() {
 
   const [orders, setOrders] = useState([]);
   const [jobRequests, setJobRequests] = useState([]);
+  const [activeDesigns, setActiveDesigns] = useState([]); // NEW: for quotations
   //const [reviews, setReviews] = useState([]);
   const [stats, setStats] = useState({ active: 0, inProgress: 0, readyToDeliver: 0, completed: 0 });
   const [loading, setLoading] = useState(true);
@@ -90,6 +93,19 @@ export default function DesignerDashboard() {
         const reqSnap = await getDocs(query(collection(db, "jobRequests"), where("designerId", "==", uid)));
         const reqs = reqSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
         setJobRequests(reqs.length > 0 ? reqs : FALLBACK_REQUESTS);
+
+        // Fetch quotations for design workflow
+        try {
+            const { data: inboxQs } = await getQuotationInbox();
+            // Filter to show active design work (not just initial quote phase, but paid/accepted)
+            const activeQs = inboxQs.filter(q => 
+                ["accepted", "design_in_progress", "design_completed", "design_delivered"].includes(q.status?.toLowerCase())
+            );
+            setActiveDesigns(activeQs);
+        } catch (e) {
+            console.error("Error fetching quotations", e);
+        }
+
       } catch (err) {
         console.error("DesignerDashboard fetch error:", err);
         setOrders(FALLBACK_ORDERS);
@@ -146,6 +162,32 @@ export default function DesignerDashboard() {
       console.error("Status update error:", err);
       alert("Failed to update project status");
     }
+  };
+
+  const handleFileUpload = async (event, quotationId) => {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+      
+      const toastId = toast.loading("Uploading designs...");
+      try {
+          const uploadedUrls = [];
+          for (let i = 0; i < files.length; i++) {
+              const res = await uploadImage(files[i], "design_deliverables");
+              uploadedUrls.push(res.data.url);
+          }
+          
+          await updateQuotationDeliverables(quotationId, uploadedUrls);
+          
+          // Update local state to show 'design_delivered' without refreshing
+          setActiveDesigns(prev => prev.map(q => 
+              q.id === quotationId ? { ...q, status: "design_delivered", designDeliverables: uploadedUrls } : q
+          ));
+          
+          toast.success("Designs delivered successfully!", { id: toastId });
+      } catch (err) {
+          console.error("Upload error", err);
+          toast.error("Failed to upload files.", { id: toastId });
+      }
   };
 
   // ── NEW: Handler to save profile via API ──
@@ -361,6 +403,69 @@ export default function DesignerDashboard() {
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" /></svg>
                         </button>
                       </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Active Design Projects (NEW FLOW) */}
+          <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden flex flex-col mt-6">
+            <div className="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
+              <h2 className="font-black text-slate-800 text-xs uppercase tracking-widest flex items-center gap-2">
+                <span className="w-2 h-2 bg-violet-600 rounded-full animate-pulse" />
+                Active Design Projects
+              </h2>
+            </div>
+            
+            {activeDesigns.length === 0 ? (
+              <div className="p-12 text-center text-slate-400 font-bold italic">No active design projects.</div>
+            ) : (
+              <div className="divide-y divide-slate-50">
+                {activeDesigns.map((req) => (
+                  <div key={req.id} className="p-6 hover:bg-slate-50/50 transition-colors group">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="font-black text-slate-900 mb-0.5">{req.customerName || "Customer"}</p>
+                        <p className="text-xs text-slate-400 font-bold tracking-tighter">{req.serviceType || "Design Work"}</p>
+                      </div>
+                      <div className="text-right">
+                         <span className={`text-[10px] font-bold px-3 py-1 rounded-lg ${
+                             req.status === "design_delivered" ? "bg-emerald-100 text-emerald-700" :
+                             req.status === "design_in_progress" ? "bg-blue-100 text-blue-700" :
+                             "bg-violet-100 text-violet-700"
+                         }`}>
+                             {req.status === "design_delivered" ? "Delivered" : "In Progress"}
+                         </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-4 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                      <div className="flex gap-2 text-sm text-gray-600">
+                           {req.status === "design_delivered" ? "You have delivered the designs." : "Upload final design files (PDF, JPG, PNG) to complete"}
+                      </div>
+                      
+                      {req.status !== "design_delivered" ? (
+                          <div className="relative">
+                            <input 
+                                type="file" 
+                                multiple 
+                                accept="image/*,application/pdf"
+                                onChange={(e) => handleFileUpload(e, req.id)}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                            <button className="px-4 py-2 bg-violet-600 text-white text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-violet-700 transition-all shadow-sm flex items-center gap-2 pointer-events-none">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                                Upload & Deliver
+                            </button>
+                          </div>
+                      ) : (
+                           <button className="px-4 py-2 bg-emerald-50 border border-emerald-200 text-emerald-600 text-[11px] font-black uppercase tracking-widest rounded-lg flex items-center gap-2 cursor-default">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                                Delivered ({req.designDeliverables?.length || 0} files)
+                            </button>
+                      )}
                     </div>
                   </div>
                 ))}
