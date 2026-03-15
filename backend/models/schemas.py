@@ -120,7 +120,19 @@ class Quotation(BaseModel):
 
 class QuotationUpdate(BaseModel):
     status: Optional[
-        Literal["pending", "quoted", "accepted", "rejected", "declined", "design_in_progress", "design_completed", "design_delivered", "completed", "cancelled", "hibernated"]
+        Literal[
+            "pending",
+            "quoted",
+            "accepted",
+            "rejected",
+            "declined",
+            "design_in_progress",
+            "design_completed",
+            "design_delivered",
+            "completed",
+            "cancelled",
+            "hibernated",
+        ]
     ] = None
     providerResponse: Optional[str] = None
     proposedPrice: Optional[float] = None
@@ -135,7 +147,19 @@ class QuotationUpdate(BaseModel):
 
 
 class QuotationStatusUpdate(BaseModel):
-    status: Literal["pending", "quoted", "accepted", "rejected", "declined", "design_in_progress", "design_completed", "design_delivered", "completed", "cancelled", "hibernated"]
+    status: Literal[
+        "pending",
+        "quoted",
+        "accepted",
+        "rejected",
+        "declined",
+        "design_in_progress",
+        "design_completed",
+        "design_delivered",
+        "completed",
+        "cancelled",
+        "hibernated",
+    ]
 
 
 class Order(BaseModel):

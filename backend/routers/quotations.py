@@ -131,8 +131,12 @@ def update_quotation(
 
         # Determine final price
         service_charge = data.get("laborCharge", 0) + data.get("additionalCharges", 0)
-        final_price = service_charge if is_designer else (data.get("proposedPrice") or data.get("grandTotal") or 0)
-        
+        final_price = (
+            service_charge
+            if is_designer
+            else (data.get("proposedPrice") or data.get("grandTotal") or 0)
+        )
+
         service_type = data.get("serviceType") or "Tailoring"
         provider_name = data.get("providerName") or "Provider"
 
@@ -146,7 +150,11 @@ def update_quotation(
                         "quantity": item.get("quantity", 1),
                         "unit": item.get("unit", "m"),
                         "unitPrice": item.get("unitPrice", 0),
-                        "image": item.image if hasattr(item, "image") else item.get("image", ""),
+                        "image": (
+                            item.image
+                            if hasattr(item, "image")
+                            else item.get("image", "")
+                        ),
                     }
                 )
 
@@ -196,6 +204,7 @@ class DeliverablesUpdate(BaseModel):
     files: list[str] = []
     message: str = ""
 
+
 @router.patch("/{quotation_id}/deliver")
 def deliver_design(
     quotation_id: str,
@@ -205,22 +214,24 @@ def deliver_design(
     uid = decoded_token["uid"]
     doc_ref = db.collection("quotations").document(quotation_id)
     doc = doc_ref.get()
-    
+
     if not doc.exists:
         raise HTTPException(status_code=404, detail="Quotation not found")
-        
+
     data = doc.to_dict()
     if data.get("providerId") != uid:
-        raise HTTPException(status_code=403, detail="Only the provider can deliver designs")
-        
+        raise HTTPException(
+            status_code=403, detail="Only the provider can deliver designs"
+        )
+
     update_data = {
         "designDeliverables": update.files,
         "designDeliveryMessage": update.message,
         "status": "design_delivered",
         "designDeliveredAt": datetime.utcnow().isoformat(),
-        "updatedAt": datetime.utcnow().isoformat()
+        "updatedAt": datetime.utcnow().isoformat(),
     }
-    
+
     doc_ref.update(update_data)
     return {"message": "Designs delivered successfully"}
 
