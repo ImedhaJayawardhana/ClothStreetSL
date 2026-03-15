@@ -91,3 +91,5 @@ serviceAccountKey.json
 __pycache__/
 *.pyc
 *.pyo
+
+serviceAccountKey.json

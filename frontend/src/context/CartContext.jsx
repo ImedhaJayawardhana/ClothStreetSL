@@ -83,8 +83,22 @@ export function CartProvider({ children }) {
           i.id === item.id ? { ...i, quantity: i.quantity + (item.quantity || 1) } : i
         );
       }
-      return [...prev, { ...item, quantity: item.quantity || 1 }];
+      return [...prev, { ...item, quantity: item.quantity || 1, selected: true }];
     });
+  }, []);
+
+  const toggleItemSelection = useCallback((id) => {
+    setCartItems((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, selected: i.selected === false ? true : false } : i))
+    );
+  }, []);
+
+  const toggleAllSelection = useCallback((isSelected) => {
+    setCartItems((prev) => prev.map((i) => ({ ...i, selected: isSelected })));
+  }, []);
+
+  const clearSelectedItems = useCallback(() => {
+    setCartItems((prev) => prev.filter((i) => i.selected === false));
   }, []);
 
   const removeFromCart = useCallback((id) => {
@@ -114,6 +128,14 @@ export function CartProvider({ children }) {
     0
   );
 
+  const selectedCartItems = cartItems.filter((i) => i.selected !== false);
+  const selectedCartProductCount = selectedCartItems.length;
+  const selectedCartCount = selectedCartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const selectedCartSubtotal = selectedCartItems.reduce(
+    (sum, item) => sum + item.unitPrice * item.quantity,
+    0
+  );
+
   return (
     <CartContext.Provider
       value={{
@@ -125,6 +147,13 @@ export function CartProvider({ children }) {
         cartCount,
         cartProductCount,
         cartSubtotal,
+        toggleItemSelection,
+        toggleAllSelection,
+        clearSelectedItems,
+        selectedCartItems,
+        selectedCartCount,
+        selectedCartProductCount,
+        selectedCartSubtotal,
       }}
     >
       {children}

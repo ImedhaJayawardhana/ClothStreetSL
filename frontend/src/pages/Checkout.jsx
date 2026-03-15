@@ -119,7 +119,7 @@ const CHECKOUT_STYLES = `
 const STEPS = ["Shipping", "Delivery", "Payment", "Confirm", "Complete"];
 
 export default function Checkout() {
-    const { cartItems, cartSubtotal, clearCart } = useCart();
+    const { selectedCartItems, selectedCartSubtotal, clearSelectedItems } = useCart();
     const { user, loading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -135,7 +135,7 @@ export default function Checkout() {
     }, [user, loading, navigate, location.state]);
 
     const SHIPPING_COST = 500;
-    const total = cartSubtotal + SHIPPING_COST;
+    const total = selectedCartSubtotal + SHIPPING_COST;
 
     // ── Multi-step state ──
     const [currentStep, setCurrentStep] = useState(location.state?.step || 1);
@@ -233,7 +233,7 @@ export default function Checkout() {
 
         setPlacingOrder(true);
         try {
-            const items = cartItems.map((item) => ({
+            const items = selectedCartItems.map((item) => ({
                 id: item.id,
                 name: item.name,
                 quantity: item.quantity,
@@ -260,7 +260,7 @@ export default function Checkout() {
             const newOrderId = res.data.order_id || "ORD-" + Date.now();
             setOrderId(newOrderId);
 
-            if (clearCart) clearCart();
+            if (clearSelectedItems) clearSelectedItems();
 
             toast.success("Order placed successfully!");
             setCurrentStep(5);
@@ -418,7 +418,7 @@ export default function Checkout() {
                             <div className="checkout-delivery-option"
                                 style={{ border: "2px solid transparent", background: "linear-gradient(#fff,#fff) padding-box, linear-gradient(135deg,#7c3aed,#db2777) border-box" }}
                                 onClick={() => {
-                                    sessionStorage.setItem("clothstreet_checkout_cart", JSON.stringify(cartItems));
+                                    sessionStorage.setItem("clothstreet_checkout_cart", JSON.stringify(selectedCartItems));
                                     navigate("/find-tailor-designer");
                                 }}>
                                 <div className="checkout-delivery-option-icon"
@@ -580,7 +580,7 @@ export default function Checkout() {
                         </div>
 
                         <div className="checkout-confirm-items">
-                            {cartItems.map((item) => (
+                            {selectedCartItems.map((item) => (
                                 <div className="checkout-confirm-item" key={item.id}>
                                     <div className="checkout-confirm-item-img">
                                         {item.image ? (
@@ -696,7 +696,7 @@ export default function Checkout() {
                 {currentStep < 5 && (
                     <div className="checkout-summary-card">
                         <h3 className="checkout-summary-title">Order Summary</h3>
-                        {cartItems.map((item) => (
+                        {selectedCartItems.map((item) => (
                             <div className="checkout-summary-item" key={item.id}>
                                 <span className="checkout-summary-item-name">
                                     {item.name} ({item.quantity}{item.unit || "m"})
@@ -708,7 +708,7 @@ export default function Checkout() {
                         ))}
                         <hr className="checkout-summary-divider" />
                         <div className="checkout-summary-row">
-                            <span>Subtotal</span><span>LKR {cartSubtotal.toLocaleString()}</span>
+                            <span>Subtotal</span><span>LKR {selectedCartSubtotal.toLocaleString()}</span>
                         </div>
                         <div className="checkout-summary-row">
                             <span>Shipping</span><span>LKR {SHIPPING_COST.toLocaleString()}</span>
