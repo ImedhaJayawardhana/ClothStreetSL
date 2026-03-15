@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from firebase.admin import db
 from firebase.auth_verify import verify_token
 from models.schemas import Quotation, QuotationUpdate
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -188,6 +189,38 @@ def update_quotation(
     if order_id_str:
         res["orderId"] = order_id_str
     return res
+
+
+# ─── PATCH /{quotation_id}/deliver  →  Upload design deliverables ─
+class DeliverablesUpdate(BaseModel):
+    files: List[str]
+
+@router.patch("/{quotation_id}/deliver")
+def deliver_design(
+    quotation_id: str,
+    update: DeliverablesUpdate,
+    decoded_token: dict = Depends(verify_token),
+):
+    uid = decoded_token["uid"]
+    doc_ref = db.collection("quotations").document(quotation_id)
+    doc = doc_ref.get()
+    
+    if not doc.exists:
+        raise HTTPException(status_code=404, detail="Quotation not found")
+        
+    data = doc.to_dict()
+    if data.get("providerId") != uid:
+        raise HTTPException(status_code=403, detail="Only the provider can deliver designs")
+        
+    update_data = {
+        "designDeliverables": update.files,
+        "status": "design_delivered",
+        "designDeliveredAt": datetime.utcnow().isoformat(),
+        "updatedAt": datetime.utcnow().isoformat()
+    }
+    
+    doc_ref.update(update_data)
+    return {"message": "Designs delivered successfully"}
 
 
 # ─── DELETE /{quotation_id}  →  Delete quotation ─────────
