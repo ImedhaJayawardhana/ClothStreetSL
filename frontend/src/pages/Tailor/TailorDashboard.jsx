@@ -275,7 +275,7 @@ function OrderRequestsCard({ requests, loading, onAccept, onDecline }) {
                     onClick={() => onAccept(req.id)}
                     className="flex-1 py-2 rounded-xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-sm"
                   >
-                    Accept Job
+                    Send Quote
                   </button>
                   <button
                     onClick={() => onDecline(req.id)}
@@ -361,7 +361,8 @@ export default function TailorDashboard() {
         const counts = { active: 0, inProgress: 0, readyToDeliver: 0, completed: 0, revenue: 0 };
         data.forEach((o) => {
           const s = (o.status || "").toLowerCase();
-          if (["pending", "in review", "accepted"].includes(s)) counts.active++;
+          // Only count confirmed/processing orders as active for the tailor
+          if (["pending", "confirmed", "in review", "accepted"].includes(s)) counts.active++;
           if (["processing", "in progress", "fabric ordered"].includes(s)) counts.inProgress++;
           if (s === "ready to deliver") counts.readyToDeliver++;
           if (s === "completed") {
@@ -418,16 +419,9 @@ export default function TailorDashboard() {
 
 
   // ── Accept / Decline quotation handlers ──
-  const handleAccept = async (quotationId) => {
-    try {
-      const { updateQuotationStatus } = await import("../../api");
-      await updateQuotationStatus(quotationId, "accepted");
-      setQuotations((prev) =>
-        prev.map((q) => q.id === quotationId ? { ...q, status: "accepted" } : q)
-      );
-    } catch (err) {
-      console.error("Accept error:", err);
-    }
+  const handleAccept = (quotationId) => {
+    // Instead of accepting directly, navigate to the response page to provide price/deadline
+    navigate(`/quotation-response/${quotationId}`);
   };
 
   const handleDecline = async (quotationId) => {
