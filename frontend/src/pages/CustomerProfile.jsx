@@ -16,11 +16,6 @@ const mockOrders = [
  { id:"#CS-8610", date:"Nov 15, 2025", total:"LKR 3,250", status:"Processing", class:"processing"},
 ];
 
-const mockTailors = [
- { name:"Saman Tailors", specialty:"Menswear & Suits", rating:"4.8"},
- { name:"Kandy Fashions", specialty:"Dresses & Blouses", rating:"4.5"},
-];
-
 export default function CustomerProfile() {
   const { user, updateProfile, logout } = useAuth();
   const navigate = useNavigate();
@@ -238,7 +233,7 @@ export default function CustomerProfile() {
     };
 
     fetchSavedEntities();
-  }, [user?.uid, user?.savedTailors, user?.savedDesigners, user?.savedShops]);
+  }, [user, user?.uid, user?.savedTailors, user?.savedDesigners, user?.savedShops]);
 
   // ==================== PROFILE VIEW ====================
  if (!isEditing) {

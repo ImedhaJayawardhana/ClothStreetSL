@@ -4,6 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { createQuotation } from "../api";
 import toast from "react-hot-toast";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
 const REQUEST_QUOTE_STYLES = `
 .rq-page { min-height: 60vh; background: #f8f9fb; padding-bottom: 64px; }
