@@ -4,6 +4,7 @@ import { db } from "../../firebase/firebase";
 import {
   doc,
   getDoc,
+  setDoc,
   updateDoc,
   collection,
   query,
@@ -12,15 +13,37 @@ import {
 } from "firebase/firestore";
 import { getAuth, updatePassword } from "firebase/auth";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
+const InputField = ({ label, name, value, isReadOnly = false, type = "text", placeholder, isEditing, handleInputChange }) => (
+  <div className="mb-4">
+    <label className="block text-sm font-semibold text-gray-700 mb-1">{label}</label>
+    {isReadOnly || !isEditing ? (
+      <div className="px-4 py-2 border rounded-xl bg-gray-50 text-gray-700 min-h-[42px] flex items-center">
+        {type === "password" && !isEditing ? "••••••••" : (value || "Not provided")}
+      </div>
+    ) : (
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={handleInputChange}
+        placeholder={placeholder}
+        className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow outline-none"
+      />
+    )}
+  </div>
+);
 export default function SellerProfile() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   // Read-only data
   const [readOnlyData, setReadOnlyData] = useState({
     email: "",
     storeName: "",
-    hasShopName: true,
+    hasShopName: false,
     nic: "",
     totalEarnings: 0,
   });
@@ -118,7 +141,7 @@ export default function SellerProfile() {
         }));
       }
       // Update in Firestore
-      await updateDoc(sellerDocRef, updates);
+      await setDoc(sellerDocRef, updates, { merge: true });
       // Also try to update user doc if it exists to keep in sync
       const userDocRef = doc(db, "users", uid);
       try {
@@ -167,25 +190,6 @@ export default function SellerProfile() {
       </div>
     );
   }
-  const InputField = ({ label, name, value, isReadOnly = false, type = "text", placeholder }) => (
-    <div className="mb-4">
-      <label className="block text-sm font-semibold text-gray-700 mb-1">{label}</label>
-      {isReadOnly || !isEditing ? (
-        <div className="px-4 py-2 border rounded-xl bg-gray-50 text-gray-700 min-h-[42px] flex items-center">
-          {type === "password" && !isEditing ? "••••••••" : (value || "Not provided")}
-        </div>
-      ) : (
-        <input
-          type={type}
-          name={name}
-          value={value}
-          onChange={handleInputChange}
-          placeholder={placeholder}
-          className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow outline-none"
-        />
-      )}
-    </div>
-  );
   return (
     <div className="min-h-screen font-sans bg-gray-50 py-10 pt-24">
       <div className="max-w-4xl mx-auto px-6">
@@ -198,12 +202,20 @@ export default function SellerProfile() {
 
           <div>
             {!isEditing ? (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
-              >
-                Edit Profile
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => navigate(`/store/${user?.uid}`)}
+                  className="bg-white border text-blue-600 border-blue-600 hover:bg-blue-50 px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
+                >
+                  View My Store
+                </button>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
+                >
+                  Edit Profile
+                </button>
+              </div>
             ) : (
               <div className="flex items-center gap-3">
                 <button
@@ -236,11 +248,15 @@ export default function SellerProfile() {
               label="Email Address"
               value={readOnlyData.email}
               isReadOnly={true}
+              isEditing={isEditing}
+              handleInputChange={handleInputChange}
             />
             <InputField
               label="Phone Number"
               name="phone"
               value={formData.phone}
+              isEditing={isEditing}
+              handleInputChange={handleInputChange}
             />
             <InputField
               label="Password"
@@ -248,6 +264,8 @@ export default function SellerProfile() {
               value={formData.password}
               type="password"
               placeholder={isEditing ? "Enter new password (leave blank to keep)" : ""}
+              isEditing={isEditing}
+              handleInputChange={handleInputChange}
             />
           </div>
         </div>
@@ -266,21 +284,29 @@ export default function SellerProfile() {
               value={readOnlyData.hasShopName || !isEditing ? readOnlyData.storeName : formData.shopName}
               isReadOnly={readOnlyData.hasShopName}
               placeholder="Enter your store name"
+              isEditing={isEditing}
+              handleInputChange={handleInputChange}
             />
             <InputField
               label="National Identity Card (NIC)"
               value={readOnlyData.nic}
               isReadOnly={true}
+              isEditing={isEditing}
+              handleInputChange={handleInputChange}
             />
             <InputField
               label="Business Registration Number"
               name="businessRegNumber"
               value={formData.businessRegNumber}
+              isEditing={isEditing}
+              handleInputChange={handleInputChange}
             />
             <InputField
               label="Address"
               name="address"
               value={formData.address}
+              isEditing={isEditing}
+              handleInputChange={handleInputChange}
             />
           </div>
         </div>
@@ -297,11 +323,15 @@ export default function SellerProfile() {
               label="Bank Name"
               name="bankName"
               value={formData.bankName}
+              isEditing={isEditing}
+              handleInputChange={handleInputChange}
             />
             <InputField
               label="Bank Account Number"
               name="bankAccount"
               value={formData.bankAccount}
+              isEditing={isEditing}
+              handleInputChange={handleInputChange}
             />
             <div className="mb-4">
               <label className="block text-sm font-semibold text-gray-700 mb-1">Total Earnings (Upto Date)</label>
