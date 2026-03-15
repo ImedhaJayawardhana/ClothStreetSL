@@ -114,11 +114,13 @@ class Quotation(BaseModel):
     customerEmail: Optional[str] = None
     serviceMode: Optional[str] = None
     linkedQuotationId: Optional[str] = None
+    comboTailorId: Optional[str] = None
+    comboTailorName: Optional[str] = None
 
 
 class QuotationUpdate(BaseModel):
     status: Optional[
-        Literal["pending", "quoted", "accepted", "rejected", "declined", "design_in_progress", "design_completed", "design_delivered"]
+        Literal["pending", "quoted", "accepted", "rejected", "declined", "design_in_progress", "design_completed", "design_delivered", "completed", "cancelled", "hibernated"]
     ] = None
     providerResponse: Optional[str] = None
     proposedPrice: Optional[float] = None
@@ -133,7 +135,7 @@ class QuotationUpdate(BaseModel):
 
 
 class QuotationStatusUpdate(BaseModel):
-    status: Literal["pending", "quoted", "accepted", "rejected", "declined", "design_in_progress", "design_completed", "design_delivered"]
+    status: Literal["pending", "quoted", "accepted", "rejected", "declined", "design_in_progress", "design_completed", "design_delivered", "completed", "cancelled", "hibernated"]
 
 
 class Order(BaseModel):
