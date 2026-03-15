@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { listFabrics } from "../api";
+import heroImg from "../assets/textile-hero-bg.png";
 import "./BrowseMaterials.css";
 
 const FABRIC_TYPES = [
@@ -162,6 +163,8 @@ export default function BrowseMaterials() {
         <div>
             {/* ============ Hero Header ============ */}
             <section className="bm-hero">
+                <img src={heroImg} className="bm-hero-bg" alt="Fabric Shop Background" />
+                <div className="bm-hero-overlay"></div>
                 <div className="bm-hero-inner">
                     <div className="bm-breadcrumb">
                         <Link to="/">
