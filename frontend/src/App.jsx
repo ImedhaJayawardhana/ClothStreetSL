@@ -34,6 +34,7 @@ import QuotationReview from"./pages/QuotationReview";
 import QuotationOffers from"./pages/QuotationOffers";
 import OrderTracking from"./pages/OrderTracking";
 import AboutUs from"./pages/AboutUs";
+import DesignerTimeline from "./pages/DesignerTimeline";
 
 function PrivateRoute({ children}) {
  const { user} = useAuth();
@@ -64,6 +65,7 @@ export default function App() {
  <Route path="/quotation-review/:quotationId" element={<QuotationReview />} />
  <Route path="/quotations/offers" element={<PrivateRoute><QuotationOffers /></PrivateRoute>} />
  <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
+ <Route path="/designer-timeline/:quotationId" element={<PrivateRoute><DesignerTimeline /></PrivateRoute>} />
 
  <Route path="/shop" element={<BrowseMaterials />} />
  <Route path="/shop/:fabricId" element={<ProductDetail />} />

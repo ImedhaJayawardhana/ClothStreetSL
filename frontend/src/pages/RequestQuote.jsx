@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
-import { createQuotation } from "../api";
+import { createQuotation, uploadImage } from "../api";
 import toast from "react-hot-toast";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
@@ -141,8 +141,13 @@ export default function RequestQuote() {
     // ── Form State ──
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [expectedDate, setExpectedDate] = useState("");
-    const [requirements, setRequirements] = useState("");
+    const [requirements, setRequirements] = useState(
+        location.state?.designerNotes 
+            ? `Designer Notes:\n${location.state.designerNotes}\n\nMy Requirements:\n` 
+            : ""
+    );
     const [designImages, setDesignImages] = useState([]);
+    const [attachedDesigns, setAttachedDesigns] = useState(location.state?.designerDeliverables || []);
     const [gender, setGender] = useState("men");
     const [measurements, setMeasurements] = useState({});
     const [submitting, setSubmitting] = useState(false);
@@ -246,11 +251,26 @@ export default function RequestQuote() {
             const estimatedPrice = selectedItemData
                 .reduce((sum, item) => sum + item.unitPrice * (item.quantity || 1), 0) || 0;
 
+            // Upload local images
+            const uploadedUrls = [];
+            if (designImages.length > 0) {
+                toast.loading("Uploading images...", { id: "uploadToast" });
+                for (let i = 0; i < designImages.length; i++) {
+                    const res = await uploadImage(designImages[i].file, "quote_references");
+                    uploadedUrls.push(res.data.url);
+                }
+                toast.dismiss("uploadToast");
+            }
+            
+            const finalImages = [...attachedDesigns, ...uploadedUrls];
+
             // Submit via FastAPI with new schema
             await createQuotation({
                 providerId: resolvedProviderId,
                 providerName: providerInfo?.name || "",
                 providerType: providerType || "tailor",
+                serviceMode: searchParams.get("combo") === "true" ? "combo_tailor" : undefined,
+                linkedQuotationId: location.state?.designerQuotationId || undefined,
                 description: requirements.trim(),
                 requirements: requirements.trim(),
                 budget: estimatedPrice,
@@ -258,7 +278,7 @@ export default function RequestQuote() {
                 gender: gender,
                 items: selectedItemData,
                 measurements: measurements,
-                designImages: [],
+                designImages: finalImages,
                 customerName: user?.name || user?.displayName || "",
                 customerEmail: user?.email || "",
             });
@@ -477,8 +497,8 @@ export default function RequestQuote() {
                     {designImages.length > 0 && (
                         <div className="rq-upload-preview-grid">
                             {designImages.map((img, idx) => (
-                                <div key={idx} className="rq-upload-preview">
-                                    <img src={img.preview} alt={`Design ${idx + 1}`} />
+                                <div key={`upload-${idx}`} className="rq-upload-preview">
+                                    <img src={img.preview} alt={`Design Upload ${idx + 1}`} />
                                     <button className="rq-upload-preview-remove"
                                         onClick={(e) => { e.stopPropagation(); removeImage(idx); }}>
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -489,18 +509,33 @@ export default function RequestQuote() {
                             ))}
                         </div>
                     )}
-
-                    {/* Note about image uploads */}
-                    {designImages.length > 0 && (
-                        <p style={{
-                            fontSize: "0.78rem", color: "#f59e0b", marginTop: 8,
-                            background: "#fef3c7", padding: "8px 12px", borderRadius: 8,
-                            border: "1px solid #fde68a"
-                        }}>
-                            ⚠️ Image uploads require Firebase Storage (Blaze plan) or Cloudinary setup.
-                            Your requirements description will still be submitted.
-                        </p>
+                    
+                    {attachedDesigns.length > 0 && (
+                        <div className="mt-4">
+                            <h4 className="text-sm font-bold text-gray-700 mb-2">Attached from Designer</h4>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                {attachedDesigns.map((url, idx) => {
+                                    const isPdf = url.toLowerCase().includes('.pdf');
+                                    return (
+                                        <div key={`attached-${idx}`} className="relative border rounded-lg overflow-hidden bg-gray-50 aspect-square flex flex-col items-center justify-center">
+                                            {isPdf ? (
+                                                <div className="text-3xl">📄</div>
+                                            ) : (
+                                                <img src={url} alt={`Attached ${idx+1}`} className="w-full h-full object-cover" />
+                                            )}
+                                            <button 
+                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                                                onClick={() => setAttachedDesigns(prev => prev.filter((_, i) => i !== idx))}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
                     )}
+
                 </div>
 
                 {/* 5. Size Chart */}

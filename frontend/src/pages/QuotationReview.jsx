@@ -418,6 +418,35 @@ export default function QuotationReview() {
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
                             </button>
                         )}
+                        
+                        {quotation.status === "rejected" && !isDesigner && (
+                            <div className="mt-6 flex flex-col gap-3 text-left">
+                                <h4 className="font-bold text-gray-800 mb-2 text-center">What would you like to do next?</h4>
+                                <button
+                                    onClick={() => navigate(`/request-quote/${quotation.providerId}?combo=${quotation.serviceMode === 'combo_tailor'}`, {
+                                        state: { designerDeliverables: quotation.designImages }
+                                    })}
+                                    className="px-6 py-3 bg-white border-2 border-violet-200 text-violet-700 hover:bg-violet-50 font-bold rounded-xl transition-colors text-center"
+                                >
+                                    Try Re-quoting {quotation.providerName}
+                                </button>
+                                <button
+                                    onClick={() => navigate(`/find-tailor-designer?mode=${quotation.serviceMode || 'tailor'}`)}
+                                    className="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl transition-colors text-center"
+                                >
+                                    Find Another Tailor
+                                </button>
+                                <button
+                                    onClick={() => {
+                                         sessionStorage.setItem("clothstreet_checkout_step", "3");
+                                         navigate("/checkout");
+                                    }}
+                                    className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors text-center"
+                                >
+                                    Cancel Tailoring & Buy Fabric Only
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
  </div>
