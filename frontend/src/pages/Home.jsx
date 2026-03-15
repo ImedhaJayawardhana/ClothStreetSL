@@ -1,19 +1,27 @@
-import { Link, useNavigate} from"react-router-dom";
-import { useAuth} from"../context/AuthContext";
-import heroImg from"../assets/textile-hero-bg.png";
-import craftImg from"../assets/craftsperson-bg.png";
-import"./Home.css";
+import { Link, useNavigate, Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import heroImg from "../assets/textile-hero-bg.png";
+import craftImg from "../assets/craftsperson-bg.png";
+import "./Home.css";
 
 export default function Home() {
- const { user, logout} = useAuth();
- const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
- async function handleLogout() {
- await logout();
- navigate("/login");
-}
+  // If the user is logged in, redirect them to their main portal
+  if (user) {
+    if (user.role === 'designer') return <Navigate to="/designer-dashboard" replace />;
+    if (user.role === 'seller') return <Navigate to="/dashboard" replace />;
+    if (user.role === 'tailor') return <Navigate to="/tailor-dashboard" replace />;
+    return <Navigate to="/shop" replace />;
+  }
 
- return (
+  async function handleLogout() {
+    await logout();
+    navigate("/login");
+  }
+
+  return (
  <div>
  {/* ============ HERO SECTION ============ */}
  <section className="hero-section">
