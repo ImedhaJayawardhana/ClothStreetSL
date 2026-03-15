@@ -58,7 +58,10 @@ export default function DesignerTimeline() {
         "accepted": 2, // accepted means payment done
         "design_in_progress": 2, 
         "design_completed": 3,
-        "design_delivered": 4
+        "design_delivered": 4,
+        "completed": 5,
+        "hibernated": -1,
+        "cancelled": -2
     };
 
     const currentStepIndex = STATUS_MAP[quotation.status] || 0;
@@ -128,16 +131,34 @@ export default function DesignerTimeline() {
         return "";
     };
 
-    const handleContinueToTailor = () => {
+    const handleContinueToTailor = async () => {
+        let tailor = null;
+        
+        // 1. Try session storage
         const comboTailorStr = sessionStorage.getItem("clothstreet_combo_tailor");
         if (comboTailorStr) {
-            const tailor = JSON.parse(comboTailorStr);
+            tailor = JSON.parse(comboTailorStr);
+        } 
+        // 2. Try database persistent info
+        else if (quotation.comboTailorId) {
+            try {
+                const tailorSnap = await getDoc(doc(db, "tailors", quotation.comboTailorId));
+                if (tailorSnap.exists()) {
+                    tailor = { id: tailorSnap.id, ...tailorSnap.data() };
+                }
+            } catch (err) {
+                console.error("Failed to fetch persistent tailor info:", err);
+            }
+        }
+
+        if (tailor) {
             // Navigate to RequestQuote for the tailor, passing the deliverables
             navigate(`/request-quote/${tailor.id}?tailorId=${tailor.id}&combo=true`, {
                 state: { 
                     provider: tailor,
                     designerDeliverables: quotation.designDeliverables || [],
-                    designerNotes: quotation.designDeliveryMessage || quotation.providerRemarks || ""
+                    designerNotes: quotation.designDeliveryMessage || quotation.providerRemarks || "",
+                    designerQuotationId: quotation.id
                 }
             });
         } else {
