@@ -118,6 +118,13 @@ const CHECKOUT_STYLES = `
 
 const STEPS = ["Shipping", "Delivery", "Payment", "Confirm", "Complete"];
 
+const SRI_LANKAN_DISTRICTS = [
+    "Ampara", "Anuradhapura", "Badulla", "Batticaloa", "Colombo", "Galle", "Gampaha",
+    "Hambantota", "Jaffna", "Kalutara", "Kandy", "Kegalle", "Kilinochchi", "Kurunegala",
+    "Mannar", "Matale", "Matara", "Moneragala", "Mullaitivu", "Nuwara Eliya", "Polonnaruwa",
+    "Puttalam", "Ratnapura", "Trincomalee", "Vavuniya"
+];
+
 export default function Checkout() {
     const { selectedCartItems, selectedCartSubtotal, clearSelectedItems } = useCart();
     const { user, loading } = useAuth();
@@ -369,9 +376,14 @@ export default function Checkout() {
 
                         <div className="checkout-form-group">
                             <label className="checkout-form-label">District</label>
-                            <input type="text" name="district" className="checkout-form-input"
-                                placeholder="Colombo" value={form.district} onChange={handleChange}
-                                style={{ maxWidth: "260px" }} />
+                            <select name="district" className="checkout-form-input"
+                                value={form.district} onChange={handleChange}
+                                style={{ maxWidth: "260px" }}>
+                                <option value="" disabled>Select District</option>
+                                {SRI_LANKAN_DISTRICTS.map((dist) => (
+                                    <option key={dist} value={dist}>{dist}</option>
+                                ))}
+                            </select>
                         </div>
 
                         <button className="checkout-continue-btn" onClick={handleContinueToDelivery}>
