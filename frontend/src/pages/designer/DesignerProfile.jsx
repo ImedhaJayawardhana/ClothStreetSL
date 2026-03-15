@@ -3,6 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getDesigner, updateDesigner, uploadImage } from "../../api";
 import ReviewSection from "../../components/common/ReviewSection";
+import toast from "react-hot-toast";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
 
 // ─── Default / placeholder designer data ───────────────────────────────────────
 const DEFAULT_DESIGNER = {
@@ -153,7 +156,7 @@ function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage, upload
 export default function DesignerProfile() {
     const { designerId } = useParams();
     const navigate = useNavigate();
-    const { user: authUser } = useAuth();
+    const { user: authUser, updateProfile: updateAuthProfile } = useAuth();
 
     const [designer, setDesigner] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -179,6 +182,8 @@ export default function DesignerProfile() {
     const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const [draftAvailability, setDraftAvailability] = useState(true);
+    const [showContactModal, setShowContactModal] = useState(false);
+    const [providerEmail, setProviderEmail] = useState("");
 
     const profilePhotoRef = useRef();
 
@@ -206,6 +211,13 @@ export default function DesignerProfile() {
         };
         fetchDesigner();
     }, [resolvedDesignerId]);
+
+    useEffect(() => {
+        if (authUser) {
+            const saved = authUser.savedDesigners || [];
+            setIsSaved(saved.includes(resolvedDesignerId));
+        }
+    }, [authUser, resolvedDesignerId]);
 
     const enterEditMode = () => {
         setDraftName(designer.name || "");
@@ -309,6 +321,51 @@ export default function DesignerProfile() {
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleToggleSave = async () => {
+        if (!authUser) {
+            toast.error("Please login to save designers");
+            return;
+        }
+
+        const currentSaved = authUser.savedDesigners || [];
+        const isCurrentlySaved = currentSaved.includes(resolvedDesignerId);
+        
+        let newSaved;
+        if (isCurrentlySaved) {
+            newSaved = currentSaved.filter(id => id !== resolvedDesignerId);
+        } else {
+            newSaved = [...currentSaved, resolvedDesignerId];
+        }
+
+        try {
+            await updateAuthProfile(authUser.uid, { savedDesigners: newSaved });
+            toast.success(isCurrentlySaved ? "Designer removed" : "Designer saved!");
+        } catch (error) {
+            console.error("Failed to update saved designers", error);
+            toast.error("Failed to update saved designers");
+        }
+    };
+
+    const handleContactMe = async () => {
+        if (!authUser) {
+            toast.error("Please login to see contact details");
+            return;
+        }
+        
+        // Ensure we have the latest email
+        if (!designer?.email && !providerEmail) {
+            try {
+                const userSnap = await getDoc(doc(db, "users", resolvedDesignerId));
+                if (userSnap.exists()) {
+                    setProviderEmail(userSnap.data().email || "");
+                }
+            } catch (err) {
+                console.error("Failed to fetch user email:", err);
+            }
+        }
+        setShowContactModal(true);
     };
 
     const handleShare = () => {
@@ -595,7 +652,7 @@ export default function DesignerProfile() {
 
                         {/* Reviews section */}
                         <div className="mt-4">
-                            <ReviewSection targetType="designer" targetId={resolvedDesignerId} />
+                            <ReviewSection targetType="designer" targetId={resolvedDesignerId} ownerId={resolvedDesignerId} />
                         </div>
                     </div>
 
@@ -714,15 +771,21 @@ export default function DesignerProfile() {
 
                                 {/* CTA Buttons */}
                                 <div className="flex flex-col gap-2.5">
-                                    <button className="w-full py-3 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200">
-                                        Consultation Request
+                                    <button 
+                                        onClick={handleContactMe}
+                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200"
+                                    >
+                                        Contact Me
                                     </button>
                                     <div className="flex gap-2">
-                                        <button className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-fuchsia-200 text-fuchsia-700 text-xs font-semibold hover:bg-fuchsia-50 hover:border-fuchsia-300 transition-colors">
+                                        <button 
+                                            onClick={() => navigate(isOwner ? "/quotation-inbox" : `/request-quote?designerId=${resolvedDesignerId}`, { state: { provider: designer } })}
+                                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-fuchsia-200 text-fuchsia-700 text-xs font-semibold hover:bg-fuchsia-50 hover:border-fuchsia-300 transition-colors"
+                                        >
                                             <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
-                                            Hire Now
+                                            {isOwner ? "My Quotations" : "Hire Designer"}
                                         </button>
-                                        <button onClick={() => setIsSaved(!isSaved)} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-fuchsia-200 text-fuchsia-700 text-xs font-semibold hover:bg-fuchsia-50 hover:border-fuchsia-300 transition-colors">
+                                        <button onClick={handleToggleSave} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-fuchsia-200 text-fuchsia-700 text-xs font-semibold hover:bg-fuchsia-50 hover:border-fuchsia-300 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
                                                 fill={isSaved ? "#ef4444" : "none"} stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
@@ -751,6 +814,36 @@ export default function DesignerProfile() {
 
                 </div>
             </div>
+
+            {/* Contact Modal */}
+            {showContactModal && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowContactModal(false)}>
+                    <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl scale-100 animate-in fade-in zoom-in duration-300" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-slate-900">Contact Details</h3>
+                            <button onClick={() => setShowContactModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Phone Number</p>
+                                <p className="text-lg font-bold text-slate-900">{designer?.phoneNumber || "Not provided"}</p>
+                            </div>
+                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Email Address</p>
+                                <p className="text-lg font-bold text-slate-900">{designer?.email || providerEmail || "Not provided"}</p>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => setShowContactModal(false)}
+                            className="w-full mt-8 py-3 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

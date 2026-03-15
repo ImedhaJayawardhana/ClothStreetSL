@@ -4,6 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { createQuotation } from "../api";
 import toast from "react-hot-toast";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
 const REQUEST_QUOTE_STYLES = `
 .rq-page { min-height: 60vh; background: #f8f9fb; padding-bottom: 64px; }
@@ -116,10 +118,11 @@ export default function RequestQuote() {
     const providerType = provider?.providerType ||
         (providerId?.startsWith("designer-") ? "designer" : "tailor");
 
-    // Get tailorId from URL query params too (e.g. /request-quote?tailorId=xxx)
+    // Get tailorId or designerId from URL query params too (e.g. /request-quote?tailorId=xxx)
     const searchParams = new URLSearchParams(location.search);
     const tailorIdFromQuery = searchParams.get("tailorId");
-    const resolvedProviderId = providerId || tailorIdFromQuery;
+    const designerIdFromQuery = searchParams.get("designerId");
+    const resolvedProviderId = providerId || tailorIdFromQuery || designerIdFromQuery;
 
     // ── Available cart items ──
     const [availableItems, setAvailableItems] = useState([]);
@@ -144,6 +147,30 @@ export default function RequestQuote() {
     const [measurements, setMeasurements] = useState({});
     const [submitting, setSubmitting] = useState(false);
     const [dragging, setDragging] = useState(false);
+    const [providerInfo, setProviderInfo] = useState(provider);
+
+    // Fetch provider if missing
+    useEffect(() => {
+        if (!providerInfo && resolvedProviderId) {
+            const fetchProvider = async () => {
+                try {
+                    const type = designerIdFromQuery ? "designer" : "tailor";
+                    let data;
+                    if (type === "designer") {
+                        const designerSnap = await getDoc(doc(db, "designers", resolvedProviderId));
+                        if (designerSnap.exists()) data = designerSnap.data();
+                    } else {
+                        const tailorSnap = await getDoc(doc(db, "tailors", resolvedProviderId));
+                        if (tailorSnap.exists()) data = tailorSnap.data();
+                    }
+                    if (data) setProviderInfo({ ...data, providerType: type });
+                } catch (err) {
+                    console.error("Failed to fetch provider info:", err);
+                }
+            };
+            fetchProvider();
+        }
+    }, [resolvedProviderId, providerInfo, designerIdFromQuery]);
 
     // ── Product toggle ──
     const toggleProduct = (itemId) => {
@@ -222,7 +249,7 @@ export default function RequestQuote() {
             // Submit via FastAPI with new schema
             await createQuotation({
                 providerId: resolvedProviderId,
-                providerName: provider?.name || "",
+                providerName: providerInfo?.name || "",
                 providerType: providerType || "tailor",
                 description: requirements.trim(),
                 requirements: requirements.trim(),
@@ -286,18 +313,18 @@ export default function RequestQuote() {
             </section>
 
             {/* ── Provider Card ── */}
-            {provider && (
+            {providerInfo && (
                 <div className="rq-provider-card">
                     <div className="rq-provider-inner">
                         <div className={`rq-provider-avatar ${providerType}`}>
-                            {provider.name?.charAt(0) || "?"}
+                            {providerInfo.name?.charAt(0) || "?"}
                         </div>
                         <div className="rq-provider-info">
-                            <p className="rq-provider-name">{provider.name}</p>
+                            <p className="rq-provider-name">{providerInfo.name}</p>
                             <p className="rq-provider-meta">
-                                {provider.location}
-                                {provider.rating && (
-                                    <><span>·</span><span style={{ color: "#f59e0b" }}>★</span>{provider.rating.toFixed(1)}</>
+                                {providerInfo.location}
+                                {providerInfo.rating && (
+                                    <><span>·</span><span style={{ color: "#f59e0b" }}>★</span>{providerInfo.rating.toFixed(1)}</>
                                 )}
                             </p>
                         </div>

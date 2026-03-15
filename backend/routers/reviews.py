@@ -26,7 +26,27 @@ def submit_review(data: ReviewCreate, current_user: dict = Depends(verify_token)
     if not 1 <= data.rating <= 5:
         raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
 
-    # 2. Check customer hasn't already reviewed this target
+    # 2. Prevent self-reviews
+    if data.targetType in ["tailor", "designer"]:
+        if current_user["uid"] == data.targetId:
+            raise HTTPException(
+                status_code=400,
+                detail=f"You cannot review your own {data.targetType} profile",
+            )
+
+    if data.targetType == "product":
+        product_doc = db.collection("fabrics").document(data.targetId).get()
+        if product_doc.exists:
+            product = product_doc.to_dict()
+            if (
+                product.get("supplierId") == current_user["uid"]
+                or product.get("sellerId") == current_user["uid"]
+            ):
+                raise HTTPException(
+                    status_code=400, detail="You cannot review your own product"
+                )
+
+    # 3. Check customer hasn't already reviewed this target
     existing = (
         db.collection("reviews")
         .where("targetId", "==", data.targetId)
