@@ -374,10 +374,10 @@ export default function QuotationResponse() {
                     Labor / Service Charge *
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold">LKR </span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-500">LKR </span>
                     <input
                       type="number"
-                      className="w-full pl-12 pr-4 py-3 border rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 transition-all"
+                      className="w-full pl-20 pr-4 py-3 border rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 transition-all"
                       placeholder="e.g. 5000"
                       value={laborCharge}
                       onChange={(e) => setLaborCharge(e.target.value)}
@@ -392,10 +392,10 @@ export default function QuotationResponse() {
                     Additional Charges
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold">LKR </span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-500">LKR </span>
                     <input
                       type="number"
-                      className="w-full pl-12 pr-4 py-3 border rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 transition-all"
+                      className="w-full pl-20 pr-4 py-3 border rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 transition-all"
                       placeholder="e.g. 1000"
                       value={additionalCharges}
                       onChange={(e) => setAdditionalCharges(e.target.value)}
