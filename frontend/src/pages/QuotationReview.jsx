@@ -34,55 +34,71 @@ export default function QuotationReview() {
  fetch();
 }, [quotationId, quotation]);
 
- /* ── Accept quotation ── */
- const handleAccept = async () => {
- setProcessing(true);
- try {
- // 1. Update quotation status
- await updateDoc(doc(db,"quotations", quotationId), {
- status:"accepted",
- acceptedAt: serverTimestamp(),
- acceptedBy: user?.uid ||"",
- paymentMethod: paymentMethod,
-});
+    /* ── Accept quotation ── */
+    const handleAccept = async () => {
+        setProcessing(true);
+        try {
+            const isDesigner = quotation.providerType === "designer";
+            const newStatus = isDesigner ? "design_in_progress" : "accepted";
 
- // 2. Create an order so it shows in the Orders page
- const orderItems = [
-   ...(quotation.items || []).map((item) => ({
-     name: item.name || "Material",
-     quantity: item.quantity || 1,
-     unit: item.unit || "m",
-     unitPrice: item.unitPrice || 0,
-     image: item.image || "",
-   })),
-   {
-     name: `Service: ${quotation.providerType === "designer" ? "Design" : "Tailoring"} by ${quotation.providerName || "Provider"}`,
-     quantity: 1,
-     unit: "service",
-     unitPrice: (quotation.laborCharge || 0) + (quotation.additionalCharges || 0),
-   },
- ];
+            // 1. Update quotation status
+            await updateDoc(doc(db, "quotations", quotationId), {
+                status: newStatus,
+                acceptedAt: serverTimestamp(),
+                acceptedBy: user?.uid || "",
+                paymentMethod: paymentMethod,
+            });
 
- const { createOrder } = await import("../api");
- await createOrder({
-   items: orderItems,
-   total_price: grandTotal,
-   status: "pending",
- });
+            // 2. Create an order so it shows in the Orders page (for designers, only charge service fee)
+            const orderItems = [];
+            
+            if (!isDesigner) {
+                // Tailors might carry the material cost
+                orderItems.push(...(quotation.items || []).map((item) => ({
+                    name: item.name || "Material",
+                    quantity: item.quantity || 1,
+                    unit: item.unit || "m",
+                    unitPrice: item.unitPrice || 0,
+                    image: item.image || "",
+                })));
+            }
 
- // 3. Clear the cart
- clearCart();
- try { sessionStorage.removeItem("clothstreet_checkout_cart"); } catch { /* */ }
+            // Add the service charge
+            orderItems.push({
+                name: `Service: ${isDesigner ? "Design" : "Tailoring"} by ${quotation.providerName || "Provider"}`,
+                quantity: 1,
+                unit: "service",
+                unitPrice: (quotation.laborCharge || 0) + (quotation.additionalCharges || 0),
+            });
 
- toast.success("Quotation accepted! Your order is being processed.");
- navigate("/orders");
-} catch (err) {
- console.error("Error accepting:", err);
- toast.error("Something went wrong. Please try again.");
-} finally {
- setProcessing(false);
-}
-};
+            const { createOrder } = await import("../api");
+            await createOrder({
+                items: orderItems,
+                total_price: isDesigner ? ((quotation.laborCharge || 0) + (quotation.additionalCharges || 0)) : grandTotal,
+                status: "pending", // Design order or Tailor order is pending fulfillment
+            });
+
+            // 3. Clear the cart if it's the final checkout (tailor, or single designer flow... wait, don't clear cart if combo)
+            const comboTailorStr = sessionStorage.getItem("clothstreet_combo_tailor");
+            if (!comboTailorStr) {
+                clearCart();
+                try { sessionStorage.removeItem("clothstreet_checkout_cart"); } catch { /* */ }
+            }
+
+            toast.success("Payment successful! Order confirmed.");
+            
+            if (isDesigner) {
+                navigate(`/designer-timeline/${quotationId}`);
+            } else {
+                navigate("/orders");
+            }
+        } catch (err) {
+            console.error("Error accepting:", err);
+            toast.error("Something went wrong. Please try again.");
+        } finally {
+            setProcessing(false);
+        }
+    };
 
  /* ── Reject quotation ── */
  const handleReject = async () => {
@@ -128,11 +144,14 @@ export default function QuotationReview() {
  );
 }
 
- const materialTotal = quotation.items?.reduce((sum, i) => sum + (i.unitPrice || 0) * (i.quantity || 1), 0) || 0;
- const labor = quotation.laborCharge || 0;
- const additional = quotation.additionalCharges || 0;
- const grandTotal = quotation.grandTotal || materialTotal + labor + additional;
- const isPending = quotation.status ==="quoted";
+    const materialTotal = quotation.items?.reduce((sum, i) => sum + (i.unitPrice || 0) * (i.quantity || 1), 0) || 0;
+    const labor = quotation.laborCharge || 0;
+    const additional = quotation.additionalCharges || 0;
+    // For designers, materials are carried over to tailor/checkout, not paid here
+    const isDesigner = quotation.providerType === "designer";
+    const payableTotal = isDesigner ? (labor + additional) : (materialTotal + labor + additional);
+    const grandTotal = quotation.grandTotal || (materialTotal + labor + additional);
+    const isPending = quotation.status === "quoted";
 
  return (
  <div className="min-h-screen">
@@ -233,14 +252,31 @@ export default function QuotationReview() {
  </div>
  )}
 
- <hr className="" />
+                        <hr className="" />
 
- <div className="flex justify-between items-center pt-1">
- <span className="text-base font-bold">Grand Total</span>
- <span className="text-2xl font-extrabold text-violet-600">LKR {grandTotal.toLocaleString()}</span>
- </div>
- </div>
- </div>
+                        <div className="flex justify-between items-center pt-1">
+                            <span className="text-base font-bold">Total Quotation Value</span>
+                            <span className="text-xl font-bold text-gray-700">LKR {grandTotal.toLocaleString()}</span>
+                        </div>
+
+                        {/* Separate Payable Amount for Designers */}
+                        {isDesigner && (
+                            <div className="mt-4 p-4 rounded-xl bg-violet-50 border border-violet-100 flex justify-between items-center">
+                                <div>
+                                    <span className="text-sm font-bold text-violet-900 block">Designer Fee (Pay Now)</span>
+                                    <span className="text-xs text-violet-700">Materials will be paid later in the process.</span>
+                                </div>
+                                <span className="text-2xl font-extrabold text-violet-700">LKR {payableTotal.toLocaleString()}</span>
+                            </div>
+                        )}
+                        {!isDesigner && (
+                            <div className="flex justify-between items-center pt-2">
+                                <span className="text-lg font-bold">Total to Pay</span>
+                                <span className="text-2xl font-extrabold text-violet-600">LKR {payableTotal.toLocaleString()}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
 
  {/* ══════════ PROVIDER REMARKS ══════════ */}
  {quotation.providerRemarks && (
@@ -290,9 +326,9 @@ export default function QuotationReview() {
  </svg>
  Payment
  </h3>
- <p className="text-sm mb-6">
- Amount to pay: <span className="font-bold">LKR {grandTotal.toLocaleString()}</span>
- </p>
+                            <p className="text-sm mb-6">
+                                Amount to pay: <span className="font-bold text-emerald-700">LKR {payableTotal.toLocaleString()}</span>
+                            </p>
 
  {/* Payment method selection */}
  <div className="space-y-3 mb-6">
@@ -343,8 +379,8 @@ export default function QuotationReview() {
  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
  <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
  </svg>
- Confirm & Pay LKR {grandTotal.toLocaleString()}
- </>
+                                        Confirm & Pay LKR {payableTotal.toLocaleString()}
+                                    </>
  )}
  </button>
  <button
@@ -359,21 +395,31 @@ export default function QuotationReview() {
  </>
  ) : (
  /* ── Already responded ── */
- <div className="rounded-2xl border shadow-sm p-6 text-center">
- <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl ${
- quotation.status ==="accepted" ?"bg-emerald-50" :""
-}`}>
- {quotation.status ==="accepted" ?"✅" :"❌"}
- </div>
- <h3 className="text-lg font-bold mb-1">
- {quotation.status ==="accepted" ?"Quotation Accepted" :"Quotation Declined"}
- </h3>
- <p className="text-2xl font-extrabold text-violet-600 mb-2">LKR {grandTotal.toLocaleString()}</p>
- {quotation.paymentMethod && (
- <p className="text-sm capitalize">Payment: {quotation.paymentMethod}</p>
- )}
- </div>
- )}
+                    <div className="rounded-2xl border shadow-sm p-6 text-center">
+                        <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl ${
+                            (quotation.status === "accepted" || quotation.status === "design_in_progress" || quotation.status === "design_completed" || quotation.status === "design_delivered") ? "bg-emerald-50" : ""
+                        }`}>
+                            {(quotation.status === "accepted" || quotation.status === "design_in_progress" || quotation.status === "design_completed" || quotation.status === "design_delivered") ? "✅" : "❌"}
+                        </div>
+                        <h3 className="text-lg font-bold mb-1">
+                            {(quotation.status === "accepted" || quotation.status === "design_in_progress" || quotation.status === "design_completed" || quotation.status === "design_delivered") ? "Quotation Accepted & Paid" : "Quotation Declined"}
+                        </h3>
+                        <p className="text-2xl font-extrabold text-violet-600 mb-2">LKR {(quotation.status === "rejected" ? grandTotal : payableTotal).toLocaleString()}</p>
+                        {quotation.paymentMethod && (
+                            <p className="text-sm capitalize">Payment: {quotation.paymentMethod}</p>
+                        )}
+                        
+                        {(quotation.status === "design_in_progress" || quotation.status === "design_completed" || quotation.status === "design_delivered") && (
+                            <button
+                                onClick={() => navigate(`/designer-timeline/${quotationId}`)}
+                                className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl transition-colors"
+                            >
+                                View Design Timeline
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                            </button>
+                        )}
+                    </div>
+                )}
  </div>
  </div>
  );
