@@ -166,4 +166,10 @@ class Order(BaseModel):
     items: List[dict]
     total_price: float
     status: Literal["pending", "processing", "completed", "cancelled"] = "pending"
+    shipping: Optional[dict] = None
+    payment_method: Optional[str] = None
+    delivery_method: Optional[str] = None
+    provider_type: Optional[str] = None
+    provider_name: Optional[str] = None
+    quotation_id: Optional[str] = None
     created_at: Optional[datetime] = None

@@ -131,7 +131,7 @@ export default function CustomerOrders() {
         if (activeTab === "All") return matchesSearch;
         const status = order.status?.toLowerCase();
         if (activeTab === "Active")
-            return matchesSearch && ["pending", "processing", "shipped"].includes(status);
+            return matchesSearch && ["pending", "confirmed", "processing", "shipped", "tailoring", "fabric_shipped", "received_by_tailor", "tailoring_done", "shipped_to_customer"].includes(status);
         if (activeTab === "Completed")
             return matchesSearch && ["completed", "delivered"].includes(status);
         return matchesSearch;
@@ -140,7 +140,7 @@ export default function CustomerOrders() {
     // ── Stats from real data ──
     const totalOrders = orders.length;
     const activeOrders = orders.filter((o) =>
-        ["pending", "processing", "shipped"].includes(o.status?.toLowerCase())
+        ["pending", "confirmed", "processing", "shipped", "tailoring", "fabric_shipped", "received_by_tailor", "tailoring_done", "shipped_to_customer"].includes(o.status?.toLowerCase())
     ).length;
     const completedOrders = orders.filter((o) =>
         ["completed", "delivered"].includes(o.status?.toLowerCase())
@@ -426,7 +426,7 @@ export default function CustomerOrders() {
 
                                         {/* Action Buttons */}
                                         <div className="flex gap-2.5 mt-4">
-                                            {["pending", "processing", "shipped"].includes(order.status?.toLowerCase()) && (
+                                            {["pending", "confirmed", "processing", "shipped", "tailoring", "fabric_shipped", "received_by_tailor", "tailoring_done", "shipped_to_customer"].includes(order.status?.toLowerCase()) && (
                                                 <button onClick={() => navigate(`/order-tracking/${order.id}`, { state: { order } })}
                                                     className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold border hover:bg-slate-50 transition-all text-slate-700">
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

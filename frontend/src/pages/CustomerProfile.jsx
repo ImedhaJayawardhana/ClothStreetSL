@@ -6,15 +6,10 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, getDoc } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
 import toast from "react-hot-toast";
-import { deleteAccount } from "../api";
+import { deleteAccount, getMyOrders } from "../api";
 import "./CustomerProfile.css";
 
-// --- Mock Data for Dashboard Widgets ---
-const mockOrders = [
- { id:"#CS-8472", date:"Oct 12, 2025", total:"LKR 4,500", status:"Delivered", class:"delivered"},
- { id:"#CS-8591", date:"Nov 03, 2025", total:"LKR 12,000", status:"Shipped", class:"shipped"},
- { id:"#CS-8610", date:"Nov 15, 2025", total:"LKR 3,250", status:"Processing", class:"processing"},
-];
+
 
 export default function CustomerProfile() {
   const { user, updateProfile, logout } = useAuth();
@@ -25,6 +20,8 @@ export default function CustomerProfile() {
   const [savedDesigners, setSavedDesigners] = useState([]);
   const [savedShops, setSavedShops] = useState([]);
   const [loadingSaved, setLoadingSaved] = useState(false);
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
 
  // Section-level edit toggles
  const [editingPersonal, setEditingPersonal] = useState(false);
@@ -235,6 +232,29 @@ export default function CustomerProfile() {
     fetchSavedEntities();
   }, [user, user?.uid, user?.savedTailors, user?.savedDesigners, user?.savedShops]);
 
+  // Fetch recent orders from API
+  useEffect(() => {
+    if (!user?.uid) return;
+    const fetchOrders = async () => {
+      try {
+        const res = await getMyOrders();
+        const orders = (res.data || res) || [];
+        // Sort by date descending and take top 3
+        const sorted = orders.sort((a, b) => {
+          const dateA = new Date(a.created_at || a.createdAt || 0);
+          const dateB = new Date(b.created_at || b.createdAt || 0);
+          return dateB - dateA;
+        });
+        setRecentOrders(sorted.slice(0, 3));
+      } catch (err) {
+        console.error("Error fetching recent orders:", err);
+      } finally {
+        setLoadingOrders(false);
+      }
+    };
+    fetchOrders();
+  }, [user?.uid]);
+
   // ==================== PROFILE VIEW ====================
  if (!isEditing) {
  return (
@@ -345,18 +365,33 @@ export default function CustomerProfile() {
  </Link>
  </div>
  <div className="cp-order-list">
- {mockOrders.map((order, idx) => (
- <div className="cp-order-item" key={idx} onClick={() => navigate("/orders")} style={{ cursor:"pointer", borderRadius:"8px", padding:"16px 8px", transition:"background 0.15s ease"}} onMouseEnter={(e) => e.currentTarget.style.background ="#f5f3ff"} onMouseLeave={(e) => e.currentTarget.style.background ="transparent"}>
- <div>
- <p style={{ fontSize:"14px", fontWeight:"700", color:"#1e1b4b"}}>{order.id}</p>
- <p style={{ fontSize:"12.5px", color:"#6b7280", marginTop:"2px"}}>{order.date}</p>
- </div>
- <div style={{ textAlign:"right"}}>
- <p style={{ fontSize:"14.5px", fontWeight:"600", color:"#1e1b4b", marginBottom:"6px"}}>{order.total}</p>
- <span className={`cp-status-pill ${order.class}`}>{order.status}</span>
- </div>
- </div>
- ))}
+ {loadingOrders ? (
+  <p style={{ fontSize: "13.5px", color: "#9ca3af", textAlign: "center", padding: "20px 0" }}>Loading orders...</p>
+ ) : recentOrders.length > 0 ? (
+  recentOrders.map((order) => {
+   const dateStr = order.created_at || order.createdAt;
+   const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—";
+   const statusClass = (order.status || "").toLowerCase().replace(/ /g, "-");
+   const itemNames = order.items?.map((i) => i.name).join(", ") || "Order";
+   return (
+    <div className="cp-order-item" key={order.id} onClick={() => navigate(`/order-tracking/${order.id}`, { state: { order } })} style={{ cursor: "pointer", borderRadius: "8px", padding: "16px 8px", transition: "background 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.background = "#f5f3ff"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+     <div>
+      <p style={{ fontSize: "14px", fontWeight: "700", color: "#1e1b4b" }}>{itemNames}</p>
+      <p style={{ fontSize: "12.5px", color: "#6b7280", marginTop: "2px" }}>{formattedDate}</p>
+     </div>
+     <div style={{ textAlign: "right" }}>
+      <p style={{ fontSize: "14.5px", fontWeight: "600", color: "#1e1b4b", marginBottom: "6px" }}>LKR {(order.total_price || 0).toLocaleString()}</p>
+      <span className={`cp-status-pill ${statusClass}`}>{order.status}</span>
+     </div>
+    </div>
+   );
+  })
+ ) : (
+  <div style={{ textAlign: "center", padding: "24px 0" }}>
+   <p style={{ fontSize: "13.5px", color: "#9ca3af", marginBottom: "12px" }}>You haven't placed any orders yet.</p>
+   <button onClick={() => navigate("/shop")} style={{ fontSize: "13px", fontWeight: "600", color: "#4f46e5", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>Browse & Shop</button>
+  </div>
+ )}
  </div>
  </div>
 

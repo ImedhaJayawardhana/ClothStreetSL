@@ -19,15 +19,26 @@ def _stock_status(stock: float) -> str:
 @router.post("")
 def create_order(order: Order, decoded_token: dict = Depends(verify_token)):
     uid = decoded_token["uid"]
-    doc_ref = db.collection("orders").add(
-        {
-            "customer_id": uid,
-            "items": order.items,
-            "total_price": order.total_price,
-            "status": "pending",
-            "created_at": datetime.utcnow().isoformat(),
-        }
-    )
+    order_data = {
+        "customer_id": uid,
+        "items": order.items,
+        "total_price": order.total_price,
+        "status": "pending",
+        "created_at": datetime.utcnow().isoformat(),
+    }
+    if order.shipping:
+        order_data["shipping"] = order.shipping
+    if order.payment_method:
+        order_data["payment_method"] = order.payment_method
+    if order.delivery_method:
+        order_data["delivery_method"] = order.delivery_method
+    if order.provider_type:
+        order_data["providerType"] = order.provider_type
+    if order.provider_name:
+        order_data["providerName"] = order.provider_name
+    if order.quotation_id:
+        order_data["quotationId"] = order.quotation_id
+    doc_ref = db.collection("orders").add(order_data)
     # ── Deduct stock for each ordered fabric ──────────────────────────────────
     for item in order.items:
         fabric_id = item.get("id")
@@ -81,7 +92,15 @@ def update_order_status(
     status: str,
     decoded_token: dict = Depends(verify_token),
 ):
-    valid_statuses = ["pending", "processing", "completed", "cancelled"]
+    valid_statuses = [
+        "pending",
+        "confirmed",
+        "processing",
+        "shipped",
+        "delivered",
+        "completed",
+        "cancelled",
+    ]
     if status not in valid_statuses:
         raise HTTPException(
             status_code=400, detail=f"Invalid status. Must be one of {valid_statuses}"

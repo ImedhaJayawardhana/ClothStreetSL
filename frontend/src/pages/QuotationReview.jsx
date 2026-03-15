@@ -72,11 +72,16 @@ export default function QuotationReview() {
                 unitPrice: (quotation.laborCharge || 0) + (quotation.additionalCharges || 0),
             });
 
-            await createOrder({
+            const orderRes = await createOrder({
                 items: orderItems,
                 total_price: isDesigner ? ((quotation.laborCharge || 0) + (quotation.additionalCharges || 0)) : grandTotal,
-                status: "pending", // Design order or Tailor order is pending fulfillment
+                status: "pending",
+                provider_type: quotation.providerType || (isDesigner ? "designer" : "tailor"),
+                provider_name: quotation.providerName || "Provider",
+                quotation_id: quotationId,
+                payment_method: paymentMethod,
             });
+            const newOrderId = orderRes?.data?.order_id || null;
 
             // 3. Clear the cart if it's the final checkout (tailor, or standard, but NOT the middle designer step)
             if (!isDesigner) {
@@ -92,6 +97,8 @@ export default function QuotationReview() {
             
             if (isDesigner) {
                 navigate(`/designer-timeline/${quotationId}`);
+            } else if (newOrderId) {
+                navigate(`/order-tracking/${newOrderId}`);
             } else {
                 navigate("/orders");
             }
