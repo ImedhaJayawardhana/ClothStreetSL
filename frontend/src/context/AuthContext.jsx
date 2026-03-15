@@ -53,6 +53,10 @@ export function AuthProvider({ children }) {
       });
     }
 
+    // New accounts should start with an empty cart — discard any guest cart
+    // so CartContext doesn't merge it into the new account's cart.
+    localStorage.removeItem("clothstreet_cart");
+
     return result;
   }
 
