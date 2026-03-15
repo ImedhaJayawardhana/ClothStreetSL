@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getMyOrders, getMyQuotations } from "../../api";
 import { getTailorDashboard, updateTailorOrderStatus } from "../../api/tailor";
-import { auth } from "../../firebase/firebase";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase/firebase";
+import { auth, db } from "../../firebase/firebase";
+import { doc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
 import toast from "react-hot-toast";
 
 // ─── Keep dummy data only for Earnings, Ratings, Reviews (needs backend later) ───
@@ -359,27 +358,53 @@ export default function TailorDashboard() {
   useEffect(() => {
     if (!authUser?.uid) return;
 
-    // Fetch orders
-    getMyOrders()
-      .then((res) => {
-        const data = res.data || [];
-        setOrders(data);
+    // Fetch ASSIGNED orders (where tailor is the provider, not the customer)
+    const fetchAssignedOrders = async () => {
+      try {
+        const uid = authUser.uid;
+        const [snap1, snap2] = await Promise.all([
+          getDocs(query(collection(db, "orders"), where("tailorId", "==", uid))),
+          getDocs(query(collection(db, "orders"), where("providerId", "==", uid))),
+        ]);
+
+        const seenIds = new Set();
+        const assignedOrders = [];
+        [...snap1.docs, ...snap2.docs].forEach((d) => {
+          if (!seenIds.has(d.id)) {
+            seenIds.add(d.id);
+            assignedOrders.push({ id: d.id, ...d.data() });
+          }
+        });
+
+        // Sort descending by creation date
+        assignedOrders.sort((a, b) => {
+          const tA = a.created_at?.toMillis ? a.created_at.toMillis() : new Date(a.created_at || 0).getTime();
+          const tB = b.created_at?.toMillis ? b.created_at.toMillis() : new Date(b.created_at || 0).getTime();
+          return tB - tA;
+        });
+
+        setOrders(assignedOrders);
+
         const counts = { active: 0, inProgress: 0, readyToDeliver: 0, completed: 0, revenue: 0 };
-        data.forEach((o) => {
+        assignedOrders.forEach((o) => {
           const s = (o.status || "").toLowerCase();
-          // Only count confirmed/processing orders as active for the tailor
           if (["pending", "confirmed", "in review", "accepted"].includes(s)) counts.active++;
-          if (["processing", "in progress", "fabric ordered"].includes(s)) counts.inProgress++;
-          if (s === "ready to deliver") counts.readyToDeliver++;
-          if (s === "completed") {
+          if (["processing", "in_progress", "tailoring"].includes(s)) counts.inProgress++;
+          if (["tailoring_done", "shipped_to_customer", "ready to deliver"].includes(s)) counts.readyToDeliver++;
+          if (["completed", "delivered"].includes(s)) {
             counts.completed++;
-            counts.revenue += Number(o.total || o.price || 0);
+            counts.revenue += Number(o.total_price || o.total || o.price || 0);
           }
         });
         setStatCounts(counts);
-      })
-      .catch((err) => console.error("Orders fetch error:", err))
-      .finally(() => setOrdersLoading(false));
+      } catch (err) {
+        console.error("Assigned orders fetch error:", err);
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+
+    fetchAssignedOrders();
 
     // Fetch quotations
     getMyQuotations()
