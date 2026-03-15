@@ -86,12 +86,20 @@ def get_tailor_dashboard(decoded_token: dict = Depends(verify_token)):
     uid = decoded_token["uid"]
 
     # ── Fetch all orders assigned to this tailor ──
-    orders_ref = db.collection("orders").where("tailorId", "==", uid)
+    # Query by tailorId (old format) AND by providerId (new format,
+    # set by QuotationReview)
+    seen_ids = set()
     all_orders = []
-    for doc in orders_ref.stream():
-        order = doc.to_dict()
-        order["id"] = doc.id
-        all_orders.append(order)
+    for query_ref in [
+        db.collection("orders").where("tailorId", "==", uid),
+        db.collection("orders").where("providerId", "==", uid),
+    ]:
+        for doc in query_ref.stream():
+            if doc.id not in seen_ids:
+                seen_ids.add(doc.id)
+                order = doc.to_dict()
+                order["id"] = doc.id
+                all_orders.append(order)
 
     # ── Count orders by status ──
     total_orders = len(all_orders)
@@ -225,11 +233,22 @@ def update_tailor_order_status(
 ):
     """
     Updates the status of an order in the 'orders' collection.
-    Only allows if the order is assigned to this tailor.
-    Valid statuses: pending, in_progress, completed, cancelled.
+    Also syncs the linked quotation status so the customer's Order Tracking
+    page reflects the change (OrderTracking.jsx reads quotation status).
+    Valid statuses: pending, in_progress, tailoring, tailoring_done,
+                    shipped_to_customer, delivered, completed, cancelled.
     """
     uid = decoded_token["uid"]
-    valid_statuses = ["pending", "in_progress", "completed", "cancelled"]
+    valid_statuses = [
+        "pending",
+        "in_progress",
+        "tailoring",
+        "tailoring_done",
+        "shipped_to_customer",
+        "delivered",
+        "completed",
+        "cancelled",
+    ]
 
     if body.status not in valid_statuses:
         raise HTTPException(
@@ -245,8 +264,40 @@ def update_tailor_order_status(
         raise HTTPException(status_code=404, detail="Order not found")
 
     order_data = order_doc.to_dict()
-    if order_data.get("tailorId") != uid:
-        raise HTTPException(status_code=403, detail="This order is not assigned to you")
+    if order_data.get("tailorId") != uid and order_data.get("provider_id") != uid:
+        # Fallback: allow if order has a quotationId and tailor owns that quotation
+        quotation_id = order_data.get("quotationId")
+        if quotation_id:
+            q_doc = db.collection("quotations").document(quotation_id).get()
+            if not q_doc.exists or q_doc.to_dict().get("providerId") != uid:
+                raise HTTPException(
+                    status_code=403, detail="This order is not assigned to you"
+                )
+        else:
+            raise HTTPException(
+                status_code=403, detail="This order is not assigned to you"
+            )
 
+    # Update the order document
     order_ref.update({"status": body.status})
+
+    # ── Sync the linked quotation so customer tracking reflects this change ──
+    # Map order status → quotation status (the tracking page reads quotation status)
+    order_to_quotation_status = {
+        "pending": "accepted",
+        "in_progress": "tailoring",
+        "tailoring": "tailoring",
+        "tailoring_done": "tailoring_done",
+        "shipped_to_customer": "shipped_to_customer",
+        "delivered": "delivered",
+        "completed": "completed",
+        "cancelled": "cancelled",
+    }
+    quotation_status = order_to_quotation_status.get(body.status)
+    quotation_id = order_data.get("quotationId")
+    if quotation_id and quotation_status:
+        q_ref = db.collection("quotations").document(quotation_id)
+        if q_ref.get().exists:
+            q_ref.update({"status": quotation_status})
+
     return {"message": f"Order status updated to {body.status}"}

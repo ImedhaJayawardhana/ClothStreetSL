@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { getMyOrders, getMyQuotations } from "../../api";
-// ── NEW: imports for dashboard API + Firebase auth ──
+import { getMyQuotations } from "../../api";
 import { getTailorDashboard, updateTailorOrderStatus } from "../../api/tailor";
-import { auth } from "../../firebase/firebase";
+import { auth, db } from "../../firebase/firebase";
+import { doc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
+import toast from "react-hot-toast";
 
 // ─── Keep dummy data only for Earnings, Ratings, Reviews (needs backend later) ───
 const DUMMY_EARNINGS = {
@@ -184,10 +185,14 @@ function ActiveOrdersCard({ orders, loading, onStatusChange }) {
                 <select
                   className="text-[10px] font-bold border border-slate-200 rounded-lg px-2 py-1 bg-white text-slate-600 cursor-pointer focus:outline-none focus:border-blue-400"
                   value={order.status?.toLowerCase() || "pending"}
-                  onChange={(e) => onStatusChange(order.id, e.target.value)}
+                  onChange={(e) => onStatusChange(order.id, e.target.value, order.quotationId)}
                 >
                   <option value="pending">Pending</option>
                   <option value="in_progress">In Progress</option>
+                  <option value="tailoring">Tailoring</option>
+                  <option value="tailoring_done">Tailoring Done</option>
+                  <option value="shipped_to_customer">Shipped to Customer</option>
+                  <option value="delivered">Delivered</option>
                   <option value="completed">Completed</option>
                   <option value="cancelled">Cancelled</option>
                 </select>
@@ -353,27 +358,53 @@ export default function TailorDashboard() {
   useEffect(() => {
     if (!authUser?.uid) return;
 
-    // Fetch orders
-    getMyOrders()
-      .then((res) => {
-        const data = res.data || [];
-        setOrders(data);
+    // Fetch ASSIGNED orders (where tailor is the provider, not the customer)
+    const fetchAssignedOrders = async () => {
+      try {
+        const uid = authUser.uid;
+        const [snap1, snap2] = await Promise.all([
+          getDocs(query(collection(db, "orders"), where("tailorId", "==", uid))),
+          getDocs(query(collection(db, "orders"), where("providerId", "==", uid))),
+        ]);
+
+        const seenIds = new Set();
+        const assignedOrders = [];
+        [...snap1.docs, ...snap2.docs].forEach((d) => {
+          if (!seenIds.has(d.id)) {
+            seenIds.add(d.id);
+            assignedOrders.push({ id: d.id, ...d.data() });
+          }
+        });
+
+        // Sort descending by creation date
+        assignedOrders.sort((a, b) => {
+          const tA = a.created_at?.toMillis ? a.created_at.toMillis() : new Date(a.created_at || 0).getTime();
+          const tB = b.created_at?.toMillis ? b.created_at.toMillis() : new Date(b.created_at || 0).getTime();
+          return tB - tA;
+        });
+
+        setOrders(assignedOrders);
+
         const counts = { active: 0, inProgress: 0, readyToDeliver: 0, completed: 0, revenue: 0 };
-        data.forEach((o) => {
+        assignedOrders.forEach((o) => {
           const s = (o.status || "").toLowerCase();
-          // Only count confirmed/processing orders as active for the tailor
           if (["pending", "confirmed", "in review", "accepted"].includes(s)) counts.active++;
-          if (["processing", "in progress", "fabric ordered"].includes(s)) counts.inProgress++;
-          if (s === "ready to deliver") counts.readyToDeliver++;
-          if (s === "completed") {
+          if (["processing", "in_progress", "tailoring"].includes(s)) counts.inProgress++;
+          if (["tailoring_done", "shipped_to_customer", "ready to deliver"].includes(s)) counts.readyToDeliver++;
+          if (["completed", "delivered"].includes(s)) {
             counts.completed++;
-            counts.revenue += Number(o.total || o.price || 0);
+            counts.revenue += Number(o.total_price || o.total || o.price || 0);
           }
         });
         setStatCounts(counts);
-      })
-      .catch((err) => console.error("Orders fetch error:", err))
-      .finally(() => setOrdersLoading(false));
+      } catch (err) {
+        console.error("Assigned orders fetch error:", err);
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+
+    fetchAssignedOrders();
 
     // Fetch quotations
     getMyQuotations()
@@ -401,18 +432,41 @@ export default function TailorDashboard() {
     fetchDashboard();
   }, [authUser]);
 
-  // ── NEW: Handler to update order status via API ──
-  const handleOrderStatusChange = async (orderId, newStatus) => {
+  // ── Handler to update order status via API and sync linked quotation ──
+  const handleOrderStatusChange = async (orderId, newStatus, quotationId) => {
     try {
       const token = await auth.currentUser.getIdToken();
       await updateTailorOrderStatus(orderId, newStatus, token);
-      // Update local state to reflect the change
+
+      // Update local order state
       setOrders((prev) =>
         prev.map((o) => o.id === orderId ? { ...o, status: newStatus } : o)
       );
+
+      // ── Sync the linked quotation so customer Order Tracking updates ──
+      // The backend already does this, but sync from frontend too as a fallback
+      const orderToQuotationStatus = {
+        pending:             "accepted",
+        in_progress:         "tailoring",
+        tailoring:           "tailoring",
+        tailoring_done:      "tailoring_done",
+        shipped_to_customer: "shipped_to_customer",
+        delivered:           "delivered",
+        completed:           "completed",
+        cancelled:           "cancelled",
+      };
+      const qStatus = orderToQuotationStatus[newStatus];
+      // Find quotationId from the order if not passed directly
+      const order = orders.find((o) => o.id === orderId);
+      const qId = quotationId || order?.quotationId;
+      if (qId && qStatus) {
+        await updateDoc(doc(db, "quotations", qId), { status: qStatus });
+      }
+
+      toast.success(`Order status updated to "${newStatus.replace(/_/g, " ")}".`);
     } catch (err) {
       console.error("Status update error:", err);
-      alert("Failed to update order status");
+      toast.error("Failed to update order status. Please try again.");
     }
   };
 

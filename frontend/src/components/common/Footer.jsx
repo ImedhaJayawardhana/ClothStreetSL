@@ -63,14 +63,13 @@ export default function Footer() {
             <ul className="space-y-3">
               <li><Link to="/about" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-700 hover:text-purple-700 transition-colors">About Us</Link></li>
               <li><Link to="/shop" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-700 hover:text-purple-700 transition-colors">Fabric Marketplace</Link></li>
-              <li><Link to="/tailors" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-700 hover:text-purple-700 transition-colors">Find Tailors</Link></li>
               <li>
                 <Link to="/designers" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-700 hover:text-purple-700 transition-colors">
                   Find Designers
                 </Link>
               </li>
               <li><Link to="/match" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-700 hover:text-purple-700 transition-colors">AI Recommendations</Link></li>
-              <li><Link to="/tracking" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-700 hover:text-purple-700 transition-colors">Order Tracking</Link></li>
+              <li><Link to="/orders" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-700 hover:text-purple-700 transition-colors">Order Tracking</Link></li>
               <li><Link to="/register" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-700 hover:text-purple-700 transition-colors">Join as Supplier</Link></li>
             </ul>
           </div>

@@ -108,8 +108,16 @@ export default function DesignerOrders() {
  const fetchData = async () => {
  try {
  const uid = user.uid;
- const ordersSnap = await getDocs(query(collection(db,"orders"), where("designerId","==", uid)));
- const allOrders = ordersSnap.docs.map((d) => ({ id: d.id, ...d.data()}));
+ // Query by designerId and by providerId (new format) to find all service orders
+ const [snapByDesignerId, snapByProviderId] = await Promise.all([
+   getDocs(query(collection(db, "orders"), where("designerId", "==", uid))),
+   getDocs(query(collection(db, "orders"), where("providerId", "==", uid))),
+ ]);
+ const seenIds = new Set();
+ const allOrders = [];
+ [...snapByDesignerId.docs, ...snapByProviderId.docs].forEach((d) => {
+   if (!seenIds.has(d.id)) { seenIds.add(d.id); allOrders.push({ id: d.id, ...d.data() }); }
+ });
 
  const counts = { total: allOrders.length, active: 0, completed: 0, revenue: 0};
  allOrders.forEach((o) => {
@@ -132,12 +140,30 @@ export default function DesignerOrders() {
  fetchData();
 }, [user]);
 
- // ── Update order status in Firestore ──
+ // ── Update order status in Firestore + sync linked quotation ──
  const handleStatusUpdate = async (projectId, newStatus) => {
  try {
  // Only write to Firestore for real docs (not mock IDs)
  if (!projectId.startsWith("DFS-")) {
  await updateDoc(doc(db,"orders", projectId), { status: newStatus});
+
+ // ── Sync the linked quotation so customer Order Tracking updates ──
+ // Find the order to get its quotationId
+ const order = orders.find((o) => o.id === projectId);
+ const quotationId = order?.quotationId;
+ if (quotationId) {
+   const designerStatusMap = {
+     "Pending":     "accepted",
+     "In Progress": "design_in_progress",
+     "In Review":   "design_in_progress",
+     "Completed":   "design_delivered",
+     "Cancelled":   "cancelled",
+   };
+   const qStatus = designerStatusMap[newStatus];
+   if (qStatus) {
+     await updateDoc(doc(db,"quotations", quotationId), { status: qStatus });
+   }
+ }
 }
  setOrders((prev) =>
  prev.map((o) => (o.id === projectId ? { ...o, status: newStatus, progress: newStatus ==="Completed" ? 100 : o.progress} : o))
@@ -161,6 +187,7 @@ export default function DesignerOrders() {
 }
  setStatusDropdown(null);
 };
+
 
  // ── Export orders to CSV ──
  const handleExport = () => {
