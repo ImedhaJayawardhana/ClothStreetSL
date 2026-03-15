@@ -1,6 +1,7 @@
 import React, { useState} from'react';
 import { Link} from'react-router-dom';
 import { useCart} from'../context/CartContext';
+import heroImg from '../assets/craftsperson-bg.png';
 
 // Mock Fallback Data
 const mockResults = {
@@ -77,29 +78,27 @@ export default function AIMatch() {
  return (
  <div className="min-h-screen flex flex-col">
  {/* Hero Section */}
- <section className="bg-gradient-to-br from-[#1a0533] to-[#2d1b69] pt-20 pb-24 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
- {/* Abstract Background Element for extra visual pop (optional) */}
- <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-full opacity-20 pointer-events-none">
- <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full mix-blend-screen filter blur-[80px]"></div>
- <div className="absolute top-1/2 right-1/4 w-72 h-72 rounded-full mix-blend-screen filter blur-[100px]"></div>
- </div>
+ <section className="relative overflow-hidden" style={{ color: '#fff' }}>
+  <img src={heroImg} alt="AI Match Background" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
+  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(15,10,40,0.90) 0%, rgba(30,20,70,0.84) 40%, rgba(55,30,100,0.76) 100%)', zIndex: 1 }} />
 
- <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
- {/* Pill Badge */}
- <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border backdrop-blur-md mb-6 shadow-sm">
- <span className="text-sm font-semibold tracking-wide">✦ Powered by Machine Learning</span>
- </div>
- 
- {/* Large Bold Heading */}
- <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
- AI-Powered Smart Match
- </h1>
- 
- {/* Subtitle */}
- <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
- Get intelligent recommendations for fabric suppliers and tailors based on your specific project requirements
- </p>
- </div>
+  <div className="relative max-w-4xl mx-auto flex flex-col items-center text-center px-4" style={{ zIndex: 2, paddingTop: '1.5rem', paddingBottom: '2rem' }}>
+   {/* Pill Badge */}
+   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '999px', border: '1px solid rgba(139,92,246,0.3)', background: 'rgba(139,92,246,0.15)', marginBottom: '16px' }}>
+    <span style={{ fontSize: '13px', fontWeight: 600, color: '#e9d5ff', letterSpacing: '0.02em' }}>✦ Powered by Machine Learning</span>
+   </div>
+
+   {/* Heading */}
+   <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4" style={{ color: '#ffffff' }}>
+    AI-Powered{' '}
+    <span style={{ background: 'linear-gradient(135deg, #c4b5fd, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Smart Match</span>
+   </h1>
+
+   {/* Subtitle */}
+   <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: 'rgba(233,213,255,0.85)' }}>
+    Get intelligent recommendations for fabric suppliers and tailors based on your specific project requirements
+   </p>
+  </div>
  </section>
 
  {/* Main Content Area */}

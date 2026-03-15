@@ -80,26 +80,26 @@ export default function BrowseDesigners() {
             </section>
 
             {/* ───────────── SEARCH BAR ROW ───────────── */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-7 relative z-20">
-                <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border p-4 sm:p-5">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 relative z-20">
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-5">
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                        <div className="relative flex-1">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div style={{ position: 'relative', flex: 1 }}>
+                            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', display: 'flex', alignItems: 'center', pointerEvents: 'none', zIndex: 1 }}>
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-                            </div>
+                            </span>
                             <input
                                 type="text"
                                 placeholder="Search by name, location, or style..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full border focus:border-violet-400 focus:ring-2 focus:ring-violet-100 rounded-xl pl-12 pr-4 py-3 text-sm placeholder-gray-400 outline-none transition-all duration-200"
+                                style={{ width: '100%', border: '1px solid #e2e8f0', borderRadius: '12px', paddingLeft: '44px', paddingRight: '16px', paddingTop: '12px', paddingBottom: '12px', fontSize: '14px', outline: 'none', background: '#fff', color: '#1e293b' }}
                             />
                             {searchQuery && (
                                 <button onClick={() => setSearchQuery('')}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
@@ -107,13 +107,16 @@ export default function BrowseDesigners() {
                         </div>
                         <button
                             onClick={() => setAvailableOnly(!availableOnly)}
-                            className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium transition-all duration-200 border whitespace-nowrap ${
-                                availableOnly
-                                    ? 'bg-emerald-50 border-emerald-300 text-emerald-700 shadow-sm'
-                                    : 'bg-white hover:bg-slate-50 border-slate-200'
-                            }`}
+                            style={{
+                                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                                padding: '12px 20px', borderRadius: '12px', fontSize: '14px',
+                                fontWeight: 500, whiteSpace: 'nowrap', cursor: 'pointer',
+                                border: availableOnly ? '1px solid #6ee7b7' : '1px solid #e2e8f0',
+                                background: availableOnly ? '#ecfdf5' : '#fff',
+                                color: availableOnly ? '#065f46' : '#475569',
+                            }}
                         >
-                            <span className={`w-2 h-2 rounded-full ${availableOnly ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: availableOnly ? '#10b981' : '#cbd5e1', display: 'inline-block' }} />
                             Available Now
                         </button>
                     </div>
