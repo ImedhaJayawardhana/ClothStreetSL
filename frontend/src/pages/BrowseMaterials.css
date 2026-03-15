@@ -4,13 +4,35 @@
 
 /* ---------- Hero / Header ---------- */
 .bm-hero {
-  background: var(--clr-surface-2);
-  padding: 3rem 0 4rem;
-  color: var(--clr-text);
-  border-bottom: 1px solid var(--clr-border);
+  position: relative;
+  overflow: hidden;
+  padding: 1.5rem 0 2rem;
+  color: #fff;
+  border-bottom: none;
+}
+
+.bm-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.bm-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+      rgba(15, 10, 40, 0.88) 0%,
+      rgba(30, 20, 70, 0.82) 40%,
+      rgba(55, 30, 100, 0.75) 100%);
+  z-index: 1;
 }
 
 .bm-hero-inner {
+  position: relative;
+  z-index: 2;
   max-width: 72rem;
   margin: 0 auto;
   padding: 0 1.5rem;
@@ -20,19 +42,20 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.8rem;
-  color: var(--clr-muted);
-  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1rem;
 }
 
 .bm-breadcrumb a {
-  color: var(--clr-muted);
+  color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
   transition: color 0.2s;
+  font-weight: 500;
 }
 
 .bm-breadcrumb a:hover {
-  color: var(--clr-primary);
+  color: #c4b5fd;
 }
 
 .bm-breadcrumb svg {
@@ -40,19 +63,20 @@
 }
 
 .bm-hero-title {
-  font-size: 2.25rem;
+  font-size: 2.8rem;
   font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: -0.025em;
-  margin: 0 0 0.5rem;
-  color: var(--clr-text);
+  margin: 0 0 0.75rem;
+  color: #ffffff;
 }
 
 .bm-hero-subtitle {
-  font-size: 1rem;
-  color: var(--clr-text-2);
+  font-size: 1.1rem;
+  color: rgba(233, 213, 255, 0.9);
   margin: 0;
   max-width: 36rem;
+  line-height: 1.6;
 }
 
 /* ---------- Search Bar ---------- */
