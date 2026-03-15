@@ -193,7 +193,7 @@ def update_quotation(
 
 # ─── PATCH /{quotation_id}/deliver  →  Upload design deliverables ─
 class DeliverablesUpdate(BaseModel):
-    files: List[str]
+    files: list[str]
 
 @router.patch("/{quotation_id}/deliver")
 def deliver_design(
