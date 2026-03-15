@@ -239,8 +239,14 @@ def update_tailor_order_status(
     """
     uid = decoded_token["uid"]
     valid_statuses = [
-        "pending", "in_progress", "tailoring", "tailoring_done",
-        "shipped_to_customer", "delivered", "completed", "cancelled",
+        "pending",
+        "in_progress",
+        "tailoring",
+        "tailoring_done",
+        "shipped_to_customer",
+        "delivered",
+        "completed",
+        "cancelled",
     ]
 
     if body.status not in valid_statuses:
@@ -263,9 +269,13 @@ def update_tailor_order_status(
         if quotation_id:
             q_doc = db.collection("quotations").document(quotation_id).get()
             if not q_doc.exists or q_doc.to_dict().get("providerId") != uid:
-                raise HTTPException(status_code=403, detail="This order is not assigned to you")
+                raise HTTPException(
+                    status_code=403, detail="This order is not assigned to you"
+                )
         else:
-            raise HTTPException(status_code=403, detail="This order is not assigned to you")
+            raise HTTPException(
+                status_code=403, detail="This order is not assigned to you"
+            )
 
     # Update the order document
     order_ref.update({"status": body.status})
@@ -273,14 +283,14 @@ def update_tailor_order_status(
     # ── Sync the linked quotation so customer tracking reflects this change ──
     # Map order status → quotation status (the tracking page reads quotation status)
     order_to_quotation_status = {
-        "pending":             "accepted",
-        "in_progress":         "tailoring",
-        "tailoring":           "tailoring",
-        "tailoring_done":      "tailoring_done",
+        "pending": "accepted",
+        "in_progress": "tailoring",
+        "tailoring": "tailoring",
+        "tailoring_done": "tailoring_done",
         "shipped_to_customer": "shipped_to_customer",
-        "delivered":           "delivered",
-        "completed":           "completed",
-        "cancelled":           "cancelled",
+        "delivered": "delivered",
+        "completed": "completed",
+        "cancelled": "cancelled",
     }
     quotation_status = order_to_quotation_status.get(body.status)
     quotation_id = order_data.get("quotationId")

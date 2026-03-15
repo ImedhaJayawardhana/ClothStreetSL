@@ -39,12 +39,12 @@ def create_order(order: Order, decoded_token: dict = Depends(verify_token)):
     if order.quotation_id:
         order_data["quotationId"] = order.quotation_id
     if order.provider_id:
-        order_data["providerId"] = order.provider_id          # generic lookup
+        order_data["providerId"] = order.provider_id  # generic lookup
         ptype = (order.provider_type or "").lower()
         if ptype == "tailor":
-            order_data["tailorId"] = order.provider_id       # tailor dashboard query
+            order_data["tailorId"] = order.provider_id  # tailor dashboard query
         elif ptype == "designer":
-            order_data["designerId"] = order.provider_id     # designer dashboard query
+            order_data["designerId"] = order.provider_id  # designer dashboard query
     doc_ref = db.collection("orders").add(order_data)
     # ── Deduct stock for each ordered fabric ──────────────────────────────────
     for item in order.items:

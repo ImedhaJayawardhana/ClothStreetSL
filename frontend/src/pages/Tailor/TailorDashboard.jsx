@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { getMyOrders, getMyQuotations } from "../../api";
+import { getMyQuotations } from "../../api";
 import { getTailorDashboard, updateTailorOrderStatus } from "../../api/tailor";
 import { auth, db } from "../../firebase/firebase";
 import { doc, updateDoc, collection, query, where, getDocs } from "firebase/firestore";
