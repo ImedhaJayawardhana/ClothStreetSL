@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { listFabrics, createFabric, updateFabric } from "../../api";
+import { listFabrics, createFabric, updateFabric, deleteFabric } from "../../api";
 
 const TABS = ["All", "In Stock", "Low Stock", "Out of Stock"];
 
@@ -104,7 +104,6 @@ function ItemModal({ item, onClose, onSave, saving }) {
                     {[
                         { label: "Fabric Name", name: "name", placeholder: "e.g. Premium Cotton Twill" },
                         { label: "Type / Fabric", name: "type", placeholder: "e.g. Cotton" },
-                        { label: "Color", name: "color", placeholder: "e.g. Blue, Red, Multi-color" },
                         { label: "Price per meter (LKR)", name: "price", placeholder: "e.g. 1500", type: "number" },
                         { label: "Stock (meters)", name: "stock", placeholder: "e.g. 50", type: "number" },
                     ].map(({ label, name, placeholder, type }) => (
@@ -357,6 +356,7 @@ export default function Inventory() {
                 stock: Number(form.stock),
                 colors: form.colors || [],
                 image_url: form.image_url || form.image || null,
+                supplier_id: authUser.uid,
             };
 
             if (modal?.mode === "add") {
@@ -393,9 +393,34 @@ export default function Inventory() {
         }
     }
 
-    // ── Toggle hide (local only for now) ──
-    function handleToggleHide(id) {
-        setItems((prev) => prev.map((i) => (i.id === id ? { ...i, hidden: !i.hidden } : i)));
+    // ── Toggle hide – persists to backend ──
+    async function handleToggleHide(id) {
+        const item = items.find((i) => i.id === id);
+        if (!item) return;
+        const newHidden = !item.hidden;
+        try {
+            await updateFabric(id, { hidden: newHidden });
+            setItems((prev) =>
+                prev.map((i) => (i.id === id ? { ...i, hidden: newHidden } : i))
+            );
+            showSuccess(newHidden ? "Product hidden from shop." : "Product is now visible in shop.");
+        } catch (err) {
+            console.error("Toggle hide failed:", err);
+            setError(err.response?.data?.detail || "Failed to update visibility. Please try again.");
+        }
+    }
+
+    // ── Delete fabric ──
+    async function handleDelete(id, name) {
+        if (!window.confirm(`Delete "${name}"? This will remove it from the shop permanently.`)) return;
+        try {
+            await deleteFabric(id);
+            setItems((prev) => prev.filter((i) => i.id !== id));
+            showSuccess(`"${name}" deleted successfully.`);
+        } catch (err) {
+            console.error("Delete failed:", err);
+            setError(err.response?.data?.detail || "Failed to delete. Please try again.");
+        }
     }
 
     const formatValue = (v) => {
@@ -652,6 +677,13 @@ export default function Inventory() {
                                                     </svg>
                                                     Edit
                                                 </button>
+                                                <button onClick={() => handleDelete(item.id, item.name)}
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-xl transition-colors">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                    Delete
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -735,6 +767,10 @@ export default function Inventory() {
                                                     <button onClick={() => setModal({ mode: "edit", item })}
                                                         className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl transition-colors">
                                                         Edit
+                                                    </button>
+                                                    <button onClick={() => handleDelete(item.id, item.name)}
+                                                        className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-xl transition-colors">
+                                                        Delete
                                                     </button>
                                                 </div>
                                             </td>

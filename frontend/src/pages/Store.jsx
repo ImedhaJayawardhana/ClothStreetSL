@@ -53,7 +53,7 @@ export default function Store() {
         const fetchFabrics = async () => {
             try {
                 const res = await listFabrics();
-                const filtered = res.data.filter((f) => f.supplier_id === sellerId);
+                const filtered = res.data.filter((f) => f.supplier_id === sellerId && !f.hidden);
                 setStoreProducts(filtered);
             } catch (err) {
                 console.error("Error fetching fabrics", err);
