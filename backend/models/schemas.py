@@ -171,5 +171,6 @@ class Order(BaseModel):
     delivery_method: Optional[str] = None
     provider_type: Optional[str] = None
     provider_name: Optional[str] = None
+    provider_id: Optional[str] = None  # UID of the tailor or designer
     quotation_id: Optional[str] = None
     created_at: Optional[datetime] = None
