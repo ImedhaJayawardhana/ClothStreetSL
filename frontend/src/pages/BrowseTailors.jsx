@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useNavigate } from 'react-router-dom';
+import heroImg from '../assets/craftsperson-bg.png';
 
 export default function BrowseTailors() {
   const navigate = useNavigate();
@@ -122,15 +124,13 @@ export default function BrowseTailors() {
     <div className="min-h-screen">
 
       {/* ───────────── HERO BANNER ───────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-violet-950 via-purple-900 to-indigo-950 py-20 px-4">
-        {/* Decorative blurred orbs */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative overflow-hidden" style={{ color: '#fff' }}>
+        <img src={heroImg} alt="Tailors Background" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(15,10,40,0.90) 0%, rgba(30,20,70,0.84) 40%, rgba(55,30,100,0.76) 100%)', zIndex: 1 }} />
 
-        <div className="max-w-7xl mx-auto text-center relative z-10">
+        <div className="max-w-7xl mx-auto text-center relative px-4" style={{ zIndex: 2, paddingTop: '1.5rem', paddingBottom: '2rem' }}>
           {/* Label pill */}
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-violet-200 uppercase bg-violet-500/15 border border-violet-400/25 rounded-full px-4 py-1.5 mb-5">
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase rounded-full px-4 py-1.5 mb-5" style={{ color: '#e9d5ff', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)' }}>
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -138,72 +138,45 @@ export default function BrowseTailors() {
           </span>
 
           {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4" style={{ color: '#ffffff' }}>
             Find Expert{''}
-            <span className="bg-gradient-to-r from-violet-300 to-purple-300 bg-clip-text text-transparent">
-              Tailors
+            <span style={{ background: 'linear-gradient(135deg, #c4b5fd, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              {' '}Tailors
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg text-violet-200/70 max-w-xl mx-auto">
+          <p className="text-lg max-w-xl mx-auto" style={{ color: 'rgba(233,213,255,0.85)' }}>
             6+ verified professionals ready for your garment needs
           </p>
 
-          {/* Stats row */}
-          <div className="flex items-center justify-center gap-8 mt-8">
-            <div className="flex items-center gap-2 text-violet-300/80">
-              <div className="w-8 h-8 bg-violet-500/20 rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span className="text-sm font-medium">Verified Professionals</span>
-            </div>
-            <div className="hidden sm:flex items-center gap-2 text-violet-300/80">
-              <div className="w-8 h-8 bg-violet-500/20 rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                </svg>
-              </div>
-              <span className="text-sm font-medium">Top Rated</span>
-            </div>
-            <div className="hidden sm:flex items-center gap-2 text-violet-300/80">
-              <div className="w-8 h-8 bg-violet-500/20 rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span className="text-sm font-medium">Quick Turnaround</span>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* ───────────── SEARCH BAR ROW ───────────── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-7 relative z-20">
-        <div className="rounded-2xl shadow-xl shadow-gray-200/60 border p-4 sm:p-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 relative z-20">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-5">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Search input */}
-            <div className="relative flex-1">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div style={{ position: 'relative', flex: 1 }}>
+              <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', display: 'flex', alignItems: 'center', pointerEvents: 'none', zIndex: 1 }}>
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-              </div>
+              </span>
               <input
                 type="text"
                 placeholder="Search by name, location, or skill..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full border focus:border-violet-400 focus:ring-2 focus:ring-violet-100 rounded-xl pl-12 pr-4 py-3 text-sm placeholder-gray-400 outline-none transition-all duration-200"
+                style={{ width: '100%', border: '1px solid #e2e8f0', borderRadius: '12px', paddingLeft: '44px', paddingRight: '16px', paddingTop: '12px', paddingBottom: '12px', fontSize: '14px', outline: 'none', background: '#fff', color: '#1e293b' }}
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 hover: transition-colors"
+                  style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -213,13 +186,16 @@ export default function BrowseTailors() {
             {/* Available Now toggle */}
             <button
               onClick={() => setAvailableOnly(!availableOnly)}
-              className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium transition-all duration-200 border whitespace-nowrap ${availableOnly
-                ? 'bg-emerald-50 border-emerald-300 text-emerald-700 shadow-sm shadow-emerald-100'
-                : ' hover: hover:'
-                }`}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                padding: '12px 20px', borderRadius: '12px', fontSize: '14px',
+                fontWeight: 500, whiteSpace: 'nowrap', cursor: 'pointer',
+                border: availableOnly ? '1px solid #6ee7b7' : '1px solid #e2e8f0',
+                background: availableOnly ? '#ecfdf5' : '#fff',
+                color: availableOnly ? '#065f46' : '#475569',
+              }}
             >
-              <span className={`w-2 h-2 rounded-full transition-colors duration-200 ${availableOnly ? 'bg-emerald-500' : ''
-                }`} />
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: availableOnly ? '#10b981' : '#cbd5e1', display: 'inline-block' }} />
               Available Now
             </button>
           </div>
@@ -432,105 +408,101 @@ export default function BrowseTailors() {
       </div>
 
       {/* ────────── CONTACT MODAL ────────── */}
-      {contactTailor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setContactTailor(null)}>
-          <div className="absolute inset-0 backdrop-blur-sm" />
+      {contactTailor && createPortal(
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}
+          onClick={() => setContactTailor(null)}
+        >
+          {/* Backdrop */}
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }} />
+          {/* Modal card */}
           <div
-            className="relative rounded-3xl shadow-2xl max-w-sm w-full p-6"
+            style={{ position: 'relative', zIndex: 1, background: '#ffffff', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.2)', maxWidth: '400px', width: '100%', padding: '24px' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
             <button
               onClick={() => setContactTailor(null)}
-              className="absolute top-4 right-4 w-8 h-8 hover: rounded-full flex items-center justify-center transition-colors"
+              style={{ position: 'absolute', top: '16px', right: '16px', width: '32px', height: '32px', borderRadius: '50%', background: '#f1f5f9', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
             {/* Header */}
-            <div className="flex items-center gap-3 mb-6">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
               <img
                 src={contactTailor.portfolioImages?.[0] || 'https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?auto=format&fit=crop&w=100&q=80'}
                 alt={contactTailor.name}
-                className="w-12 h-12 rounded-full object-cover border-2 border-violet-100"
+                style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #ede9fe' }}
               />
               <div>
-                <h3 className="font-bold">{contactTailor.name}</h3>
-                <p className="text-sm">{contactTailor.location}</p>
+                <h3 style={{ fontWeight: 700, fontSize: '16px', color: '#1e293b', margin: 0 }}>{contactTailor.name}</h3>
+                <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>{contactTailor.location}</p>
               </div>
             </div>
 
-            <h4 className="text-sm font-semibold uppercase tracking-wider mb-3">Get in touch</h4>
+            <p style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94a3b8', marginBottom: '12px' }}>Get in touch</p>
 
             {/* Contact options */}
-            <div className="space-y-3">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {/* Phone */}
               <a
                 href={`tel:${contactTailor.phoneNumber || contactTailor.phone || '+94770000000'}`}
-                className="flex items-center gap-3 p-3 hover: border hover: rounded-xl transition-all duration-200 group/link"
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '12px', textDecoration: 'none', color: 'inherit', background: '#fff' }}
               >
-                <div className="w-10 h-10 group-hover/link: rounded-lg flex items-center justify-center transition-colors">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div style={{ width: '40px', height: '40px', background: '#f1f5f9', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', flexShrink: 0 }}>
+                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold">Call Now</p>
-                  <p className="text-xs truncate">{contactTailor.phoneNumber || contactTailor.phone || '+94770000000'}</p>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b', margin: 0 }}>Call Now</p>
+                  <p style={{ fontSize: '12px', color: '#64748b', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{contactTailor.phoneNumber || contactTailor.phone || '+94770000000'}</p>
                 </div>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <svg width="16" height="16" fill="none" stroke="#cbd5e1" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </a>
 
               {/* WhatsApp */}
               <a
-                href={`https://wa.me/${(contactTailor.phoneNumber || contactTailor.phone || '+94770000000').replace('+', '')}?text=Hi ${encodeURIComponent(contactTailor.name)}, I found your profile on ClothStreet and I'd like to discuss a tailoring project.`}
+                href={`https://wa.me/${(contactTailor.phoneNumber || contactTailor.phone || '+94770000000').replace('+', '')}?text=Hi ${encodeURIComponent(contactTailor.name)}, I found your profile on ClothStreet.`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 hover:bg-emerald-50 border hover:border-emerald-200 rounded-xl transition-all duration-200 group/link"
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '12px', textDecoration: 'none', color: 'inherit', background: '#fff' }}
               >
-                <div className="w-10 h-10 bg-emerald-100 group-hover/link:bg-emerald-200 rounded-lg flex items-center justify-center transition-colors">
-                  <svg className="w-5 h-5 text-emerald-600" viewBox="0 0 24 24" fill="currentColor">
+                <div style={{ width: '40px', height: '40px', background: '#dcfce7', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#16a34a">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                   </svg>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold">WhatsApp</p>
-                  <p className="text-xs truncate">{(contactTailor.phoneNumber || contactTailor.phone || '+94770000000')}</p>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b', margin: 0 }}>WhatsApp</p>
+                  <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>{contactTailor.phoneNumber || contactTailor.phone || '+94770000000'}</p>
                 </div>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <svg width="16" height="16" fill="none" stroke="#cbd5e1" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </a>
 
               {/* View Profile */}
               <button
-                onClick={() => {
-                  setContactTailor(null);
-                  navigate(`/tailor/${contactTailor.id}`);
-                }}
-                className="w-full flex items-center gap-3 p-3 hover:bg-violet-50 border hover:border-violet-200 rounded-xl transition-all duration-200 group/link"
+                onClick={() => { setContactTailor(null); navigate(`/tailor/${contactTailor.id}`); }}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '12px', background: '#fff', cursor: 'pointer', width: '100%', textAlign: 'left' }}
               >
-                <div className="w-10 h-10 bg-violet-100 group-hover/link:bg-violet-200 rounded-lg flex items-center justify-center transition-colors">
-                  <svg className="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div style={{ width: '40px', height: '40px', background: '#ede9fe', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="20" height="20" fill="none" stroke="#7c3aed" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <div className="flex-1 min-w-0 text-left">
-                  <p className="text-sm font-semibold">View Full Profile</p>
-                  <p className="text-xs truncate">See portfolio & reviews</p>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b', margin: 0 }}>View Full Profile</p>
+                  <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>See portfolio & reviews</p>
                 </div>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <svg width="16" height="16" fill="none" stroke="#cbd5e1" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </button>
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
     </div>
   );
 }

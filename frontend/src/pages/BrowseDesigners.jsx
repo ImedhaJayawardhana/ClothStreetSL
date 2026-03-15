@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useNavigate } from 'react-router-dom';
+import heroImg from '../assets/craftsperson-bg.png';
 
 export default function BrowseDesigners() {
     const navigate = useNavigate();
@@ -54,50 +56,50 @@ export default function BrowseDesigners() {
         <div className="min-h-screen">
 
             {/* ───────────── HERO BANNER ───────────── */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-violet-950 via-purple-900 to-indigo-950 py-20 px-4">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-600/15 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-fuchsia-600/10 rounded-full blur-3xl pointer-events-none" />
+            <section className="relative overflow-hidden" style={{ color: '#fff' }}>
+                <img src={heroImg} alt="Designers Background" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(15,10,40,0.90) 0%, rgba(30,20,70,0.84) 40%, rgba(55,30,100,0.76) 100%)', zIndex: 1 }} />
 
-                <div className="max-w-7xl mx-auto text-center relative z-10">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-violet-200 uppercase bg-violet-500/15 border border-violet-400/25 rounded-full px-4 py-1.5 mb-5">
+                <div className="max-w-7xl mx-auto text-center relative px-4" style={{ zIndex: 2, paddingTop: '1.5rem', paddingBottom: '2rem' }}>
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase rounded-full px-4 py-1.5 mb-5" style={{ color: '#e9d5ff', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)' }}>
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                         </svg>
                         Creative Network
                     </span>
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4">
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4" style={{ color: '#ffffff' }}>
                         Find Expert{' '}
-                        <span className="bg-gradient-to-r from-fuchsia-300 to-purple-300 bg-clip-text text-transparent">
+                        <span style={{ background: 'linear-gradient(135deg, #f0abfc, #c4b5fd)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                             Designers
                         </span>
                     </h1>
-                    <p className="text-lg text-violet-200/70 max-w-xl mx-auto">
+                    <p className="text-lg max-w-xl mx-auto" style={{ color: 'rgba(233,213,255,0.85)' }}>
                         {loading ? '...' : `${designers.length}+`} creative professionals for your fashion vision
                     </p>
                 </div>
             </section>
 
             {/* ───────────── SEARCH BAR ROW ───────────── */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-7 relative z-20">
-                <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border p-4 sm:p-5">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 relative z-20">
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-5">
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                        <div className="relative flex-1">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div style={{ position: 'relative', flex: 1 }}>
+                            <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', display: 'flex', alignItems: 'center', pointerEvents: 'none', zIndex: 1 }}>
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-                            </div>
+                            </span>
                             <input
                                 type="text"
                                 placeholder="Search by name, location, or style..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full border focus:border-violet-400 focus:ring-2 focus:ring-violet-100 rounded-xl pl-12 pr-4 py-3 text-sm placeholder-gray-400 outline-none transition-all duration-200"
+                                style={{ width: '100%', border: '1px solid #e2e8f0', borderRadius: '12px', paddingLeft: '44px', paddingRight: '16px', paddingTop: '12px', paddingBottom: '12px', fontSize: '14px', outline: 'none', background: '#fff', color: '#1e293b' }}
                             />
                             {searchQuery && (
                                 <button onClick={() => setSearchQuery('')}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
@@ -105,13 +107,16 @@ export default function BrowseDesigners() {
                         </div>
                         <button
                             onClick={() => setAvailableOnly(!availableOnly)}
-                            className={`inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium transition-all duration-200 border whitespace-nowrap ${
-                                availableOnly
-                                    ? 'bg-emerald-50 border-emerald-300 text-emerald-700 shadow-sm'
-                                    : 'bg-white hover:bg-slate-50 border-slate-200'
-                            }`}
+                            style={{
+                                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                                padding: '12px 20px', borderRadius: '12px', fontSize: '14px',
+                                fontWeight: 500, whiteSpace: 'nowrap', cursor: 'pointer',
+                                border: availableOnly ? '1px solid #6ee7b7' : '1px solid #e2e8f0',
+                                background: availableOnly ? '#ecfdf5' : '#fff',
+                                color: availableOnly ? '#065f46' : '#475569',
+                            }}
                         >
-                            <span className={`w-2 h-2 rounded-full ${availableOnly ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: availableOnly ? '#10b981' : '#cbd5e1', display: 'inline-block' }} />
                             Available Now
                         </button>
                     </div>
@@ -295,13 +300,19 @@ export default function BrowseDesigners() {
             </div>
 
             {/* ────────── CONTACT MODAL ────────── */}
-            {contactDesigner && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setContactDesigner(null)}>
-                    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-                    <div className="relative bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6" onClick={(e) => e.stopPropagation()}>
+            {contactDesigner && createPortal(
+                <div
+                  style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}
+                  onClick={() => setContactDesigner(null)}
+                >
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }} />
+                    <div
+                      style={{ position: 'relative', zIndex: 1, background: '#ffffff', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.2)', maxWidth: '400px', width: '100%', padding: '24px' }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
                         <button onClick={() => setContactDesigner(null)}
-                            className="absolute top-4 right-4 w-8 h-8 hover:bg-slate-100 rounded-full flex items-center justify-center transition-colors">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            style={{ position: 'absolute', top: '16px', right: '16px', width: '32px', height: '32px', borderRadius: '50%', background: '#f1f5f9', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
@@ -366,7 +377,7 @@ export default function BrowseDesigners() {
                         </div>
                     </div>
                 </div>
-            )}
+            , document.body)}
         </div>
     );
 }
