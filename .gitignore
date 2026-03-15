@@ -87,3 +87,7 @@ eslint-report.json
 eslint.json
 parse_eslint.py
 serviceAccountKey.json
+
+__pycache__/
+*.pyc
+*.pyo
