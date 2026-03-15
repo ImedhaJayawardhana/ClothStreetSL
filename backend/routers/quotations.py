@@ -193,7 +193,8 @@ def update_quotation(
 
 # ─── PATCH /{quotation_id}/deliver  →  Upload design deliverables ─
 class DeliverablesUpdate(BaseModel):
-    files: list[str]
+    files: list[str] = []
+    message: str = ""
 
 @router.patch("/{quotation_id}/deliver")
 def deliver_design(
@@ -214,6 +215,7 @@ def deliver_design(
         
     update_data = {
         "designDeliverables": update.files,
+        "designDeliveryMessage": update.message,
         "status": "design_delivered",
         "designDeliveredAt": datetime.utcnow().isoformat(),
         "updatedAt": datetime.utcnow().isoformat()
