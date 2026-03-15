@@ -92,7 +92,15 @@ def update_order_status(
     status: str,
     decoded_token: dict = Depends(verify_token),
 ):
-    valid_statuses = ["pending", "confirmed", "processing", "shipped", "delivered", "completed", "cancelled"]
+    valid_statuses = [
+        "pending",
+        "confirmed",
+        "processing",
+        "shipped",
+        "delivered",
+        "completed",
+        "cancelled",
+    ]
     if status not in valid_statuses:
         raise HTTPException(
             status_code=400, detail=f"Invalid status. Must be one of {valid_statuses}"
