@@ -174,6 +174,8 @@ def update_quotation(
             "customerId": data.get("customerId", ""),
             "customer_id": data.get("customerId", ""),  # legacy field for UI
             "providerId": data.get("providerId", ""),
+            "providerType": data.get("providerType", ""),
+            "providerName": data.get("providerName", ""),
             "quotationId": quotation_id,
             "serviceType": service_type,
             "description": data.get("description", ""),
@@ -253,11 +255,7 @@ def delete_quotation(quotation_id: str, decoded_token: dict = Depends(verify_tok
             detail="You can only delete your own quotation requests",
         )
 
-    if data.get("status", "").lower() not in ["pending", "rejected", "declined"]:
-        raise HTTPException(
-            status_code=400,
-            detail="Cannot delete a quotation that is in progress or completed",
-        )
+    # Allow deletion of quotation in any status
 
     db.collection("quotations").document(quotation_id).delete()
     return {"message": "Quotation deleted successfully"}
