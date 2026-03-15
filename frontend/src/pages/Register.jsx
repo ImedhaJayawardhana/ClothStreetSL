@@ -36,7 +36,7 @@ export default function Register() {
       } else if (role === 'tailor') {
         navigate('/tailor-dashboard');
       } else {
-        navigate('/');
+        navigate('/profile');
       }
     } catch (err) {
       console.error(err);
@@ -62,7 +62,7 @@ export default function Register() {
       } else if (role === 'tailor') {
         navigate('/tailor-dashboard');
       } else {
-        navigate('/');
+        navigate('/profile');
       }
     } catch (err) {
       setError(err.message || 'Failed to sign in with Google.');
