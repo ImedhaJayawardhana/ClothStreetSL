@@ -57,6 +57,7 @@ export default function App() {
  <Route path="/cart" element={<Cart />} />
  <Route path="/checkout" element={<Checkout />} />
  <Route path="/find-tailor-designer" element={<FindTailorDesigner />} />
+ <Route path="/request-quote" element={<RequestQuote />} />
  <Route path="/request-quote/:providerId" element={<RequestQuote />} />
  <Route path="/quotation-inbox" element={<QuotationInbox />} />
  <Route path="/quotation-response/:quotationId" element={<QuotationResponse />} />

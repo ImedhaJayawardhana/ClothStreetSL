@@ -1,8 +1,9 @@
-import { useState} from"react";
-import { Link, useNavigate} from"react-router-dom";
-import { useAuth} from"../context/AuthContext";
-import { auth, storage} from"../firebase/firebase";
-import { ref, uploadBytes, getDownloadURL} from"firebase/storage";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { auth, storage, db } from "../firebase/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { doc, getDoc } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
 import toast from "react-hot-toast";
 import { deleteAccount } from "../api";
@@ -24,7 +25,11 @@ export default function CustomerProfile() {
   const { user, updateProfile, logout } = useAuth();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
- const [isSaving, setIsSaving] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedTailors, setSavedTailors] = useState([]);
+  const [savedDesigners, setSavedDesigners] = useState([]);
+  const [savedShops, setSavedShops] = useState([]);
+  const [loadingSaved, setLoadingSaved] = useState(false);
 
  // Section-level edit toggles
  const [editingPersonal, setEditingPersonal] = useState(false);
@@ -193,7 +198,49 @@ export default function CustomerProfile() {
     }
   };
 
- // ==================== PROFILE VIEW ====================
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchSavedEntities = async () => {
+      setLoadingSaved(true);
+      try {
+        // Fetch Tailors
+        if (user.savedTailors?.length > 0) {
+          const tailorPromises = user.savedTailors.map(id => getDoc(doc(db, "tailors", id)));
+          const tailorSnaps = await Promise.all(tailorPromises);
+          setSavedTailors(tailorSnaps.filter(s => s.exists()).map(s => ({ uid: s.id, ...s.data() })));
+        } else {
+          setSavedTailors([]);
+        }
+
+        // Fetch Designers
+        if (user.savedDesigners?.length > 0) {
+          const designerPromises = user.savedDesigners.map(id => getDoc(doc(db, "designers", id)));
+          const designerSnaps = await Promise.all(designerPromises);
+          setSavedDesigners(designerSnaps.filter(s => s.exists()).map(s => ({ uid: s.id, ...s.data() })));
+        } else {
+          setSavedDesigners([]);
+        }
+
+        // Fetch Shops
+        if (user.savedShops?.length > 0) {
+          const shopPromises = user.savedShops.map(id => getDoc(doc(db, "sellers", id)));
+          const shopSnaps = await Promise.all(shopPromises);
+          setSavedShops(shopSnaps.filter(s => s.exists()).map(s => ({ uid: s.id, ...s.data() })));
+        } else {
+          setSavedShops([]);
+        }
+      } catch (err) {
+        console.error("Error fetching saved entities:", err);
+      } finally {
+        setLoadingSaved(false);
+      }
+    };
+
+    fetchSavedEntities();
+  }, [user?.uid, user?.savedTailors, user?.savedDesigners, user?.savedShops]);
+
+  // ==================== PROFILE VIEW ====================
  if (!isEditing) {
  return (
  <div>
@@ -351,34 +398,97 @@ export default function CustomerProfile() {
  </div>
  </div>
 
- {/* Saved Tailors Widget */}
- <div className="cp-card" style={{ marginBottom:"0"}}>
- <div className="cp-section-header">
- <h3 className="cp-section-title">
- <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
- Saved Tailors
- </h3>
- </div>
- <div style={{ display:"flex", flexDirection:"column", gap:"16px"}}>
- {mockTailors.map((tailor, idx) => (
- <div key={idx} style={{ display:"flex", alignItems:"center", gap:"12px"}}>
- <div style={{ width:"40px", height:"40px", borderRadius:"8px", background:"#e0e7ff", display:"flex", alignItems:"center", justifyContent:"center", color:"#4f46e5", fontWeight:"bold", fontSize:"16px"}}>
- {tailor.name.charAt(0)}
- </div>
- <div>
- <p style={{ fontSize:"14px", fontWeight:"600", color:"#1e1b4b"}}>{tailor.name}</p>
- <p style={{ fontSize:"12px", color:"#6b7280", marginTop:"2px"}}>★ {tailor.rating} • {tailor.specialty}</p>
- </div>
- </div>
- ))}
- </div>
- <button
- onClick={() => navigate('/tailors')}
- style={{ width:"100%", marginTop:"20px", padding:"8px 0", borderRadius:"8px", border:"1.5px solid #e0e7ff", background:"#f8fafc", color:"#4f46e5", fontSize:"13px", fontWeight:"600", cursor:"pointer"}}
- >
- Browse Tailors
- </button>
- </div>
+  {/* Saved Items Widget */}
+  <div className="cp-card" style={{ marginBottom:"0"}}>
+    <div className="cp-section-header">
+      <h3 className="cp-section-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+        </svg>
+        Saved Items
+      </h3>
+    </div>
+    
+    <div style={{ display:"flex", flexDirection:"column", gap:"20px"}}>
+      {loadingSaved ? (
+        <p style={{fontSize:"14px", color:"#6b7280", textAlign:"center"}}>Loading saved items...</p>
+      ) : (
+        <>
+          {/* Tailors */}
+          {savedTailors.length > 0 && (
+            <div className="saved-group">
+              <h4 style={{fontSize:"12px", fontWeight:"700", color:"#9ca3af", marginBottom:"10px", textTransform:"uppercase", letterSpacing:"0.05em"}}>Tailors</h4>
+              <div style={{ display:"flex", flexDirection:"column", gap:"12px"}}>
+                {savedTailors.map((tailor) => (
+                  <div key={tailor.uid} onClick={() => navigate(`/tailor/${tailor.uid}`)} style={{ display:"flex", alignItems:"center", gap:"12px", cursor:"pointer"}} className="cp-saved-item">
+                    <div style={{ width:"40px", height:"40px", borderRadius:"8px", background:"#e0e7ff", display:"flex", alignItems:"center", justifyContent:"center", color:"#4f46e5", fontWeight:"bold", fontSize:"16px", overflow:"hidden"}}>
+                      {tailor.profilePhoto ? <img src={tailor.profilePhoto} alt="" style={{width:"100%", height:"100%", objectFit:"cover"}} /> : tailor.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p style={{ fontSize:"14px", fontWeight:"600", color:"#1e1b4b"}}>{tailor.name}</p>
+                      <p style={{ fontSize:"12px", color:"#6b7280", marginTop:"2px"}}>★ {tailor.rating} • {tailor.location || "Sri Lanka"}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Designers */}
+          {savedDesigners.length > 0 && (
+            <div className="saved-group">
+              <h4 style={{fontSize:"12px", fontWeight:"700", color:"#9ca3af", marginBottom:"10px", textTransform:"uppercase", letterSpacing:"0.05em"}}>Designers</h4>
+              <div style={{ display:"flex", flexDirection:"column", gap:"12px"}}>
+                {savedDesigners.map((designer) => (
+                  <div key={designer.uid} onClick={() => navigate(`/designer/${designer.uid}`)} style={{ display:"flex", alignItems:"center", gap:"12px", cursor:"pointer"}} className="cp-saved-item">
+                    <div style={{ width:"40px", height:"40px", borderRadius:"8px", background:"#fdf4ff", display:"flex", alignItems:"center", justifyContent:"center", color:"#d946ef", fontWeight:"bold", fontSize:"16px", overflow:"hidden"}}>
+                      {designer.profilePhoto ? <img src={designer.profilePhoto} alt="" style={{width:"100%", height:"100%", objectFit:"cover"}} /> : designer.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p style={{ fontSize:"14px", fontWeight:"600", color:"#1e1b4b"}}>{designer.name}</p>
+                      <p style={{ fontSize:"12px", color:"#6b7280", marginTop:"2px"}}>★ {designer.rating} • {designer.style || "Designer"}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Shops */}
+          {savedShops.length > 0 && (
+            <div className="saved-group">
+              <h4 style={{fontSize:"12px", fontWeight:"700", color:"#9ca3af", marginBottom:"10px", textTransform:"uppercase", letterSpacing:"0.05em"}}>Shops</h4>
+              <div style={{ display:"flex", flexDirection:"column", gap:"12px"}}>
+                {savedShops.map((shop) => (
+                  <div key={shop.uid} onClick={() => navigate(`/store/${shop.uid}`)} style={{ display:"flex", alignItems:"center", gap:"12px", cursor:"pointer"}} className="cp-saved-item">
+                    <div style={{ width:"40px", height:"40px", borderRadius:"8px", background:"#f0fdf4", display:"flex", alignItems:"center", justifyContent:"center", color:"#16a34a", fontWeight:"bold", fontSize:"16px", overflow:"hidden"}}>
+                      {shop.logoUrl ? <img src={shop.logoUrl} alt="" style={{width:"100%", height:"100%", objectFit:"cover"}} /> : (shop.shopName || shop.storeName || "S").charAt(0)}
+                    </div>
+                    <div>
+                      <p style={{ fontSize:"14px", fontWeight:"600", color:"#1e1b4b"}}>{shop.shopName || shop.storeName || "Seller Store"}</p>
+                      <p style={{ fontSize:"12px", color:"#6b7280", marginTop:"2px"}}>★ {shop.rating || "4.8"} • {shop.address || "Sri Lanka"}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {savedTailors.length === 0 && savedDesigners.length === 0 && savedShops.length === 0 && (
+            <div style={{textAlign:"center", padding:"20px 0"}}>
+              <p style={{fontSize:"13.5px", color:"#9ca3af", marginBottom:"15px"}}>You haven't saved any items yet.</p>
+              <button 
+                onClick={() => navigate('/tailors')}
+                style={{ fontSize:"13px", fontWeight:"600", color:"#4f46e5", background:"none", border:"none", cursor:"pointer", textDecoration:"underline"}}
+              >
+                Browse Tailors & Designers
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  </div>
 
  {/* My Measurements */}
  <div className="cp-card" style={{ height:"100%", marginBottom:"0"}}>

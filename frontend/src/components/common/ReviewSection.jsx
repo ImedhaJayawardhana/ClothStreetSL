@@ -52,8 +52,11 @@ function StarsDisplay({ rating, size = 16 }) {
 }
 
 // ─── Main Component ────────────────────────────────────────
-export default function ReviewSection({ targetType, targetId }) {
+export default function ReviewSection({ targetType, targetId, ownerId }) {
     const { user: authUser } = useAuth();
+    
+    // Check if the current user is the owner of this profile/product
+    const isOwner = authUser && (ownerId ? authUser.uid === ownerId : authUser.uid === targetId);
 
     // State
     const [reviews, setReviews] = useState([]);
@@ -205,6 +208,10 @@ export default function ReviewSection({ targetType, targetId }) {
                                 Login
                             </Link>
                         </div>
+                    ) : isOwner ? (
+                        <div style={{ background: C.bgCardAlt, color: C.textMuted, padding: "8px 16px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: 600, border: `1px dashed ${C.border}` }}>
+                            You cannot review your own {targetType}
+                        </div>
                     ) : hasReviewed ? (
                         <div style={{ background: C.purpleMuted, color: C.purpleDark, padding: "8px 16px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: 600 }}>
                             ✓ You have reviewed this {targetType}
@@ -227,7 +234,7 @@ export default function ReviewSection({ targetType, targetId }) {
             )}
 
             {/* Review Form */}
-            {showForm && authUser && !hasReviewed && (
+            {showForm && authUser && !hasReviewed && !isOwner && (
                 <div style={{ background: C.bgCardAlt, padding: "24px", borderRadius: "16px", border: `1px solid ${C.border}`, animation: "fadeIn 0.3s ease" }}>
                     <h3 style={{ margin: "0 0 16px", fontSize: "1.1rem", color: C.text }}>Rate and review this {targetType}</h3>
                     

@@ -597,7 +597,7 @@ export default function ProductDetail() {
               {/* Reviews Tab */}
               {activeTab === "reviews" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                  <ReviewSection targetType="product" targetId={fabricId} />
+                  <ReviewSection targetType="product" targetId={fabricId} ownerId={fabric?.supplierId} />
                 </div>
               )}
             </div>

@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { listFabrics } from "../api";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 export default function Store() {
     const { sellerId } = useParams();
     const navigate = useNavigate();
@@ -10,6 +12,8 @@ export default function Store() {
     const [loading, setLoading] = useState(true);
     const [storeProducts, setStoreProducts] = useState([]);
     const [_fabricsLoading, setFabricsLoading] = useState(true);
+    const { user: authUser, updateProfile: updateAuthProfile } = useAuth();
+    const [isFollowing, setIsFollowing] = useState(false);
     const decodedSellerId = decodeURIComponent(sellerId);
     useEffect(() => {
         if (!sellerId) return;
@@ -63,6 +67,38 @@ export default function Store() {
         };
         fetchFabrics();
     }, [sellerId, setFabricsLoading]);
+
+    useEffect(() => {
+        if (authUser) {
+            const saved = authUser.savedShops || [];
+            setIsFollowing(saved.includes(sellerId));
+        }
+    }, [authUser, sellerId]);
+
+    const handleToggleFollow = async () => {
+        if (!authUser) {
+            toast.error("Please login to follow stores");
+            return;
+        }
+
+        const currentSaved = authUser.savedShops || [];
+        const isCurrentlyFollowing = currentSaved.includes(sellerId);
+        
+        let newSaved;
+        if (isCurrentlyFollowing) {
+            newSaved = currentSaved.filter(id => id !== sellerId);
+        } else {
+            newSaved = [...currentSaved, sellerId];
+        }
+
+        try {
+            await updateAuthProfile(authUser.uid, { savedShops: newSaved });
+            toast.success(isCurrentlyFollowing ? "Stopped following" : "Following store!");
+        } catch (error) {
+            console.error("Failed to update saved shops", error);
+            toast.error("Failed to update saved shops");
+        }
+    };
     const displayName = profile?.shopName || "Seller Store";
     const avatarLetter = displayName.charAt(0).toUpperCase();
     if (loading) {
@@ -310,11 +346,14 @@ export default function Store() {
                             Message Seller
                         </button>
                         <div className="grid grid-cols-2 gap-3">
-                            <button className="flex justify-center items-center gap-2 border hover: hover: text-sm font-semibold py-2.5 rounded-xl transition-colors">
-                                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                            <button 
+                                onClick={handleToggleFollow}
+                                className="flex justify-center items-center gap-2 border hover:bg-slate-50 text-sm font-semibold py-2.5 rounded-xl transition-colors"
+                            >
+                                <svg className={`w-4 h-4 ${isFollowing ? "text-red-500 fill-current" : "text-slate-400"}`} viewBox="0 0 24 24">
                                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                 </svg>
-                                Follow Store
+                                {isFollowing ? "Following" : "Follow Store"}
                             </button>
                             <button className="flex justify-center items-center gap-2 border hover: hover: text-sm font-semibold py-2.5 rounded-xl transition-colors">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
