@@ -11,6 +11,12 @@ const STATUS_MAP = {
   pending: { label: "Pending", bg: "bg-amber-100", text: "text-amber-700", dot: "bg-amber-500" },
   quoted: { label: "Quoted", bg: "bg-blue-100", text: "text-blue-700", dot: "bg-blue-500" },
   accepted: { label: "Accepted", bg: "bg-emerald-100", text: "text-emerald-700", dot: "bg-emerald-500" },
+  design_in_progress: { label: "Designing", bg: "bg-violet-100", text: "text-violet-700", dot: "bg-violet-500" },
+  design_completed: { label: "Drafted", bg: "bg-indigo-100", text: "text-indigo-700", dot: "bg-indigo-500" },
+  design_delivered: { label: "Delivered", bg: "bg-emerald-100", text: "text-emerald-700", dot: "bg-emerald-500" },
+  completed: { label: "Completed", bg: "bg-emerald-100", text: "text-emerald-700", dot: "bg-emerald-500" },
+  hibernated: { label: "Hibernated", bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400" },
+  cancelled: { label: "Cancelled", bg: "bg-red-100", text: "text-red-600", dot: "bg-red-500" },
   rejected: { label: "Declined", bg: "bg-red-100", text: "text-red-600", dot: "bg-red-500" },
 };
 
@@ -211,8 +217,10 @@ export default function QuotationOffers() {
                   key={q.id}
                   className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-200 hover:-translate-y-1 transition-all cursor-pointer group relative overflow-hidden"
                   onClick={() => {
-                    if (isQuoted) {
+                    if (q.status === "quoted") {
                       navigate(`/quotation-review/${q.id}`, { state: { quotation: q } });
+                    } else if (q.providerType === "designer" && ["design_in_progress", "design_completed", "design_delivered", "completed"].includes(q.status)) {
+                      navigate(`/designer-timeline/${q.id}`);
                     }
                   }}
                 >
@@ -271,9 +279,9 @@ export default function QuotationOffers() {
                               {q.items.length} Items
                             </span>
                           )}
-                          {q.grandTotal > 0 && (
-                            <span className="flex items-center gap-2 bg-emerald-50 px-2 py-1 rounded-md text-emerald-600">
-                              LKR {q.grandTotal.toLocaleString()}
+                          {(q.grandTotal > 0 || q.laborCharge > 0) && (
+                            <span className="flex items-center gap-2 bg-emerald-50 px-2.5 py-1 rounded-lg text-emerald-600 border border-emerald-100">
+                              LKR {(q.grandTotal || q.laborCharge).toLocaleString()}
                             </span>
                           )}
                         </div>
