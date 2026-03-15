@@ -4,7 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from firebase.admin import db
 from firebase.auth_verify import verify_token
 from models.schemas import Order
+
 router = APIRouter()
+
 
 def _stock_status(stock: float) -> str:
     if stock <= 0:
@@ -12,6 +14,7 @@ def _stock_status(stock: float) -> str:
     if stock <= 10:
         return "low"
     return "in"
+
 
 @router.post("")
 def create_order(order: Order, decoded_token: dict = Depends(verify_token)):
@@ -38,11 +41,14 @@ def create_order(order: Order, decoded_token: dict = Depends(verify_token)):
         # Atomically reduce stock (floor at 0)
         current_stock = fab_doc.to_dict().get("stock", 0)
         new_stock = max(0, current_stock - qty)
-        fab_ref.update({
-            "stock": new_stock,
-            "stockStatus": _stock_status(new_stock),
-        })
+        fab_ref.update(
+            {
+                "stock": new_stock,
+                "stockStatus": _stock_status(new_stock),
+            }
+        )
     return {"message": "Order placed successfully", "order_id": doc_ref[1].id}
+
 
 @router.get("/my")
 def get_my_orders(decoded_token: dict = Depends(verify_token)):
@@ -55,6 +61,7 @@ def get_my_orders(decoded_token: dict = Depends(verify_token)):
         results.append(data)
     return results
 
+
 @router.get("/{order_id}")
 def get_order(order_id: str, decoded_token: dict = Depends(verify_token)):
     uid = decoded_token["uid"]
@@ -66,6 +73,7 @@ def get_order(order_id: str, decoded_token: dict = Depends(verify_token)):
         raise HTTPException(status_code=403, detail="You can only view your own orders")
     data["id"] = doc.id
     return data
+
 
 @router.patch("/{order_id}/status")
 def update_order_status(
@@ -83,6 +91,7 @@ def update_order_status(
         raise HTTPException(status_code=404, detail="Order not found")
     db.collection("orders").document(order_id).update({"status": status})
     return {"message": "Order status updated", "status": status}
+
 
 @router.delete("/{order_id}")
 def cancel_order(order_id: str, decoded_token: dict = Depends(verify_token)):
