@@ -20,11 +20,13 @@ export default function SellerProfile() {
   const [readOnlyData, setReadOnlyData] = useState({
     email: "",
     storeName: "",
+    hasShopName: true,
     nic: "",
     totalEarnings: 0,
   });
   // Editable data
   const [formData, setFormData] = useState({
+    shopName: "",
     phone: "",
     password: "", // Handled separately if changed
     businessRegNumber: "",
@@ -61,14 +63,19 @@ export default function SellerProfile() {
           const data = d.data();
           totalEarnings += Number(data.total ?? data.totalAmount ?? 0);
         });
+        const savedShopName = sellerData.shopName || sellerData.storeName;
+        const hasShopName = !!savedShopName;
+
         // Set state
         setReadOnlyData({
           email: user.email || sellerData.email || userData.email || "",
-          storeName: sellerData.shopName || sellerData.storeName || userData.name || user.name || "N/A",
+          storeName: savedShopName || userData.name || user.name || "N/A",
+          hasShopName: hasShopName,
           nic: sellerData.nic || userData.nic || "N/A",
           totalEarnings: totalEarnings,
         });
         setFormData({
+          shopName: savedShopName || "",
           phone: sellerData.phone || userData.phone || "",
           password: "",
           businessRegNumber: sellerData.businessRegNumber || sellerData.brn || "",
@@ -100,6 +107,16 @@ export default function SellerProfile() {
         bankName: formData.bankName,
         bankAccount: formData.bankAccount,
       };
+
+      if (!readOnlyData.hasShopName && formData.shopName && formData.shopName.trim() !== "") {
+        updates.shopName = formData.shopName.trim();
+        // Also update local readOnly state so it locks immediately upon save
+        setReadOnlyData((prev) => ({
+          ...prev,
+          storeName: formData.shopName.trim(),
+          hasShopName: true,
+        }));
+      }
       // Update in Firestore
       await updateDoc(sellerDocRef, updates);
       // Also try to update user doc if it exists to keep in sync
@@ -244,9 +261,11 @@ export default function SellerProfile() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
             <InputField
-              label="Name of Store / Proprietor"
-              value={readOnlyData.storeName}
-              isReadOnly={true}
+              label={readOnlyData.hasShopName ? "Name of Store / Proprietor" : "Name of Store / Proprietor (Can only be set once)"}
+              name="shopName"
+              value={readOnlyData.hasShopName || !isEditing ? readOnlyData.storeName : formData.shopName}
+              isReadOnly={readOnlyData.hasShopName}
+              placeholder="Enter your store name"
             />
             <InputField
               label="National Identity Card (NIC)"
