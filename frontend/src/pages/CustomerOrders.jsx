@@ -120,8 +120,37 @@ export default function CustomerOrders() {
         toast.success("Review submitted successfully!");
     };
 
+    // ── Deduplicate: hide completed fabric-only orders that are already
+    //    covered by a service/quotation order (same fabric name appears in
+    //    a combined order with a "Service:" item or a quotationId).
+    const fabricNamesCoveredByService = new Set();
+    orders.forEach((order) => {
+        const isServiceOrder =
+            order.quotationId ||
+            order.items?.some((i) => i.name?.toLowerCase().startsWith("service:"));
+        if (isServiceOrder) {
+            order.items?.forEach((item) => {
+                if (!item.name?.toLowerCase().startsWith("service:")) {
+                    fabricNamesCoveredByService.add(item.name?.toLowerCase().trim());
+                }
+            });
+        }
+    });
+
+    const displayOrders = orders.filter((order) => {
+        const isCompleted = ["completed", "delivered"].includes(order.status?.toLowerCase());
+        if (isCompleted && fabricNamesCoveredByService.size > 0) {
+            // If every item in this completed order is already in a service order, hide it.
+            const allCovered = order.items?.every((item) =>
+                fabricNamesCoveredByService.has(item.name?.toLowerCase().trim())
+            );
+            if (allCovered) return false;
+        }
+        return true;
+    });
+
     // ── Filter orders ──
-    const filteredOrders = orders.filter((order) => {
+    const filteredOrders = displayOrders.filter((order) => {
         const q = searchQuery.toLowerCase();
         const matchesSearch =
             order.items?.[0]?.name?.toLowerCase().includes(q) ||
@@ -137,15 +166,15 @@ export default function CustomerOrders() {
         return matchesSearch;
     });
 
-    // ── Stats from real data ──
-    const totalOrders = orders.length;
-    const activeOrders = orders.filter((o) =>
+    // ── Stats from deduplicated data ──
+    const totalOrders = displayOrders.length;
+    const activeOrders = displayOrders.filter((o) =>
         ["pending", "confirmed", "processing", "shipped", "tailoring", "fabric_shipped", "received_by_tailor", "tailoring_done", "shipped_to_customer"].includes(o.status?.toLowerCase())
     ).length;
-    const completedOrders = orders.filter((o) =>
+    const completedOrders = displayOrders.filter((o) =>
         ["completed", "delivered"].includes(o.status?.toLowerCase())
     ).length;
-    const totalSpent = orders.reduce((sum, o) => sum + (o.total_price || 0), 0);
+    const totalSpent = displayOrders.reduce((sum, o) => sum + (o.total_price || 0), 0);
 
     // ── Export CSV ──
     const handleExport = () => {
@@ -390,6 +419,51 @@ export default function CustomerOrders() {
                                             {order.items?.length} item{order.items?.length !== 1 ? "s" : ""} —{" "}
                                             {order.items?.map((i) => `${i.name} (${i.quantity}${i.unit || "m"})`).join(", ")}
                                         </p>
+
+                                        {/* ── Provider Completion Badge ── */}
+                                        {(() => {
+                                            const providerType = order.providerType?.toLowerCase();
+                                            const providerName = order.providerName;
+                                            const isServiceOrder = providerType === "tailor" || providerType === "designer" ||
+                                                order.items?.some((i) => i.name?.toLowerCase().startsWith("service:"));
+                                            if (!isServiceOrder) return null;
+
+                                            const label = providerType === "designer" ? "Designer" : "Tailor";
+                                            const nameTag = providerName ? ` · ${providerName}` : "";
+                                            const st = order.status?.toLowerCase();
+                                            const isProviderDone = ["completed", "delivered", "design_delivered", "tailoring_done"].includes(st);
+                                            const isActive = ["tailoring", "design_in_progress", "in_progress", "received_by_tailor"].includes(st);
+
+                                            if (isProviderDone) {
+                                                return (
+                                                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3 bg-emerald-50 border border-emerald-200 text-emerald-700">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+                                                        </svg>
+                                                        <span className="text-xs font-bold">Completed by {label}{nameTag}</span>
+                                                    </div>
+                                                );
+                                            }
+                                            if (isActive) {
+                                                return (
+                                                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3 bg-blue-50 border border-blue-200 text-blue-700">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                                                        </svg>
+                                                        <span className="text-xs font-bold">In Progress by {label}{nameTag}</span>
+                                                    </div>
+                                                );
+                                            }
+                                            // Pending — not yet started by provider
+                                            return (
+                                                <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3 bg-amber-50 border border-amber-200 text-amber-700">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                                                    </svg>
+                                                    <span className="text-xs font-bold">Awaiting {label}{nameTag}</span>
+                                                </div>
+                                            );
+                                        })()}
 
                                         {/* Shipping info */}
                                         {order.shipping && (

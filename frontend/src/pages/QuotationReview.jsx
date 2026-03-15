@@ -50,34 +50,28 @@ export default function QuotationReview() {
                 paymentMethod: paymentMethod,
             });
 
-            // 2. Create an order so it shows in the Orders page (for designers, only charge service fee)
-            const orderItems = [];
-            
-            if (!isDesigner) {
-                // Tailors might carry the material cost
-                orderItems.push(...(quotation.items || []).map((item) => ({
-                    name: item.name || "Material",
-                    quantity: item.quantity || 1,
-                    unit: item.unit || "m",
-                    unitPrice: item.unitPrice || 0,
-                    image: item.image || "",
-                })));
-            }
-
-            // Add the service charge
-            orderItems.push({
-                name: `Service: ${isDesigner ? "Design" : "Tailoring"} by ${quotation.providerName || "Provider"}`,
-                quantity: 1,
-                unit: "service",
-                unitPrice: (quotation.laborCharge || 0) + (quotation.additionalCharges || 0),
-            });
+            // 2. Create a service-only order so it shows in the Orders page.
+            //    We do NOT re-include fabric items here because those were already
+            //    purchased as a separate order during checkout. Including them again
+            //    would cause the same fabric to appear as both "completed" (the
+            //    original checkout order) and "pending" (this service order).
+            const serviceCharge = (quotation.laborCharge || 0) + (quotation.additionalCharges || 0);
+            const orderItems = [
+                {
+                    name: `Service: ${isDesigner ? "Design" : "Tailoring"} by ${quotation.providerName || "Provider"}`,
+                    quantity: 1,
+                    unit: "service",
+                    unitPrice: serviceCharge,
+                },
+            ];
 
             const orderRes = await createOrder({
                 items: orderItems,
-                total_price: isDesigner ? ((quotation.laborCharge || 0) + (quotation.additionalCharges || 0)) : grandTotal,
+                total_price: serviceCharge,
                 status: "pending",
                 provider_type: quotation.providerType || (isDesigner ? "designer" : "tailor"),
                 provider_name: quotation.providerName || "Provider",
+                provider_id: quotation.providerId || "",   // ← tailor/designer UID → stored as tailorId/designerId in Firestore
                 quotation_id: quotationId,
                 payment_method: paymentMethod,
             });
