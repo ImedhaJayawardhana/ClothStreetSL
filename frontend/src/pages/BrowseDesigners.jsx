@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/firebase';
 import { useNavigate } from 'react-router-dom';
@@ -296,13 +297,19 @@ export default function BrowseDesigners() {
             </div>
 
             {/* ────────── CONTACT MODAL ────────── */}
-            {contactDesigner && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setContactDesigner(null)}>
-                    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-                    <div className="relative bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6" onClick={(e) => e.stopPropagation()}>
+            {contactDesigner && createPortal(
+                <div
+                  style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}
+                  onClick={() => setContactDesigner(null)}
+                >
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }} />
+                    <div
+                      style={{ position: 'relative', zIndex: 1, background: '#ffffff', borderRadius: '24px', boxShadow: '0 25px 50px rgba(0,0,0,0.2)', maxWidth: '400px', width: '100%', padding: '24px' }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
                         <button onClick={() => setContactDesigner(null)}
-                            className="absolute top-4 right-4 w-8 h-8 hover:bg-slate-100 rounded-full flex items-center justify-center transition-colors">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            style={{ position: 'absolute', top: '16px', right: '16px', width: '32px', height: '32px', borderRadius: '50%', background: '#f1f5f9', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
@@ -367,7 +374,7 @@ export default function BrowseDesigners() {
                         </div>
                     </div>
                 </div>
-            )}
+            , document.body)}
         </div>
     );
 }
