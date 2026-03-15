@@ -3,7 +3,6 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useNavigate, useLocation } from "react-router-dom";
 import designersData from "../data/designersData";
-import toast from "react-hot-toast";
 
 export default function FindTailorDesigner() {
     const navigate = useNavigate();

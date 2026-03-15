@@ -3,6 +3,7 @@ import { collection, query, where, getDocs, doc, updateDoc } from "firebase/fire
 import { db, auth } from "../firebase/firebase";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 // ── NEW: imports for dashboard API ──
 import { getDesignerDashboard, updateDesignerProjectStatus, updateDesignerProfile } from "../api/designer";
 import { getQuotationInbox, uploadImage, updateQuotationDeliverables } from "../api";

@@ -22,7 +22,6 @@ export default function QuotationResponse() {
   const [completionDate, setCompletionDate] = useState("");
   const [remarks, setRemarks] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [showBillPreview, setShowBillPreview] = useState(false);
 
   /* ── Action States ── */
   const [actionMode, setActionMode] = useState(null); // "hibernate", "cancel", "upload"
