@@ -2,9 +2,10 @@ import { useState, useEffect} from"react";
 import { useParams, useLocation, useNavigate} from"react-router-dom";
 import { doc, getDoc, updateDoc, serverTimestamp} from"firebase/firestore";
 import { db} from"../firebase/firebase";
-import { useAuth} from"../context/AuthContext";
-import { useCart} from"../context/CartContext";
-import toast from"react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+import toast from "react-hot-toast";
+import { createOrder } from "../api";
 
 export default function QuotationReview() {
  const { quotationId} = useParams();
@@ -71,7 +72,6 @@ export default function QuotationReview() {
                 unitPrice: (quotation.laborCharge || 0) + (quotation.additionalCharges || 0),
             });
 
-            const { createOrder } = await import("../api");
             await createOrder({
                 items: orderItems,
                 total_price: isDesigner ? ((quotation.laborCharge || 0) + (quotation.additionalCharges || 0)) : grandTotal,
