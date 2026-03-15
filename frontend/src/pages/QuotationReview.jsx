@@ -78,11 +78,14 @@ export default function QuotationReview() {
                 status: "pending", // Design order or Tailor order is pending fulfillment
             });
 
-            // 3. Clear the cart if it's the final checkout (tailor, or single designer flow... wait, don't clear cart if combo)
-            const comboTailorStr = sessionStorage.getItem("clothstreet_combo_tailor");
-            if (!comboTailorStr) {
+            // 3. Clear the cart if it's the final checkout (tailor, or standard, but NOT the middle designer step)
+            if (!isDesigner) {
                 clearCart();
-                try { sessionStorage.removeItem("clothstreet_checkout_cart"); } catch { /* */ }
+                try { 
+                    sessionStorage.removeItem("clothstreet_checkout_cart"); 
+                    sessionStorage.removeItem("clothstreet_combo_tailor");
+                    sessionStorage.removeItem("clothstreet_checkout_mode");
+                } catch { /* */ }
             }
 
             toast.success("Payment successful! Order confirmed.");

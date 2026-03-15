@@ -22,14 +22,10 @@ const LEGS = {
  { key:"delivered", label:"Delivered", icon:"🏠"},
  ],
  designer: [
- { key:"ordered", label:"Order Placed", icon:"📋"},
- { key:"confirmed", label:"Confirmed", icon:"✅"},
- { key:"fabric_shipped", label:"Fabric Shipped to Designer", icon:"📦"},
- { key:"received_by_designer", label:"Received by Designer", icon:"🎨"},
- { key:"designing", label:"Design In Progress", icon:"✏️"},
- { key:"design_done", label:"Design Complete", icon:"👗"},
- { key:"shipped_to_customer", label:"Shipped to You", icon:"🚚"},
- { key:"delivered", label:"Delivered", icon:"🏠"},
+ { key: "pending", label: "Payment Confirmed", icon: "📋" },
+ { key: "design_in_progress", label: "Design In Progress", icon: "✏️" },
+ { key: "design_completed", label: "Design Complete", icon: "👗" },
+ { key: "design_delivered", label: "Designs Delivered", icon: "📥" },
  ],
 };
 
