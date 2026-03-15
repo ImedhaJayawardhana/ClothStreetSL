@@ -137,7 +137,7 @@ export default function DesignerTimeline() {
                 state: { 
                     provider: tailor,
                     designerDeliverables: quotation.designDeliverables || [],
-                    designerNotes: quotation.providerRemarks || ""
+                    designerNotes: quotation.designDeliveryMessage || quotation.providerRemarks || ""
                 }
             });
         } else {
@@ -205,16 +205,27 @@ export default function DesignerTimeline() {
                 </div>
 
                 {/* FILE DELIVERY SECTION */}
-                {quotation.status === "design_delivered" && quotation.designDeliverables?.length > 0 && (
+                {quotation.status === "design_delivered" && (quotation.designDeliverables?.length > 0 || quotation.designDeliveryMessage) && (
                     <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border-2 border-emerald-100 p-6 sm:p-10 mb-8 animate-fadeIn">
                         <div className="flex flex-col items-center text-center mb-8">
                             <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mb-4 shadow-sm">
                                 📦
                             </div>
                             <h2 className="text-2xl font-bold text-gray-900">Your Designs are Ready!</h2>
-                            <p className="text-gray-500 mt-2">Download your custom design files below.</p>
+                            <p className="text-gray-500 mt-2">The designer has delivered your project.</p>
                         </div>
                         
+                        {quotation.designDeliveryMessage && (
+                            <div className="mb-6 p-5 bg-indigo-50 border border-indigo-100 rounded-2xl text-indigo-900 whitespace-pre-wrap text-sm shadow-sm">
+                                <span className="font-bold flex items-center gap-2 mb-2">
+                                    <svg className="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+                                    Message from Designer:
+                                </span>
+                                {quotation.designDeliveryMessage}
+                            </div>
+                        )}
+                        
+                        {quotation.designDeliverables?.length > 0 && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {quotation.designDeliverables.map((url, idx) => {
                                 const isPdf = url.toLowerCase().includes('.pdf');
@@ -243,6 +254,7 @@ export default function DesignerTimeline() {
                                 )
                             })}
                         </div>
+                        )}
                     </div>
                 )}
 
