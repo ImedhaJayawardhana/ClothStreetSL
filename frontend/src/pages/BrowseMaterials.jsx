@@ -77,7 +77,7 @@ export default function BrowseMaterials() {
             setError("");
             try {
                 const res = await listFabrics();
-                const data = res.data || [];
+                const data = (res.data || []).filter((f) => !f.hidden);
                 // Assign fallback bg colors if no image
                 const enriched = data.map((fab, idx) => ({
                     ...fab,

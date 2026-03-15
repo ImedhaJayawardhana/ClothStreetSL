@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException
 
 from firebase.admin import db
@@ -7,6 +6,14 @@ from firebase.auth_verify import verify_token
 from models.schemas import Order
 
 router = APIRouter()
+
+
+def _stock_status(stock: float) -> str:
+    if stock <= 0:
+        return "out"
+    if stock <= 10:
+        return "low"
+    return "in"
 
 
 @router.post("")
@@ -21,6 +28,25 @@ def create_order(order: Order, decoded_token: dict = Depends(verify_token)):
             "created_at": datetime.utcnow().isoformat(),
         }
     )
+    # ── Deduct stock for each ordered fabric ──────────────────────────────────
+    for item in order.items:
+        fabric_id = item.get("id")
+        qty = item.get("quantity", 0)
+        if not fabric_id or qty <= 0:
+            continue
+        fab_ref = db.collection("fabrics").document(fabric_id)
+        fab_doc = fab_ref.get()
+        if not fab_doc.exists:
+            continue
+        # Atomically reduce stock (floor at 0)
+        current_stock = fab_doc.to_dict().get("stock", 0)
+        new_stock = max(0, current_stock - qty)
+        fab_ref.update(
+            {
+                "stock": new_stock,
+                "stockStatus": _stock_status(new_stock),
+            }
+        )
     return {"message": "Order placed successfully", "order_id": doc_ref[1].id}
 
 
