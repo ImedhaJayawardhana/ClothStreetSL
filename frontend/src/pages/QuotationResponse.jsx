@@ -28,6 +28,7 @@ export default function QuotationResponse() {
   const [actionMode, setActionMode] = useState(null); // "hibernate", "cancel", "upload"
   const [actionReason, setActionReason] = useState("");
   const [uploadFiles, setUploadFiles] = useState([]);
+  const [uploadMessage, setUploadMessage] = useState("");
   const [uploading, setUploading] = useState(false);
 
   /* ── Fetch from Firestore if not passed via state ── */
@@ -202,8 +203,8 @@ export default function QuotationResponse() {
   };
 
   const handleDesignerDelivery = async () => {
-    if (uploadFiles.length === 0) {
-      toast.error("Please select files to upload.");
+    if (uploadFiles.length === 0 && !uploadMessage.trim()) {
+      toast.error("Please provide at least a file or a message.");
       return;
     }
     setUploading(true);
@@ -213,9 +214,9 @@ export default function QuotationResponse() {
         const res = await uploadImage(file, "designs");
         if (res.data && res.data.url) urls.push(res.data.url);
       }
-      await updateQuotationDeliverables(quotationId, urls);
-      toast.success("Design files delivered successfully!");
-      setQuotation(prev => ({ ...prev, status: "design_delivered", designDeliverables: urls }));
+      await updateQuotationDeliverables(quotationId, urls, uploadMessage);
+      toast.success("Design delivered successfully!");
+      setQuotation(prev => ({ ...prev, status: "design_delivered", designDeliverables: urls, designDeliveryMessage: uploadMessage }));
       setActionMode(null);
     } catch (err) {
       console.error(err);
@@ -576,17 +577,29 @@ export default function QuotationResponse() {
                 <h4 className="font-bold mb-4">{isDesigner ? "Upload Design Deliverables" : "Complete Order"}</h4>
                 {isDesigner ? (
                   <div className="space-y-4">
-                    <input 
-                      type="file" 
-                      multiple 
-                      className="w-full border p-3 rounded-xl"
-                      onChange={(e) => setUploadFiles(Array.from(e.target.files))}
-                    />
-                    <div className="flex gap-3">
-                      <button onClick={handleDesignerDelivery} disabled={uploading} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-xl font-bold flex-1">
-                        {uploading ? "Uploading..." : "Upload & Deliver"}
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-slate-700">Attach Files (Optional)</label>
+                      <input 
+                        type="file" 
+                        multiple 
+                        className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:border-violet-500 bg-white"
+                        onChange={(e) => setUploadFiles(Array.from(e.target.files))}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-slate-700">Message / Link to Designs</label>
+                      <textarea
+                        className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:border-violet-500 min-h-[100px] bg-white resize-y"
+                        placeholder="e.g. Here is the link to the Figma file: https://..."
+                        value={uploadMessage}
+                        onChange={(e) => setUploadMessage(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                      <button onClick={handleDesignerDelivery} disabled={uploading} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex-1 transition-colors disabled:opacity-50">
+                        {uploading ? "Delivering..." : "Upload & Deliver"}
                       </button>
-                      <button onClick={() => setActionMode(null)} className="border px-6 py-2 rounded-xl font-bold hover:">Cancel</button>
+                      <button onClick={() => setActionMode(null)} disabled={uploading} className="border border-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-colors disabled:opacity-50 text-slate-700">Cancel</button>
                     </div>
                   </div>
                 ) : (
