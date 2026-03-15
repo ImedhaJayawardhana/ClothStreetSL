@@ -86,7 +86,8 @@ def get_tailor_dashboard(decoded_token: dict = Depends(verify_token)):
     uid = decoded_token["uid"]
 
     # ── Fetch all orders assigned to this tailor ──
-    # Query by tailorId (old format) AND by providerId (new format, set by QuotationReview)
+    # Query by tailorId (old format) AND by providerId (new format,
+    # set by QuotationReview)
     seen_ids = set()
     all_orders = []
     for query_ref in [
