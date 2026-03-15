@@ -301,20 +301,27 @@ export default function CustomerOrders() {
 
                                         <div className="grid grid-cols-2 gap-2 mb-4 text-xs text-slate-500">
                                             <div>
-                                                <span>Tailor ID: </span>
-                                                <span className="font-semibold text-slate-700">{q.tailor_id?.slice(0, 8)}...</span>
+                                                <span>Provider ID: </span>
+                                                <span className="font-semibold text-slate-700">{q.providerId?.slice(0, 8)}...</span>
                                             </div>
                                             <div>
                                                 <span>Price: </span>
-                                                <span className="font-bold text-violet-600">LKR {q.price?.toLocaleString()}</span>
+                                                <span className="font-bold text-violet-600">LKR {q.grandTotal ? q.grandTotal.toLocaleString() : (q.price ? q.price.toLocaleString() : "Pending")}</span>
                                             </div>
                                         </div>
 
-                                        {q.status?.toLowerCase() === "accepted" && (
+                                        {q.status?.toLowerCase() === "quoted" && (
                                             <button
                                                 onClick={() => navigate(`/quotation-review/${q.id}`, { state: { quotation: q } })}
                                                 className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
                                                 Review & Respond
+                                            </button>
+                                        )}
+                                        {q.providerType === "designer" && ["design_in_progress", "design_completed", "design_delivered", "completed"].includes(q.status?.toLowerCase()) && (
+                                            <button
+                                                onClick={() => navigate(`/designer-timeline/${q.id}`, { state: { quotation: q } })}
+                                                className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold border-2 border-violet-600 text-violet-600 hover:bg-violet-50 transition-all">
+                                                Track Design Progress
                                             </button>
                                         )}
                                     </div>
