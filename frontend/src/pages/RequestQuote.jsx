@@ -264,13 +264,24 @@ export default function RequestQuote() {
             
             const finalImages = [...attachedDesigns, ...uploadedUrls];
 
+            // Get combo tailor from session storage if applicable
+            let comboTailor = null;
+            try {
+                const stored = sessionStorage.getItem("clothstreet_combo_tailor");
+                if (stored) comboTailor = JSON.parse(stored);
+            } catch { /* ignore */ }
+
             // Submit via FastAPI with new schema
             await createQuotation({
                 providerId: resolvedProviderId,
                 providerName: providerInfo?.name || "",
                 providerType: providerType || "tailor",
-                serviceMode: searchParams.get("combo") === "true" ? "combo_tailor" : undefined,
+                serviceMode: searchParams.get("combo") === "true" 
+                    ? (providerType === "designer" ? "combo_designer" : "combo_tailor") 
+                    : undefined,
                 linkedQuotationId: location.state?.designerQuotationId || undefined,
+                comboTailorId: (providerType === "designer" && comboTailor) ? comboTailor.id : undefined,
+                comboTailorName: (providerType === "designer" && comboTailor) ? comboTailor.name : undefined,
                 description: requirements.trim(),
                 requirements: requirements.trim(),
                 budget: estimatedPrice,
