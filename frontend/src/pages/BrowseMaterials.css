@@ -308,27 +308,6 @@
   opacity: 0.8;
 }
 
-.bm-card-wishlist {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--clr-bg);
-  border: 1px solid var(--clr-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.bm-card-wishlist:hover {
-  color: var(--clr-accent);
-  background: var(--clr-surface);
-}
 
 .bm-card-badge {
   position: absolute;

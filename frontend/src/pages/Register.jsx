@@ -25,7 +25,7 @@ export default function Register() {
     setLoading(true);
     try {
       await register(name, email, password, role);
-      
+
       const returnUrl = location.state?.returnUrl;
       if (returnUrl) {
         navigate(returnUrl, { state: location.state });
@@ -51,7 +51,7 @@ export default function Register() {
     setLoading(true);
     try {
       await loginWithGoogle(role);
-      
+
       const returnUrl = location.state?.returnUrl;
       if (returnUrl) {
         navigate(returnUrl, { state: location.state });

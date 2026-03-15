@@ -5,6 +5,7 @@ import { db } from "../../firebase/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { uploadImage } from "../../api";
 import { toast } from "react-hot-toast";
+import "../CustomerProfile.css";
 
 // ─── Portfolio Gallery (reusable) ─────────────────────────────────────────────
 function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage, uploading }) {
@@ -263,73 +264,24 @@ export default function Portfolio() {
         <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
 
             {/* ── Hero Banner ── */}
-            <div className="bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-600 relative overflow-hidden">
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute -top-10 -right-10 w-64 h-64 bg-white/5 rounded-full" />
-                    <div className="absolute top-4 right-32 w-32 h-32 bg-white/5 rounded-full" />
-                    <div className="absolute -bottom-6 left-10 w-48 h-48 bg-white/5 rounded-full" />
-                </div>
-
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
-
-                    {/* Error banner */}
-                    {error && (
-                        <div className="mb-4 bg-red-500/20 border border-red-300/30 text-white rounded-xl px-4 py-3 text-sm font-medium flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
-                            {error}
-                        </div>
-                    )}
-
-                    {/* Edit / Save / Cancel buttons */}
-                    <div className="flex justify-end mb-6 gap-2">
-                        {!editMode && (
-                            <button onClick={enterEditMode}
-                                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold transition-all duration-200 backdrop-blur-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                </svg>
-                                Edit Portfolio
-                            </button>
-                        )}
-                        {editMode && (
-                            <>
-                                <button onClick={cancelEdit}
-                                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium transition-all duration-200">
-                                    Cancel
-                                </button>
-                                <button onClick={handleSave} disabled={saving}
-                                    className="flex items-center gap-2 px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 text-white text-sm font-semibold transition-colors shadow-lg">
-                                    {saving ? (
-                                        <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
-                                    ) : (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                            <polyline points="20 6 9 17 4 12" />
-                                        </svg>
-                                    )}
-                                    {saving ? "Saving…" : "Save Changes"}
-                                </button>
-                            </>
-                        )}
-                    </div>
-
-                    {/* Profile identity row */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <section className="cp-hero shadow-sm">
+                <div className="cp-hero-inner" style={{ justifyContent: "space-between" }}>
+                    
+                    {/* Left: Icon & Info */}
+                    <div className="flex items-start gap-6">
+                        
                         {/* Avatar / Logo */}
                         <div className="relative flex-shrink-0">
                             {displayLogoUrl ? (
                                 <img src={displayLogoUrl} alt={displayName}
-                                    className="w-24 h-24 rounded-2xl object-cover border-4 border-white/30 shadow-xl" />
+                                    className="w-24 h-24 rounded-2xl object-cover shadow-xl" style={{ border: "2px solid rgba(255,255,255,0.4)" }} />
                             ) : (
-                                <div className="w-24 h-24 rounded-2xl border-4 border-white/30 shadow-xl bg-white/20 flex items-center justify-center text-4xl font-extrabold text-white backdrop-blur-sm">
+                                <div className="w-24 h-24 rounded-2xl shadow-xl bg-white/20 flex items-center justify-center text-4xl font-extrabold text-white backdrop-blur-sm" style={{ border: "2px solid rgba(255,255,255,0.4)" }}>
                                     {avatarLetter}
                                 </div>
                             )}
                             {/* Verified badge */}
-                            <div className="absolute -bottom-2 -right-2 w-7 h-7 bg-emerald-400 rounded-full border-2 border-white flex items-center justify-center shadow-md">
+                            <div className="absolute -bottom-2 -right-2 w-7 h-7 bg-emerald-400 rounded-full border-2 border-white flex items-center justify-center shadow-md z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24"
                                     fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                     <polyline points="20 6 9 17 4 12" />
@@ -338,7 +290,7 @@ export default function Portfolio() {
                             {editMode && (
                                 <>
                                     <button onClick={() => logoRef.current.click()} disabled={uploadingLogo}
-                                        className="absolute inset-0 w-24 h-24 rounded-2xl bg-black/40 flex items-center justify-center text-white text-xs font-semibold hover:bg-black/50 transition-colors">
+                                        className="absolute inset-0 w-24 h-24 rounded-2xl bg-black/40 flex items-center justify-center text-white text-xs font-semibold hover:bg-black/50 transition-colors z-20">
                                         {uploadingLogo ? "Uploading…" : "Change"}
                                     </button>
                                     <input ref={logoRef} type="file" accept="image/*" className="hidden"
@@ -347,17 +299,17 @@ export default function Portfolio() {
                             )}
                         </div>
 
-                        {/* Name, info */}
-                        <div className="flex-1 min-w-0 text-white">
-                            <div className="flex flex-wrap items-center gap-2 mb-1">
-                                <h1 className="text-3xl font-extrabold leading-tight">{displayName}</h1>
-                                <span className="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-semibold bg-white/15 border border-white/20 backdrop-blur-sm">
+                        <div className="cp-hero-info" style={{ marginTop: "4px" }}>
+                            <div className="cp-hero-name-row" style={{ marginBottom: "6px" }}>
+                                <h1 className="cp-hero-name" style={{ fontSize: "28px" }}>{displayName}</h1>
+                                <span style={{ display: "inline-flex", alignItems: "center", padding: "1px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: "600", background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)", backdropFilter: "blur(4px)" }}>
                                     ✦ Verified Supplier
                                 </span>
                             </div>
-                            <div className="flex flex-wrap items-center gap-4 mt-2">
-                                <div className="flex items-center gap-1.5 text-sm text-white/80">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width={13} height={13} viewBox="0 0 24 24"
+
+                            <div className="cp-hero-contacts" style={{ marginTop: "12px", gap: "24px" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "rgba(255,255,255,0.8)" }}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                                         <circle cx="12" cy="10" r="3" />
@@ -365,31 +317,66 @@ export default function Portfolio() {
                                     {editMode ? (
                                         <input type="text" value={draftLocation}
                                             onChange={(e) => setDraftLocation(e.target.value)}
-                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-48"
+                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-48 text-white"
                                             placeholder="City, Sri Lanka" />
                                     ) : (
-                                        <span>{profile?.location || "Sri Lanka"}</span>
+                                        <span style={{ fontSize: "14px", fontWeight: "400" }}>{profile?.location || "Sri Lanka"}</span>
                                     )}
                                 </div>
-                                <div className="flex items-center gap-1.5 text-sm text-white/80">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width={13} height={13} viewBox="0 0 24 24"
+                                <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "rgba(255,255,255,0.8)" }}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                                     </svg>
                                     {editMode ? (
                                         <input type="text" value={draftPhone}
                                             onChange={(e) => setDraftPhone(e.target.value)}
-                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-36"
+                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-36 text-white"
                                             placeholder="Contact Phone" />
                                     ) : (
-                                        <span>{profile?.phone || "Not provided"}</span>
+                                        <span style={{ fontSize: "14px", fontWeight: "400" }}>{profile?.phone || "Not provided"}</span>
                                     )}
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    {/* Right: Actions */}
+                    <div>
+                        {!editMode && (
+                            <button onClick={enterEditMode} disabled={saving} className="cp-edit-btn" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)" }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: "6px" }}>
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                </svg>
+                                Edit Portfolio
+                            </button>
+                        )}
+                        {editMode && (
+                            <div className="flex items-center gap-3">
+                                <button onClick={cancelEdit} className="cp-edit-btn" style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.4)" }}>
+                                    Cancel
+                                </button>
+                                <button onClick={handleSave} disabled={saving} className="cp-edit-btn" style={{ background: "white", color: "#4c1d95" }}>
+                                    {saving ? "Saving…" : "Save Changes"}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
                 </div>
-            </div>
+            </section>
+
+            {/* Error banner */}
+            {error && (
+                <div className="max-w-5xl mx-auto px-4 mt-6">
+                    <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-medium flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                        {error}
+                    </div>
+                </div>
+            )}
 
             {/* ── Page body ── */}
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
