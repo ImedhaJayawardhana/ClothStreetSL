@@ -9,13 +9,17 @@ export default function Cart() {
  updateQuantity,
  clearCart,
  cartProductCount,
- cartSubtotal,
+ toggleItemSelection,
+ toggleAllSelection,
+ selectedCartItems,
+ selectedCartSubtotal,
 } = useCart();
 
  const SHIPPING_COST = 500;
  const FREE_SHIPPING_THRESHOLD = 50000;
- const shipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
- const total = cartSubtotal + shipping;
+ const shipping = selectedCartSubtotal === 0 ? 0 : (selectedCartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST);
+ const total = selectedCartSubtotal + shipping;
+ const allSelected = cartItems.length > 0 && cartItems.every((i) => i.selected !== false);
 
  /* ── Empty state ── */
  if (cartItems.length === 0) {
@@ -74,12 +78,18 @@ export default function Cart() {
  </span>
  </div>
 
+ <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+ <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "0.95rem", color: "#52525b", fontWeight: 600 }}>
+ <input type="checkbox" checked={allSelected} onChange={(e) => toggleAllSelection(e.target.checked)} style={{ width: "18px", height: "18px", accentColor: "var(--clr-primary)", cursor: "pointer" }} />
+ Select All
+ </label>
  <button className="cart-clear-btn" onClick={clearCart}>
  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
  <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
  </svg>
  Clear All
  </button>
+ </div>
  </div>
  </div>
 
@@ -89,6 +99,9 @@ export default function Cart() {
  <div className="cart-items-section">
  {cartItems.map((item) => (
  <div className="cart-item-card" key={item.id}>
+ <div className="cart-item-select" style={{ display: "flex", alignItems: "center" }}>
+ <input type="checkbox" checked={item.selected !== false} onChange={() => toggleItemSelection(item.id)} style={{ width: "22px", height: "22px", accentColor: "var(--clr-primary)", cursor: "pointer" }} />
+ </div>
  {/* Product Image */}
  {item.image ? (
  <img src={item.image} alt={item.name} className="cart-item-img" />
@@ -184,8 +197,8 @@ export default function Cart() {
  <h3 className="cart-summary-title">Order Summary</h3>
 
  <div className="cart-summary-row">
- <span>Subtotal</span>
- <span>LKR {cartSubtotal.toLocaleString()}</span>
+ <span>Subtotal ({selectedCartItems.length} items)</span>
+ <span>LKR {selectedCartSubtotal.toLocaleString()}</span>
  </div>
 
  <div className="cart-summary-row">
@@ -204,7 +217,7 @@ export default function Cart() {
  <span>LKR {total.toLocaleString()}</span>
  </div>
 
- <Link to="/checkout" className="cart-checkout-btn">
+ <Link to="/checkout" className="cart-checkout-btn" onClick={(e) => { if (selectedCartItems.length === 0) e.preventDefault(); }} style={{ opacity: selectedCartItems.length === 0 ? 0.5 : 1, cursor: selectedCartItems.length === 0 ? "not-allowed" : "pointer" }}>
  Proceed to Checkout
  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
  <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />

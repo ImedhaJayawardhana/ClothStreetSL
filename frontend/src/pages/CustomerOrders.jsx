@@ -129,20 +129,21 @@ export default function CustomerOrders() {
             order.status?.toLowerCase().includes(q);
 
         if (activeTab === "All") return matchesSearch;
+        const status = order.status?.toLowerCase();
         if (activeTab === "Active")
-            return matchesSearch && ["pending", "processing", "shipped"].includes(order.status);
+            return matchesSearch && ["pending", "processing", "shipped"].includes(status);
         if (activeTab === "Completed")
-            return matchesSearch && ["completed", "delivered"].includes(order.status);
+            return matchesSearch && ["completed", "delivered"].includes(status);
         return matchesSearch;
     });
 
     // ── Stats from real data ──
     const totalOrders = orders.length;
     const activeOrders = orders.filter((o) =>
-        ["pending", "processing", "shipped"].includes(o.status)
+        ["pending", "processing", "shipped"].includes(o.status?.toLowerCase())
     ).length;
     const completedOrders = orders.filter((o) =>
-        ["completed", "delivered"].includes(o.status)
+        ["completed", "delivered"].includes(o.status?.toLowerCase())
     ).length;
     const totalSpent = orders.reduce((sum, o) => sum + (o.total_price || 0), 0);
 
@@ -264,7 +265,8 @@ export default function CustomerOrders() {
                     ) : quotations.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {quotations.map((q) => {
-                                const sc = QUOTATION_STATUS_STYLES[q.status] || QUOTATION_STATUS_STYLES.pending;
+                                const statusKey = q.status?.toLowerCase() || "pending";
+                                const sc = QUOTATION_STATUS_STYLES[statusKey] || QUOTATION_STATUS_STYLES.pending;
                                 return (
                                     <div key={q.id} className="border rounded-2xl p-6 hover:-translate-y-1 hover:shadow-lg transition-all"
                                         style={{ borderLeft: `4px solid ${sc.border}` }}>
@@ -282,7 +284,7 @@ export default function CustomerOrders() {
                                                 </span>
                                             </div>
                                             {/* Delete button for pending/rejected/declined quotes */}
-                                            {["pending", "rejected", "declined"].includes(q.status) && (
+                                            {["pending", "rejected", "declined"].includes(q.status?.toLowerCase()) && (
                                                 <button onClick={() => handleDeleteQuotation(q.id)}
                                                     className="w-7 h-7 rounded-lg border flex items-center justify-center hover:bg-red-50 hover:border-red-200 hover:text-red-500 transition-colors shrink-0 text-slate-400">
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -308,7 +310,7 @@ export default function CustomerOrders() {
                                             </div>
                                         </div>
 
-                                        {q.status === "accepted" && (
+                                        {q.status?.toLowerCase() === "accepted" && (
                                             <button
                                                 onClick={() => navigate(`/quotation-review/${q.id}`, { state: { quotation: q } })}
                                                 className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
@@ -342,7 +344,8 @@ export default function CustomerOrders() {
                             [1, 2, 3, 4].map((i) => <OrderSkeleton key={i} />)
                         ) : filteredOrders.length > 0 ? (
                             filteredOrders.map((order) => {
-                                const ss = STATUS_STYLES[order.status] || STATUS_STYLES.pending;
+                                const statusKey = order.status?.toLowerCase() || "pending";
+                                const ss = STATUS_STYLES[statusKey] || STATUS_STYLES.pending;
                                 const itemNames = order.items?.map((i) => i.name).join(", ") || "Order";
 
                                 return (
@@ -364,7 +367,7 @@ export default function CustomerOrders() {
                                                 </div>
                                             </div>
                                             {/* Cancel button for pending orders */}
-                                            {order.status === "pending" && (
+                                            {order.status?.toLowerCase() === "pending" && (
                                                 <button onClick={() => handleCancelOrder(order.id)}
                                                     className="w-7 h-7 rounded-lg border flex items-center justify-center hover:bg-red-50 hover:border-red-200 hover:text-red-500 transition-colors shrink-0 text-slate-400">
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -416,7 +419,7 @@ export default function CustomerOrders() {
 
                                         {/* Action Buttons */}
                                         <div className="flex gap-2.5 mt-4">
-                                            {["pending", "processing", "shipped"].includes(order.status) && (
+                                            {["pending", "processing", "shipped"].includes(order.status?.toLowerCase()) && (
                                                 <button onClick={() => navigate(`/order-tracking/${order.id}`, { state: { order } })}
                                                     className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold border hover:bg-slate-50 transition-all text-slate-700">
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -427,7 +430,7 @@ export default function CustomerOrders() {
                                                     Track
                                                 </button>
                                             )}
-                                            {order.status === "completed" && (
+                                            {order.status?.toLowerCase() === "completed" && (
                                                 <button onClick={() => handleOpenReview(order)}
                                                     className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold border hover:bg-amber-50 hover:border-amber-200 text-amber-600 transition-all">
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
