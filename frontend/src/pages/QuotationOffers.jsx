@@ -51,8 +51,8 @@ export default function QuotationOffers() {
     setIsProcessing(true);
 
     try {
-      // 1. Update status to Accepted which internally triggers order creation in backend
-      await updateQuotationStatus(q.id, "Accepted");
+      // 1. Update status to accepted which internally triggers order creation in backend
+      await updateQuotationStatus(q.id, "accepted");
 
       // 2. Clear related cart items
       try {
@@ -84,10 +84,10 @@ export default function QuotationOffers() {
     if (isProcessing) return;
 
     try {
-      await updateQuotationStatus(q.id, "Declined");
+      await updateQuotationStatus(q.id, "rejected");
       toast.success("Quotation declined.");
       setQuotations((prev) =>
-        prev.map((item) => (item.id === q.id ? { ...item, status: "declined" } : item))
+        prev.map((item) => (item.id === q.id ? { ...item, status: "rejected" } : item))
       );
     } catch {
       toast.error("Failed to decline quotation.");
@@ -306,7 +306,7 @@ export default function QuotationOffers() {
                           </div>
                         )}
 
-                        {["pending", "rejected", "declined"].includes(q.status) && (
+                        {["pending", "rejected", "declined"].includes(q.status?.toLowerCase()) && (
                           <button
                             onClick={(e) => handleDelete(e, q.id)}
                             className="w-8 h-8 rounded-full border border-red-100 bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-sm"

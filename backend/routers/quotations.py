@@ -200,7 +200,7 @@ def delete_quotation(quotation_id: str, decoded_token: dict = Depends(verify_tok
             detail="You can only delete your own quotation requests",
         )
 
-    if data.get("status") not in ["pending", "rejected", "declined"]:
+    if data.get("status", "").lower() not in ["pending", "rejected", "declined"]:
         raise HTTPException(
             status_code=400,
             detail="Cannot delete a quotation that is in progress or completed",
