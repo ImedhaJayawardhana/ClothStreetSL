@@ -25,7 +25,7 @@ export default function Store() {
                     setProfile({
                         ...userData,
                         ...sellerData,
-                        shopName: sellerData?.shopName || sellerData?.storeName || userData?.name || decodedSellerId,
+                        shopName: sellerData?.shopName || sellerData?.storeName || decodedSellerId,
                         rating: sellerData?.rating || 4.8,
                         reviews: sellerData?.reviews || 142
                     });
@@ -187,17 +187,33 @@ export default function Store() {
                                         className="rounded-2xl border shadow-sm hover:shadow-md transition-all overflow-hidden group relative cursor-pointer"
                                     >
                                         {/* Image */}
-                                        <div className="relative h-44 overflow-hidden" style={{ background: item.bgColor }}>
-                                            <div className="absolute inset-0 group-hover: transition-colors duration-300" />
-                                            {item.inStock ? (
-                                                <span className="absolute top-3 left-3 bg-green-50 text-green-700 border border-green-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
-                                                    In Stock
-                                                </span>
+                                        <div className="relative h-44 overflow-hidden bg-slate-100 flex items-center justify-center">
+                                            {item.image_url || item.image ? (
+                                                <img 
+                                                    src={item.image_url || item.image} 
+                                                    alt={item.name} 
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                />
                                             ) : (
-                                                <span className="absolute top-3 left-3 border text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
-                                                    Out of Stock
-                                                </span>
+                                                <div className="w-full h-full" style={{ background: item.bgColor }} />
                                             )}
+                                            
+                                            <div className="absolute inset-0 group-hover:bg-black/5 transition-colors duration-300" />
+                                            {(() => {
+                                                const status = item.stock <= 0 ? "out" : item.stock <= 10 ? "low" : "in";
+                                                const statusStyles = {
+                                                    in: { label: "In Stock", bg: "bg-green-50 text-green-700 border-green-200" },
+                                                    low: { label: "Low Stock", bg: "bg-amber-50 text-amber-700 border-amber-200" },
+                                                    out: { label: "Out of Stock", bg: "bg-white/90 text-red-600 border-red-200" },
+                                                };
+                                                const currentStyle = statusStyles[status];
+                                                
+                                                return (
+                                                    <span className={`absolute top-3 left-3 border text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm ${currentStyle.bg}`}>
+                                                        {currentStyle.label}
+                                                    </span>
+                                                );
+                                            })()}
                                         </div>
                                         {/* Body */}
                                         <div className="p-4">
