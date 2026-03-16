@@ -194,47 +194,58 @@ export default function SellerProfile() {
     <div className="min-h-screen font-sans bg-gray-50 py-10 pt-24">
       <div className="max-w-4xl mx-auto px-6">
 
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-            <p className="text-gray-500 mt-1">Manage your account, business, and banking information.</p>
-          </div>
+        {/* ── Hero Banner ── */}
+        <section className="cp-hero rounded-3xl mb-8 shadow-sm">
+          <div className="cp-hero-inner" style={{ justifyContent: "space-between" }}>
+            
+            {/* Left: Icon & Info */}
+            <div className="flex items-center gap-6">
+              <div className="cp-avatar-wrap">
+                <div className="cp-avatar" style={{ border: "none", background: "rgba(255,255,255,0.15)" }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                </div>
+              </div>
+              
+              <div className="cp-hero-info">
+                <div className="cp-hero-name-row" style={{ marginBottom: "6px" }}>
+                  <h1 className="cp-hero-name">{readOnlyData.storeName || "My Store"}</h1>
+                </div>
+                <div className="cp-hero-contacts">
+                  <span style={{ color: "rgba(255,255,255,0.85)", fontSize: "14.5px", fontWeight: "500" }}>
+                     Seller Profile
+                  </span>
+                </div>
+              </div>
+            </div>
 
-          <div>
-            {!isEditing ? (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => navigate(`/store/${user?.uid}`)}
-                  className="bg-white border text-blue-600 border-blue-600 hover:bg-blue-50 px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
-                >
-                  View My Store
-                </button>
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
-                >
-                  Edit Profile
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handleCancel}
-                  className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSave}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm"
-                >
-                  Save Changes
-                </button>
-              </div>
-            )}
+            {/* Right: Actions */}
+            <div>
+              {!isEditing ? (
+                <div className="flex items-center gap-3">
+                  <button onClick={() => navigate(`/store/${user?.uid}`)} className="cp-edit-btn" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)" }}>
+                    View Store
+                  </button>
+                  <button onClick={() => setIsEditing(true)} className="cp-edit-btn">
+                    Edit Profile
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <button onClick={handleCancel} className="cp-edit-btn" style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.4)" }}>
+                    Cancel
+                  </button>
+                  <button onClick={handleSave} className="cp-edit-btn" style={{ background: "white", color: "#4c1d95" }}>
+                    Save Changes
+                  </button>
+                </div>
+              )}
+            </div>
+            
           </div>
-        </div>
-        <div className="space-y-6"></div>
+        </section>
         {/* Account Details Card */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">

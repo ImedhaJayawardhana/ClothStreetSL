@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { getMyOrders, getQuotationOffers, cancelOrder, deleteQuotation } from "../api";
 import toast from "react-hot-toast";
 
+import "./CustomerProfile.css";
+
 // ── Status config ──
 const STATUS_STYLES = {
     pending: { bg: "bg-amber-100", text: "text-amber-700", border: "#f59e0b" },
@@ -205,31 +207,41 @@ export default function CustomerOrders() {
         <div className="min-h-screen">
 
             {/* ── Hero Banner ── */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 py-11 px-4">
-                <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none opacity-20" />
-                <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10 text-white">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                                <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
-                            </svg>
+            <section className="cp-hero">
+                <div className="cp-hero-inner" style={{ justifyContent: "space-between" }}>
+                    
+                    {/* Left: Icon & Info */}
+                    <div className="flex items-center gap-6">
+                        <div className="cp-avatar-wrap">
+                            <div className="cp-avatar" style={{ border: "none", background: "rgba(255,255,255,0.15)" }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                                    <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
+                                </svg>
+                            </div>
                         </div>
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">My Orders</h1>
-                            <p className="text-sm mt-0.5 text-white/70">
-                                {ordersLoading ? "Loading..." : `${totalOrders} orders total`}
-                            </p>
+                        
+                        <div className="cp-hero-info">
+                            <div className="cp-hero-name-row" style={{ marginBottom: "6px" }}>
+                                <h1 className="cp-hero-name">My Orders</h1>
+                            </div>
+                            <div className="cp-hero-contacts">
+                                <span style={{ color: "rgba(255,255,255,0.85)", fontSize: "14.5px", fontWeight: "500" }}>
+                                    {ordersLoading ? "Loading..." : `${totalOrders} orders total`}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <button onClick={handleExport}
-                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/20 border border-white/20 transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+
+                    {/* Right: Export Button */}
+                    <button onClick={handleExport} className="cp-edit-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                             <polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
                         </svg>
                         Export
                     </button>
+                    
                 </div>
             </section>
 
@@ -259,17 +271,17 @@ export default function CustomerOrders() {
                     ))}
                 </div>
 
-                {/* Search + Tabs */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
                     <div className="relative flex-1 max-w-md">
-                        <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+                        <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 z-10 pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" x2="16.65" y1="21" y2="16.65"></line>
                             </svg>
                         </div>
                         <input type="text" placeholder="Search orders..."
                             value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full border rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-100 transition-all" />
+                            className="w-full border rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-100 transition-all bg-white relative z-0 shadow-sm" />
                     </div>
 
                     <div className="flex items-center gap-1 bg-slate-50 rounded-xl p-1">
@@ -389,26 +401,29 @@ export default function CustomerOrders() {
                                         style={{ borderLeft: `4px solid ${ss.border}` }}>
 
                                         {/* Header */}
-                                        <div className="flex items-start gap-3.5 mb-3">
-                                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center font-bold text-lg text-indigo-600 shrink-0">
-                                                {itemNames.charAt(0).toUpperCase()}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="text-sm font-bold truncate text-slate-900">{itemNames}</h3>
-                                                <p className="text-xs text-slate-500 mt-0.5">Order ID: {order.id?.slice(0, 16)}</p>
-                                                <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${ss.bg} ${ss.text}`}>
-                                                        {order.status}
-                                                    </span>
+                                        <div className="flex items-start justify-between gap-3.5 mb-3">
+                                            <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center font-bold text-lg text-indigo-600 shrink-0">
+                                                    {itemNames.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-sm font-bold text-slate-900 pr-2">{itemNames}</h3>
+                                                    <p className="text-xs text-slate-500 mt-0.5">Order ID: {order.id?.slice(0, 16)}</p>
+                                                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${ss.bg} ${ss.text}`}>
+                                                            {order.status}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
+
                                             {/* Cancel button for pending orders */}
                                             {order.status?.toLowerCase() === "pending" && (
-                                                <button onClick={() => handleCancelOrder(order.id)}
-                                                    className="w-7 h-7 rounded-lg border flex items-center justify-center hover:bg-red-50 hover:border-red-200 hover:text-red-500 transition-colors shrink-0 text-slate-400">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                                <button onClick={() => handleCancelOrder(order.id)} title="Cancel Order"
+                                                    className="w-8 h-8 rounded-lg border border-slate-200 bg-white flex items-center justify-center hover:bg-red-50 hover:border-red-200 text-slate-400 hover:text-red-500 transition-colors shrink-0 z-10 relative shadow-sm">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x">
+                                                        <path d="M18 6 6 18"></path>
+                                                        <path d="m6 6 12 12"></path>
                                                     </svg>
                                                 </button>
                                             )}

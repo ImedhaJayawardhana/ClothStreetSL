@@ -108,12 +108,12 @@ export default function Navbar() {
 
           {/* Right Section */}
           <div className="flex items-center space-x-5">
-            <Link to="/cart" className="relative p-2 rounded-xl border hover: transition-colors shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <Link to="/cart" className="relative p-2 rounded-full text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
               </svg>
               {cartProductCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-[11px] font-bold leading-none shadow-sm">
+                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-purple-600 text-white rounded-full text-[10px] font-bold leading-none border-2 border-white">
                   {cartProductCount > 99 ? "99+" : cartProductCount}
                 </span>
               )}
@@ -132,39 +132,39 @@ export default function Navbar() {
               <div className="relative ml-2" ref={profileRef}>
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center justify-center w-10 h-10 rounded-full font-bold border-2 border-transparent hover: transition-all focus:outline-none"
+                  className="flex items-center justify-center w-10 h-10 overflow-hidden rounded-full font-bold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition-all focus:outline-none"
                 >
                   {user.name ? user.name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase() || 'U'}
                 </button>
 
                 {isProfileOpen && (
-                  <div className="absolute right-0 mt-3 w-48 rounded-xl shadow-lg border py-2 z-50">
+                  <div className="absolute right-0 mt-3 w-48 rounded-xl shadow-lg border border-slate-200 bg-white text-slate-800 py-2 z-50">
                     <div className="px-4 py-2 border-b mb-1">
                       <p className="text-sm font-medium truncate">{user.name || 'User'}</p>
                       <p className="text-xs truncate">{user.email}</p>
                     </div>
 
                     {user.role === "customer" ? (
-                      <Link to="/profile" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm hover: hover: transition-colors">
+                      <Link to="/profile" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
                         Profile
                       </Link>
                     ) : (
                       <Link
                         to={user?.role === "tailor" ? "/tailor-profile" : user?.role === "designer" ? "/designer-profile" : "/portfolio"}
                         onClick={() => setIsProfileOpen(false)}
-                        className="block px-4 py-2 text-sm hover: hover: transition-colors"
+                        className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors"
                       >
                         Portfolio
                       </Link>
                     )}
 
                     {user.role === "seller" && (
-                      <Link to="/inventory" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm hover: hover: transition-colors">
+                      <Link to="/inventory" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
                         Inventory
                       </Link>
                     )}
 
-                    <Link to={user?.role === "designer" ? "/designer-orders" : "/orders"} onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover: hover: transition-colors">
+                    <Link to={user?.role === "designer" ? "/designer-orders" : "/orders"} onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
                         <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
@@ -173,7 +173,7 @@ export default function Navbar() {
                     </Link>
 
                     {user.role === "customer" && (
-                      <Link to="/quotations/offers" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover: hover: transition-colors">
+                      <Link to="/quotations/offers" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
@@ -182,7 +182,7 @@ export default function Navbar() {
                     )}
 
                     {(user.role === "tailor" || user.role === "designer") && (
-                      <Link to="/quotation-inbox" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover: hover: transition-colors">
+                      <Link to="/quotation-inbox" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
@@ -193,7 +193,7 @@ export default function Navbar() {
                     <div className="border-t mt-1 pt-1">
                       <button
                         onClick={() => { handleLogout(); setIsProfileOpen(false); }}
-                        className="block w-full text-left px-4 py-2 text-sm hover: transition-colors"
+                        className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
                       >
                         Logout
                       </button>

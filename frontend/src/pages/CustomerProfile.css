@@ -3,8 +3,8 @@
 /* -- Hero Banner -- */
 .cp-hero {
   position: relative;
-  background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary) 40%, #6366f1 100%);
-  padding: 48px 0 56px;
+  background: linear-gradient(135deg, #4c1d95 0%, #3b0764 100%);
+  padding: 24px 0 32px;
   overflow: hidden;
 }
 
