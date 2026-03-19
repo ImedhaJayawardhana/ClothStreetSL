@@ -6,11 +6,13 @@ import {
   signInWithPopup,
   signOut,
   onAuthStateChanged,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  EmailAuthProvider,
+  reauthenticateWithCredential
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db, googleProvider } from "../firebase/firebase";
-import { registerUser, createTailor, createDesigner } from "../api";
+import { registerUser, createTailor, createDesigner, deleteAccount as deleteAccountApi } from "../api";
 
 const AuthContext = createContext();
 
@@ -118,6 +120,24 @@ export function AuthProvider({ children }) {
     return sendPasswordResetEmail(auth, email);
   }
 
+  async function deleteUserAccount(password, reason, feedback) {
+    const currentUser = auth.currentUser;
+    if (!currentUser) throw new Error("No user logged in");
+
+    // Re-authenticate with password
+    const credential = EmailAuthProvider.credential(currentUser.email, password);
+    await reauthenticateWithCredential(currentUser, credential);
+
+    // Call backend to backup + delete
+    await deleteAccountApi({ reason, feedback });
+
+    // Clear local data
+    localStorage.removeItem("clothstreet_cart");
+
+    // Sign out
+    await signOut(auth);
+  }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
@@ -136,7 +156,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, loginWithGoogle, logout, updateProfile, resetPassword }}>
+    <AuthContext.Provider value={{ user, loading, register, login, loginWithGoogle, logout, updateProfile, resetPassword, deleteUserAccount }}>
       {!loading && children}
     </AuthContext.Provider>
   );
