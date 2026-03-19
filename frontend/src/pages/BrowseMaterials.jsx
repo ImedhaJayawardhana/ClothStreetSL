@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { listFabrics } from "../api";
 import heroImg from "../assets/textile-hero-bg.png";
 import "./BrowseMaterials.css";
@@ -52,7 +53,9 @@ function FabricCardSkeleton() {
 /* ─── Component ───────────────────────────────────────────── */
 export default function BrowseMaterials() {
     const { addToCart } = useCart();
+    const { user } = useAuth();
     const navigate = useNavigate();
+    const isSeller = user?.role === "seller";
 
     // ── Real data state ──
     const [fabrics, setFabrics] = useState([]);
@@ -428,21 +431,38 @@ export default function BrowseMaterials() {
                                         </div>
                                     </div>
 
-                                    {/* Add to Cart */}
-                                    <button
-                                        className="bm-add-cart-btn"
-                                        disabled={!fab.inStock}
-                                        onClick={(e) => { e.stopPropagation(); handleAddToCart(fab); }}
-                                        id={`add-cart-${fab.id}`}
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                                            strokeLinecap="round" strokeLinejoin="round">
-                                            <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
-                                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-                                        </svg>
-                                        {fab.inStock ? "Add to Cart" : "Out of Stock"}
-                                    </button>
+                                    {/* Add to Cart / View Details */}
+                                    {isSeller ? (
+                                        <button
+                                            className="bm-add-cart-btn"
+                                            onClick={(e) => { e.stopPropagation(); navigate(`/shop/${fab.id}`); }}
+                                            id={`view-${fab.id}`}
+                                            style={{ background: "#f1f5f9", color: "#475569", border: "1px solid #e2e8f0" }}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                                strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>
+                                            View Details
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="bm-add-cart-btn"
+                                            disabled={!fab.inStock}
+                                            onClick={(e) => { e.stopPropagation(); handleAddToCart(fab); }}
+                                            id={`add-cart-${fab.id}`}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                                strokeLinecap="round" strokeLinejoin="round">
+                                                <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
+                                                <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                                            </svg>
+                                            {fab.inStock ? "Add to Cart" : "Out of Stock"}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}

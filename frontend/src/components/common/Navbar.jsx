@@ -46,7 +46,7 @@ export default function Navbar() {
         Designers
       </Link>
       <Link to="/match" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
-        AI Match
+        AI Assistant
       </Link>
     </>
   );
@@ -69,7 +69,7 @@ export default function Navbar() {
         Designers
       </Link>
       <Link to="/match" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
-        AI Match
+        AI Assistant
       </Link>
     </>
   );
@@ -149,13 +149,22 @@ export default function Navbar() {
                         Profile
                       </Link>
                     ) : (
-                      <Link
-                        to={user?.role === "tailor" ? "/tailor-profile" : user?.role === "designer" ? "/designer-profile" : "/portfolio"}
-                        onClick={() => setIsProfileOpen(false)}
-                        className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors"
-                      >
-                        Portfolio
-                      </Link>
+                      <>
+                        <Link
+                          to={user?.role === "tailor" ? "/tailor-profile" : user?.role === "designer" ? "/designer-profile" : "/seller-profile"}
+                          onClick={() => setIsProfileOpen(false)}
+                          className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        >
+                          Profile
+                        </Link>
+                        <Link
+                          to={user?.role === "tailor" ? "/tailor-profile" : user?.role === "designer" ? "/designer-profile" : "/portfolio"}
+                          onClick={() => setIsProfileOpen(false)}
+                          className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        >
+                          Portfolio
+                        </Link>
+                      </>
                     )}
 
                     {user.role === "seller" && (
@@ -164,14 +173,32 @@ export default function Navbar() {
                       </Link>
                     )}
 
-                    <Link to={user?.role === "designer" ? "/designer-orders" : "/orders"} onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                        <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
-                      </svg>
-                      Orders
-                    </Link>
+                    {/* Personal Orders — shown for customers, tailors, designers (not sellers since they can't buy) */}
+                    {user.role !== "seller" && (
+                      <Link to={user?.role === "designer" ? "/designer-orders" : "/orders"} onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                          <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
+                        </svg>
+                        {user.role === "customer" ? "Orders" : "Personal Orders"}
+                      </Link>
+                    )}
 
+                    {/* Jobs link for service providers — goes to their dashboard */}
+                    {(user.role === "tailor" || user.role === "designer" || user.role === "seller") && (
+                      <Link
+                        to={user.role === "tailor" ? "/tailor-dashboard" : user.role === "designer" ? "/designer-dashboard" : "/dashboard"}
+                        onClick={() => setIsProfileOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect width="20" height="14" x="2" y="7" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                        </svg>
+                        Jobs
+                      </Link>
+                    )}
+
+                    {/* My Quotes — customer only */}
                     {user.role === "customer" && (
                       <Link to="/quotations/offers" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -181,6 +208,7 @@ export default function Navbar() {
                       </Link>
                     )}
 
+                    {/* Quotation Inbox — tailor/designer only */}
                     {(user.role === "tailor" || user.role === "designer") && (
                       <Link to="/quotation-inbox" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { getFabric, listFabrics } from "../api";
 import ReviewSection from "../components/common/ReviewSection";
 
@@ -67,6 +68,8 @@ export default function ProductDetail() {
   const { fabricId } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { user } = useAuth();
+  const isSeller = user?.role === "seller";
 
   // ── ALL useState calls must be here at the top ──
   const [fabric, setFabric] = useState(null);
@@ -484,28 +487,44 @@ export default function ProductDetail() {
 
           {/* CTA Buttons */}
           <div style={{ display: "flex", gap: 12 }}>
-            <button disabled={!fabric.inStock} onClick={handleAddToCart}
-              style={{
+            {isSeller ? (
+              <div style={{
                 flex: 1, padding: "1rem", borderRadius: 12,
-                background: fabric.inStock
-                  ? `linear-gradient(135deg, ${C.purple}, ${C.purpleDark})`
-                  : "#d1d5db",
-                color: C.white, border: "none",
-                cursor: fabric.inStock ? "pointer" : "not-allowed",
-                fontWeight: 700, fontSize: "1rem",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                boxShadow: fabric.inStock ? "0 4px 24px rgba(124,58,237,0.4)" : "none",
-                transition: "opacity 0.2s"
-              }}
-              onMouseEnter={e => { if (fabric.inStock) e.currentTarget.style.opacity = "0.9"; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
-                <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-              </svg>
-              {fabric.inStock ? `Add to Cart · LKR ${total}` : "Out of Stock"}
-            </button>
+                background: "#f1f5f9", border: "1px solid #e2e8f0",
+                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#94a3b8" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                  </svg>
+                  <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "#64748b" }}>Sellers Cannot Purchase</span>
+                </div>
+                <span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>Switch to a buyer account to add items to cart</span>
+              </div>
+            ) : (
+              <button disabled={!fabric.inStock} onClick={handleAddToCart}
+                style={{
+                  flex: 1, padding: "1rem", borderRadius: 12,
+                  background: fabric.inStock
+                    ? `linear-gradient(135deg, ${C.purple}, ${C.purpleDark})`
+                    : "#d1d5db",
+                  color: C.white, border: "none",
+                  cursor: fabric.inStock ? "pointer" : "not-allowed",
+                  fontWeight: 700, fontSize: "1rem",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  boxShadow: fabric.inStock ? "0 4px 24px rgba(124,58,237,0.4)" : "none",
+                  transition: "opacity 0.2s"
+                }}
+                onMouseEnter={e => { if (fabric.inStock) e.currentTarget.style.opacity = "0.9"; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
+                  <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                </svg>
+                {fabric.inStock ? `Add to Cart · LKR ${total}` : "Out of Stock"}
+              </button>
+            )}
             <button onClick={handleShare}
               style={{
                 width: 56, height: 56, borderRadius: 12, background: C.bgCard,

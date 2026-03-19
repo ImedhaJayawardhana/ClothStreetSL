@@ -6,13 +6,13 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, getDoc } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
 import toast from "react-hot-toast";
-import { deleteAccount, getMyOrders } from "../api";
+import { getMyOrders } from "../api";
 import "./CustomerProfile.css";
 
 
 
 export default function CustomerProfile() {
-  const { user, updateProfile, logout } = useAuth();
+  const { user, updateProfile, deleteUserAccount } = useAuth();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -22,6 +22,15 @@ export default function CustomerProfile() {
   const [loadingSaved, setLoadingSaved] = useState(false);
   const [recentOrders, setRecentOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
+
+ // Delete account modal state
+ const [showDeleteModal, setShowDeleteModal] = useState(false);
+ const [deleteStep, setDeleteStep] = useState(1);
+ const [deletePassword, setDeletePassword] = useState("");
+ const [deleteReason, setDeleteReason] = useState("");
+ const [deleteFeedback, setDeleteFeedback] = useState("");
+ const [deleteError, setDeleteError] = useState("");
+ const [isDeleting, setIsDeleting] = useState(false);
 
  // Section-level edit toggles
  const [editingPersonal, setEditingPersonal] = useState(false);
@@ -176,17 +185,70 @@ export default function CustomerProfile() {
 }
 };
 
-  const handleDeleteAccount = async () => {
-    if (window.confirm("Are you sure? This cannot be undone and will permanently delete your account.")) {
-      try {
-        await deleteAccount();
-        await logout();
-        navigate("/");
-        toast.success("Account deleted");
-      } catch (error) {
-        console.error("Delete failed", error);
-        toast.error("Failed to delete account. Please log in again to verify.");
+  const DELETE_REASONS = [
+    "I found a better alternative",
+    "I'm not using the platform anymore",
+    "Privacy concerns",
+    "Too many emails / notifications",
+    "Other",
+  ];
+
+  const openDeleteModal = () => {
+    setShowDeleteModal(true);
+    setDeleteStep(1);
+    setDeletePassword("");
+    setDeleteReason("");
+    setDeleteFeedback("");
+    setDeleteError("");
+  };
+
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeleteStep(1);
+    setDeletePassword("");
+    setDeleteReason("");
+    setDeleteFeedback("");
+    setDeleteError("");
+    setIsDeleting(false);
+  };
+
+  const handleDeleteStep1 = async () => {
+    // Just validate password is not empty — actual re-auth happens at final step
+    if (!deletePassword.trim()) {
+      setDeleteError("Please enter your password.");
+      return;
+    }
+    setDeleteError("");
+    setDeleteStep(2);
+  };
+
+  const handleDeleteStep2 = () => {
+    if (!deleteReason) {
+      setDeleteError("Please select a reason.");
+      return;
+    }
+    setDeleteError("");
+    setDeleteStep(3);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true);
+    setDeleteError("");
+    try {
+      await deleteUserAccount(deletePassword, deleteReason, deleteFeedback || null);
+      closeDeleteModal();
+      navigate("/");
+      toast.success("Your account has been deleted. We're sorry to see you go.");
+    } catch (error) {
+      console.error("Delete failed", error);
+      if (error?.code === "auth/wrong-password" || error?.code === "auth/invalid-credential") {
+        setDeleteStep(1);
+        setDeleteError("Incorrect password. Please try again.");
+      } else {
+        setDeleteError("Failed to delete account. Please try again.");
       }
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -819,7 +881,7 @@ export default function CustomerProfile() {
  <p style={{ fontSize:"13px", color:"#6b7280"}}>Permanently remove your account and data.</p>
  </div>
  <button
- onClick={handleDeleteAccount}
+ onClick={openDeleteModal}
  style={{
  padding:"8px 16px",
  borderRadius:"8px",
@@ -864,7 +926,122 @@ export default function CustomerProfile() {
  />
  </div>
 
- {/* ---- Bottom Actions ---- */}
+  {/* ---- Delete Account Modal ---- */}
+  {showDeleteModal && (
+    <div className="da-overlay" onClick={closeDeleteModal}>
+      <div className="da-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="da-close" onClick={closeDeleteModal}>{"\u2715"}</button>
+
+        {/* Step Indicator */}
+        <div className="da-steps">
+          {[1, 2, 3].map((s) => (
+            <div
+              key={s}
+              className={`da-step-dot ${s === deleteStep ? "active" : s < deleteStep ? "done" : ""}`}
+            />
+          ))}
+        </div>
+
+        {/* STEP 1: Password */}
+        {deleteStep === 1 && (
+          <>
+            <div className="da-icon-circle warning">{"\uD83D\uDD12"}</div>
+            <h3 className="da-title">Verify Your Identity</h3>
+            <p className="da-subtitle">
+              For your security, please enter your password to continue with account deletion.
+            </p>
+            <div className="da-password-wrap">
+              <label>Password</label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={deletePassword}
+                onChange={(e) => { setDeletePassword(e.target.value); setDeleteError(""); }}
+                onKeyDown={(e) => e.key === "Enter" && handleDeleteStep1()}
+                autoFocus
+              />
+            </div>
+            {deleteError && <p className="da-error">{"\u26A0"} {deleteError}</p>}
+            <div className="da-actions">
+              <button className="da-btn-secondary" onClick={closeDeleteModal}>Cancel</button>
+              <button className="da-btn-next" onClick={handleDeleteStep1} disabled={!deletePassword.trim()}>Continue</button>
+            </div>
+          </>
+        )}
+
+        {/* STEP 2: Sorry to see you go + Reason */}
+        {deleteStep === 2 && (
+          <>
+            <div className="da-icon-circle sad">{"\uD83D\uDE14"}</div>
+            <h3 className="da-title">Sorry to See You Go</h3>
+            <p className="da-subtitle">
+              We hate to see you leave! Could you tell us why you{"'"}re leaving? Your feedback helps us improve.
+            </p>
+            <div className="da-reasons">
+              {DELETE_REASONS.map((reason) => (
+                <label
+                  key={reason}
+                  className={`da-reason-option ${deleteReason === reason ? "selected" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="deleteReason"
+                    checked={deleteReason === reason}
+                    onChange={() => { setDeleteReason(reason); setDeleteError(""); }}
+                  />
+                  {reason}
+                </label>
+              ))}
+            </div>
+            {deleteReason === "Other" && (
+              <div className="da-feedback">
+                <label>Tell us more (optional)</label>
+                <textarea
+                  placeholder="Your feedback helps us improve..."
+                  value={deleteFeedback}
+                  onChange={(e) => setDeleteFeedback(e.target.value)}
+                />
+              </div>
+            )}
+            {deleteError && <p className="da-error">{"\u26A0"} {deleteError}</p>}
+            <div className="da-actions">
+              <button className="da-btn-secondary" onClick={() => setDeleteStep(1)}>Back</button>
+              <button className="da-btn-next" onClick={handleDeleteStep2} disabled={!deleteReason}>Continue</button>
+            </div>
+          </>
+        )}
+
+        {/* STEP 3: Final Confirmation */}
+        {deleteStep === 3 && (
+          <>
+            <div className="da-icon-circle warning">{"\u26A0\uFE0F"}</div>
+            <h3 className="da-title">Are You Absolutely Sure?</h3>
+            <p className="da-subtitle">
+              This action is <strong>permanent</strong> and cannot be undone.
+            </p>
+            <div className="da-final-warning">
+              <p>Deleting your account will:</p>
+              <ul>
+                <li>Remove your profile and personal data</li>
+                <li>Delete your saved items and cart</li>
+                <li>Remove any tailor / designer profiles</li>
+                <li>Archive your order history for records</li>
+              </ul>
+            </div>
+            {deleteError && <p className="da-error">{"\u26A0"} {deleteError}</p>}
+            <div className="da-actions">
+              <button className="da-btn-secondary" onClick={() => setDeleteStep(2)}>Go Back</button>
+              <button className="da-btn-danger" onClick={handleDeleteConfirm} disabled={isDeleting}>
+                {isDeleting ? "Deleting..." : "Delete My Account"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )}
+
+  {/* ---- Bottom Actions ---- */}
  <div className="cp-bottom-actions">
  <button className="cp-cancel-btn" onClick={handleCancel}>
  Cancel

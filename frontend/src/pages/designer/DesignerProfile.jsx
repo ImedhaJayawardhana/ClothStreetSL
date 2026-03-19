@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { getDesigner, updateDesigner, uploadImage } from "../../api";
+import { getDesigner, updateDesigner, uploadImage, getMyOrders } from "../../api";
 import ReviewSection from "../../components/common/ReviewSection";
 import toast from "react-hot-toast";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebase/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth, db } from "../../firebase/firebase";
 
 // ─── Default / placeholder designer data ───────────────────────────────────────
 const DEFAULT_DESIGNER = {
@@ -156,7 +157,7 @@ function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage, upload
 export default function DesignerProfile() {
     const { designerId } = useParams();
     const navigate = useNavigate();
-    const { user: authUser, updateProfile: updateAuthProfile } = useAuth();
+    const { user: authUser, updateProfile: updateAuthProfile, deleteUserAccount } = useAuth();
 
     const [designer, setDesigner] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -185,6 +186,27 @@ export default function DesignerProfile() {
     const [showContactModal, setShowContactModal] = useState(false);
     const [providerEmail, setProviderEmail] = useState("");
 
+    // Profile settings state (owner only)
+    const [profileData, setProfileData] = useState({
+        name: "", email: "", phone: "",
+        address: { street: "", city: "", province: "", zip: "" },
+        preferences: { emailAlerts: true, smsAlerts: false }
+    });
+    const [editingPersonal, setEditingPersonal] = useState(false);
+    const [editingAddress, setEditingAddress] = useState(false);
+    const [savingProfile, setSavingProfile] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteStep, setDeleteStep] = useState(1);
+    const [deletePassword, setDeletePassword] = useState("");
+    const [deleteReason, setDeleteReason] = useState("");
+    const [deleteFeedback, setDeleteFeedback] = useState("");
+    const [deleteError, setDeleteError] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    // Personal orders state (orders where designer is the buyer)
+    const [personalOrders, setPersonalOrders] = useState([]);
+    const [personalOrdersLoading, setPersonalOrdersLoading] = useState(true);
+
     const profilePhotoRef = useRef();
 
     const resolvedDesignerId = designerId || authUser?.uid;
@@ -212,12 +234,42 @@ export default function DesignerProfile() {
         fetchDesigner();
     }, [resolvedDesignerId]);
 
+    // ── Fetch personal orders (where designer is the buyer) ──
+    useEffect(() => {
+        if (!isOwner) { setPersonalOrdersLoading(false); return; }
+        getMyOrders()
+            .then(res => setPersonalOrders(res.data || []))
+            .catch(err => console.error("Personal orders error:", err))
+            .finally(() => setPersonalOrdersLoading(false));
+    }, [isOwner]);
+
     useEffect(() => {
         if (authUser) {
             const saved = authUser.savedDesigners || [];
             setIsSaved(saved.includes(resolvedDesignerId));
         }
     }, [authUser, resolvedDesignerId]);
+
+    // Load user profile data for settings (owner only)
+    useEffect(() => {
+        if (!isOwner || !resolvedDesignerId) return;
+        const fetchUserProfile = async () => {
+            try {
+                const snap = await getDoc(doc(db, "users", resolvedDesignerId));
+                if (snap.exists()) {
+                    const d = snap.data();
+                    setProfileData({
+                        name: d.name || "", email: d.email || "", phone: d.phone || "",
+                        address: d.address || { street: "", city: "", province: "", zip: "" },
+                        preferences: d.preferences || { emailAlerts: true, smsAlerts: false }
+                    });
+                }
+            } catch (err) {
+                console.error("Error fetching user profile:", err);
+            }
+        };
+        fetchUserProfile();
+    }, [isOwner, resolvedDesignerId]);
 
     const enterEditMode = () => {
         setDraftName(designer.name || "");
@@ -376,6 +428,41 @@ export default function DesignerProfile() {
             navigator.clipboard.writeText(url);
             alert("Profile link copied to clipboard!");
         }
+    };
+
+    // ── Profile settings handlers (owner only) ──
+    const DELETE_REASONS = ["I found a better alternative", "I'm not using the platform anymore", "Privacy concerns", "Too many emails / notifications", "Other"];
+
+    const handleProfileInputChange = (e) => { const { name, value } = e.target; setProfileData(prev => ({ ...prev, [name]: value })); };
+    const handleAddressChange = (e) => { const { name, value } = e.target; setProfileData(prev => ({ ...prev, address: { ...prev.address, [name]: value } })); };
+
+    const handlePreferenceToggle = async (field) => {
+        const newPrefs = { ...profileData.preferences, [field]: !profileData.preferences[field] };
+        setProfileData(prev => ({ ...prev, preferences: newPrefs }));
+        try { await setDoc(doc(db, "users", resolvedDesignerId), { preferences: newPrefs }, { merge: true }); } catch (err) { console.error("Failed to save preference:", err); }
+    };
+
+    const handleSaveProfile = async () => {
+        setSavingProfile(true);
+        try {
+            await setDoc(doc(db, "users", resolvedDesignerId), { name: profileData.name, phone: profileData.phone, address: profileData.address }, { merge: true });
+            setEditingPersonal(false); setEditingAddress(false); toast.success("Profile saved!");
+        } catch (err) { console.error("Error saving profile:", err); toast.error("Failed to save profile"); } finally { setSavingProfile(false); }
+    };
+
+    const handlePasswordReset = async () => {
+        try { await sendPasswordResetEmail(auth, profileData.email); toast.success("Password reset email sent!"); } catch { toast.error("Failed to send reset email"); }
+    };
+
+    const openDeleteModal = () => { setShowDeleteModal(true); setDeleteStep(1); setDeletePassword(""); setDeleteReason(""); setDeleteFeedback(""); setDeleteError(""); };
+    const closeDeleteModal = () => { setShowDeleteModal(false); setDeleteStep(1); setDeletePassword(""); setDeleteReason(""); setDeleteFeedback(""); setDeleteError(""); setIsDeleting(false); };
+    const handleDeleteStep1 = () => { if (!deletePassword.trim()) { setDeleteError("Please enter your password."); return; } setDeleteError(""); setDeleteStep(2); };
+    const handleDeleteStep2 = () => { if (!deleteReason) { setDeleteError("Please select a reason."); return; } setDeleteError(""); setDeleteStep(3); };
+    const handleDeleteConfirm = async () => {
+        setIsDeleting(true); setDeleteError("");
+        try { await deleteUserAccount(deletePassword, deleteReason, deleteFeedback || null); closeDeleteModal(); navigate("/"); toast.success("Your account has been deleted."); }
+        catch (error) { console.error("Delete failed", error); if (error?.code === "auth/wrong-password" || error?.code === "auth/invalid-credential") { setDeleteStep(1); setDeleteError("Incorrect password."); } else { setDeleteError("Failed to delete account."); } }
+        finally { setIsDeleting(false); }
     };
 
     // ─── Loading skeleton ──────────────────────────────────────────────────────
@@ -814,6 +901,177 @@ export default function DesignerProfile() {
 
                 </div>
             </div>
+
+            {/* ── Owner Personal Orders ── */}
+            {isOwner && (
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+                    <div className="border-t border-slate-200 pt-8 mt-4">
+                        <h2 className="text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-xl bg-fuchsia-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                            </div>
+                            Personal Orders
+                            <span className="text-xs font-bold text-slate-400 ml-auto">
+                                {personalOrdersLoading ? "" : `${personalOrders.length} order${personalOrders.length !== 1 ? "s" : ""}`}
+                            </span>
+                        </h2>
+
+                        {personalOrdersLoading ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {[1, 2].map(i => (
+                                    <div key={i} className="rounded-2xl border p-5 animate-pulse">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 rounded-xl bg-slate-100" />
+                                            <div className="flex-1 space-y-2"><div className="h-3 bg-slate-100 rounded w-1/2" /><div className="h-2 bg-slate-100 rounded w-1/3" /></div>
+                                        </div>
+                                        <div className="h-8 bg-slate-100 rounded-xl" />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : personalOrders.length === 0 ? (
+                            <div className="rounded-2xl border border-dashed border-slate-200 p-10 text-center">
+                                <div className="w-14 h-14 rounded-2xl bg-fuchsia-50 flex items-center justify-center mx-auto mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e879f9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                                </div>
+                                <h3 className="text-sm font-bold text-slate-700 mb-1">No personal orders yet</h3>
+                                <p className="text-xs text-slate-400">When you purchase fabrics from the shop, they’ll appear here.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {personalOrders.map(order => {
+                                    const status = order.status?.toLowerCase() || "pending";
+                                    const statusStyles = {
+                                        pending: "bg-amber-50 text-amber-700 border-amber-200",
+                                        processing: "bg-blue-50 text-blue-700 border-blue-200",
+                                        shipped: "bg-indigo-50 text-indigo-700 border-indigo-200",
+                                        completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                                        delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                                        cancelled: "bg-red-50 text-red-600 border-red-200",
+                                    };
+                                    const sc = statusStyles[status] || statusStyles.pending;
+                                    const itemNames = order.items?.map(i => i.name).join(", ") || "Order";
+                                    return (
+                                        <div key={order.id} className="rounded-2xl border border-slate-200 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all bg-white">
+                                            <div className="flex items-start gap-3 mb-3">
+                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-fuchsia-100 to-pink-100 flex items-center justify-center font-bold text-fuchsia-600 shrink-0">
+                                                    {itemNames.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-sm font-bold text-slate-900 truncate">{itemNames}</h4>
+                                                    <p className="text-[11px] text-slate-400 mt-0.5">ID: {order.id?.slice(0, 16)}</p>
+                                                    <span className={`inline-flex items-center mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border ${sc}`}>
+                                                        {order.status}
+                                                    </span>
+                                                </div>
+                                                <span className="text-sm font-extrabold text-slate-900 shrink-0">LKR {order.total_price?.toLocaleString()}</span>
+                                            </div>
+                                            <p className="text-xs text-slate-500 mb-3">
+                                                {order.items?.length} item{order.items?.length !== 1 ? "s" : ""} — {order.items?.map(i => `${i.name} (${i.quantity}${i.unit || "m"})`).join(", ")}
+                                            </p>
+                                            {order.created_at && (
+                                                <p className="text-[10px] text-slate-400 mb-3">Placed: {new Date(order.created_at).toLocaleDateString()}</p>
+                                            )}
+                                            {["pending", "processing", "shipped"].includes(status) && (
+                                                <button onClick={() => navigate(`/order-tracking/${order.id}`, { state: { order } })}
+                                                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold border border-fuchsia-200 text-fuchsia-600 hover:bg-fuchsia-50 transition-all">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                                                    Track Order
+                                                </button>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* ── Owner Profile Settings ── */}
+            {isOwner && (
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+                    <div className="border-t border-slate-200 pt-8 mt-4">
+                        <h2 className="text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-xl bg-fuchsia-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </div>
+                            Profile Settings
+                        </h2>
+                        <div className="flex flex-col gap-5">
+                            {/* Personal Info */}
+                            <div className="rounded-2xl border border-fuchsia-100 shadow-sm p-6 bg-white">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-2"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><h3 className="font-bold text-sm">Personal Info</h3></div>
+                                    <button onClick={() => setEditingPersonal(!editingPersonal)} className="text-xs font-semibold text-fuchsia-600 hover:text-fuchsia-700">{editingPersonal ? "Cancel" : "Edit"}</button>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    {editingPersonal ? (<>
+                                        <div><label className="block text-xs font-medium text-slate-400 mb-1">Full Name</label><input type="text" name="name" value={profileData.name} onChange={handleProfileInputChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-400" /></div>
+                                        <div><label className="block text-xs font-medium text-slate-400 mb-1">Email</label><input type="email" value={profileData.email} disabled className="w-full border rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed" /></div>
+                                        <div><label className="block text-xs font-medium text-slate-400 mb-1">Phone</label><input type="tel" name="phone" value={profileData.phone} onChange={handleProfileInputChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-400" placeholder="0771234567" /></div>
+                                    </>) : (<>
+                                        <div><span className="block text-xs font-medium text-slate-400 mb-0.5">Full Name</span><span className="text-sm font-semibold text-slate-800">{profileData.name || "—"}</span></div>
+                                        <div><span className="block text-xs font-medium text-slate-400 mb-0.5">Email</span><span className="text-sm font-semibold text-slate-800">{profileData.email || "—"}</span></div>
+                                        <div><span className="block text-xs font-medium text-slate-400 mb-0.5">Phone</span><span className="text-sm font-semibold text-slate-800">{profileData.phone || "—"}</span></div>
+                                    </>)}
+                                </div>
+                            </div>
+                            {/* Address Details */}
+                            <div className="rounded-2xl border border-fuchsia-100 shadow-sm p-6 bg-white">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-2"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><h3 className="font-bold text-sm">Address Details</h3></div>
+                                    <button onClick={() => setEditingAddress(!editingAddress)} className="text-xs font-semibold text-fuchsia-600 hover:text-fuchsia-700">{editingAddress ? "Cancel" : "Edit"}</button>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {editingAddress ? (<>
+                                        <div className="sm:col-span-2"><label className="block text-xs font-medium text-slate-400 mb-1">Street Address</label><input type="text" name="street" value={profileData.address.street} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-400" /></div>
+                                        <div><label className="block text-xs font-medium text-slate-400 mb-1">City</label><input type="text" name="city" value={profileData.address.city} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-400" /></div>
+                                        <div><label className="block text-xs font-medium text-slate-400 mb-1">Province</label><input type="text" name="province" value={profileData.address.province} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-400" /></div>
+                                        <div><label className="block text-xs font-medium text-slate-400 mb-1">Postal / Zip</label><input type="text" name="zip" value={profileData.address.zip} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-fuchsia-400" /></div>
+                                    </>) : (<>
+                                        <div className="sm:col-span-2"><span className="block text-xs font-medium text-slate-400 mb-0.5">Street Address</span><span className="text-sm font-semibold text-slate-800">{profileData.address.street || "—"}</span></div>
+                                        <div><span className="block text-xs font-medium text-slate-400 mb-0.5">City</span><span className="text-sm font-semibold text-slate-800">{profileData.address.city || "—"}</span></div>
+                                        <div><span className="block text-xs font-medium text-slate-400 mb-0.5">Province</span><span className="text-sm font-semibold text-slate-800">{profileData.address.province || "—"}</span></div>
+                                        <div><span className="block text-xs font-medium text-slate-400 mb-0.5">Postal / Zip</span><span className="text-sm font-semibold text-slate-800">{profileData.address.zip || "—"}</span></div>
+                                    </>)}
+                                </div>
+                            </div>
+                            {/* Preferences */}
+                            <div className="rounded-2xl border border-fuchsia-100 shadow-sm p-6 bg-white">
+                                <div className="flex items-center gap-2 mb-5"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg></div><h3 className="font-bold text-sm">Preferences</h3></div>
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-slate-800">Email Notifications</p><p className="text-xs text-slate-500">Receive order updates and promotions via email.</p></div><button onClick={() => handlePreferenceToggle("emailAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.emailAlerts ? "#d946ef" : "#d1d5db" }}><div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: profileData.preferences.emailAlerts ? "22px" : "2px" }} /></button></div>
+                                    <div className="h-px bg-slate-100" />
+                                    <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-slate-800">SMS Alerts</p><p className="text-xs text-slate-500">Get real-time text messages when orders are out for delivery.</p></div><button onClick={() => handlePreferenceToggle("smsAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.smsAlerts ? "#d946ef" : "#d1d5db" }}><div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: profileData.preferences.smsAlerts ? "22px" : "2px" }} /></button></div>
+                                </div>
+                            </div>
+                            {/* Account Security */}
+                            <div className="rounded-2xl border border-fuchsia-100 shadow-sm p-6 bg-white">
+                                <div className="flex items-center gap-2 mb-5"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3 className="font-bold text-sm">Account Security</h3></div>
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-slate-800">Password</p><p className="text-xs text-slate-500">Send a secure reset link to your email ({profileData.email}).</p></div><button onClick={handlePasswordReset} className="px-4 py-2 rounded-xl border text-xs font-semibold text-fuchsia-600 hover:bg-fuchsia-50 transition-colors">Change Password</button></div>
+                                    <div className="h-px bg-slate-100" />
+                                    <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-red-600">Delete Account</p><p className="text-xs text-slate-500">Permanently remove your account and data.</p></div><button onClick={openDeleteModal} className="px-4 py-2 rounded-xl border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors">Delete Account</button></div>
+                                </div>
+                            </div>
+                            {(editingPersonal || editingAddress) && (<div className="flex justify-end"><button onClick={handleSaveProfile} disabled={savingProfile} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 text-white font-semibold text-sm disabled:opacity-50 transition-colors shadow-md">{savingProfile ? "Saving..." : "Save Changes"}</button></div>)}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Delete Account Modal ── */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={closeDeleteModal}>
+                    <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                        <button className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg" onClick={closeDeleteModal}>✕</button>
+                        <div className="flex justify-center gap-2 mb-6">{[1, 2, 3].map((s) => (<div key={s} className={`w-2.5 h-2.5 rounded-full transition-colors ${s === deleteStep ? "bg-fuchsia-600" : s < deleteStep ? "bg-fuchsia-300" : "bg-slate-200"}`} />))}</div>
+                        {deleteStep === 1 && (<><div className="text-center mb-4"><span className="text-3xl">🔒</span></div><h3 className="text-lg font-bold text-center mb-1">Verify Your Identity</h3><p className="text-sm text-slate-500 text-center mb-4">Enter your password to continue.</p><input type="password" placeholder="Enter your password" value={deletePassword} onChange={(e) => { setDeletePassword(e.target.value); setDeleteError(""); }} onKeyDown={(e) => e.key === "Enter" && handleDeleteStep1()} autoFocus className="w-full border rounded-xl px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-fuchsia-400" />{deleteError && <p className="text-red-500 text-xs mb-3">⚠ {deleteError}</p>}<div className="flex gap-3"><button onClick={closeDeleteModal} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Cancel</button><button onClick={handleDeleteStep1} disabled={!deletePassword.trim()} className="flex-1 py-2.5 rounded-xl bg-fuchsia-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div></>)}
+                        {deleteStep === 2 && (<><div className="text-center mb-4"><span className="text-3xl">😔</span></div><h3 className="text-lg font-bold text-center mb-1">Sorry to See You Go</h3><p className="text-sm text-slate-500 text-center mb-4">Could you tell us why you{"'"}re leaving?</p><div className="flex flex-col gap-2 mb-4">{DELETE_REASONS.map((reason) => (<label key={reason} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm cursor-pointer transition-colors ${deleteReason === reason ? "border-fuchsia-400 bg-fuchsia-50" : "hover:bg-slate-50"}`}><input type="radio" name="deleteReason" checked={deleteReason === reason} onChange={() => { setDeleteReason(reason); setDeleteError(""); }} className="accent-fuchsia-600" />{reason}</label>))}</div>{deleteReason === "Other" && <textarea placeholder="Your feedback..." value={deleteFeedback} onChange={(e) => setDeleteFeedback(e.target.value)} className="w-full border rounded-xl px-3 py-2 text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-fuchsia-400" rows={3} />}{deleteError && <p className="text-red-500 text-xs mb-3">⚠ {deleteError}</p>}<div className="flex gap-3"><button onClick={() => setDeleteStep(1)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Back</button><button onClick={handleDeleteStep2} disabled={!deleteReason} className="flex-1 py-2.5 rounded-xl bg-fuchsia-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div></>)}
+                        {deleteStep === 3 && (<><div className="text-center mb-4"><span className="text-3xl">⚠️</span></div><h3 className="text-lg font-bold text-center mb-1">Are You Absolutely Sure?</h3><p className="text-sm text-slate-500 text-center mb-4">This action is <strong>permanent</strong> and cannot be undone.</p><div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-4 text-sm text-red-700"><p className="font-semibold mb-2">Deleting your account will:</p><ul className="list-disc pl-4 space-y-1"><li>Remove your profile and personal data</li><li>Delete your designer profile and portfolio</li><li>Remove all saved items</li><li>Archive your order history</li></ul></div>{deleteError && <p className="text-red-500 text-xs mb-3">⚠ {deleteError}</p>}<div className="flex gap-3"><button onClick={() => setDeleteStep(2)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Go Back</button><button onClick={handleDeleteConfirm} disabled={isDeleting} className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold disabled:opacity-50">{isDeleting ? "Deleting..." : "Delete My Account"}</button></div></>)}
+                    </div>
+                </div>
+            )}
 
             {/* Contact Modal */}
             {showContactModal && (

@@ -161,6 +161,11 @@ export default function Checkout() {
             toast.error("Please login or create an account to proceed to checkout.");
             navigate("/login", { state: { returnUrl: "/checkout", step: location.state?.step || 1 } });
         }
+        // Block sellers from checkout
+        if (!loading && user && user.role === "seller") {
+            toast.error("Sellers cannot place orders. Switch to a buyer account.");
+            navigate("/shop");
+        }
     }, [user, loading, navigate, location.state]);
 
     const SHIPPING_COST = 500;
