@@ -26,7 +26,8 @@ export const registerUser = (data, token) =>
         headers: { Authorization: `Bearer ${token}` },
     });
 export const getCurrentUser = () => api.get("/users/me");
-export const deleteAccount = () => api.delete("/users/me");
+export const deleteAccount = ({ reason, feedback }) =>
+    api.delete("/users/me", { data: { reason, feedback } });
 
 // ─── Tailors ─────────────────────────────────────────
 export const createTailor = (data) => api.post("/tailors", data);
