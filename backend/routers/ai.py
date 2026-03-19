@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from typing import Optional
 from firebase.admin import db
 
 router = APIRouter()
@@ -77,7 +77,8 @@ def process_ai_chat(prompt: str, user_measurements: dict, fabrics: list):
 
     if needs_size_match:
         if user_measurements:
-            # Simple heuristic: e.g. for a shirt, chest size (in cm) * 0.02 + 0.5 additional meters
+            # Simple heuristic: e.g. for a shirt, chest size (in cm)
+            # * 0.02 + 0.5 additional meters
             chest = float(user_measurements.get("chest", 90))  # default 90cm
             waist = float(user_measurements.get("waist", 75))
 
@@ -101,18 +102,34 @@ def process_ai_chat(prompt: str, user_measurements: dict, fabrics: list):
             else:
                 required_meters = 2.5  # default fallback
 
-            message = f"Based on the measurements saved in your profile, you will need approximately {required_meters} meters of fabric. Here are the best matches for you!"
+            message = (
+                "Based on the measurements saved in your profile, you will need "
+                f"approximately {required_meters} meters of fabric. "
+                "Here are the best matches for you!"
+            )
         else:
-            message = "I noticed you asked for something that fits you, but your profile doesn't have size charts updated yet. You can update your measurements in your profile settings. Here are your fabric matches in the meantime!"
+            message = (
+                "I noticed you asked for something that fits you, but your profile "
+                "doesn't have size charts updated yet. You can update your "
+                "measurements in your profile settings. Here are your fabric matches "
+                "in the meantime!"
+            )
 
     # Fallback if no specific keywords found (or matched fabrics empty)
     if not matched_fabrics:
         if not found_colors and not found_types:
             # Just return top 5 fabrics
             matched_fabrics = fabrics[:5]
-            message = "I can help you find fabrics! Here are some of our popular picks. Try asking for specific colors or materials like 'white cotton' or 'blue denim'."
+            message = (
+                "I can help you find fabrics! Here are some of our popular picks. "
+                "Try asking for specific colors or materials like 'white cotton' "
+                "or 'blue denim'."
+            )
         else:
-            message = "I couldn't find any exact matches for your request, but our inventory updates frequently! Try adjusting your search."
+            message = (
+                "I couldn't find any exact matches for your request, but our "
+                "inventory updates frequently! Try adjusting your search."
+            )
 
     return {
         "message": message,
