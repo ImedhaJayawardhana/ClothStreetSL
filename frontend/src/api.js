@@ -82,3 +82,7 @@ export const uploadImage = (file, folder = "general") => {
 };
 export const deleteImage = (filename) =>
     api.delete(`/storage/delete?filename=${filename}`);
+
+// ─── AI Chat ─────────────────────────────────────────
+export const sendChatMessage = (prompt, userId) => 
+    api.post("/ai/chat", { prompt, userId });
