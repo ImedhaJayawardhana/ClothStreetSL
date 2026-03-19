@@ -46,7 +46,7 @@ export default function Navbar() {
         Designers
       </Link>
       <Link to="/match" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
-        AI Match
+        AI Assistant
       </Link>
     </>
   );
@@ -69,7 +69,7 @@ export default function Navbar() {
         Designers
       </Link>
       <Link to="/match" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
-        AI Match
+        AI Assistant
       </Link>
     </>
   );

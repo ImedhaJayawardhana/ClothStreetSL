@@ -1,460 +1,256 @@
-import React, { useState} from'react';
-import { Link} from'react-router-dom';
-import { useCart} from'../context/CartContext';
-import heroImg from '../assets/craftsperson-bg.png';
-
-// Mock Fallback Data
-const mockResults = {
- materials: [
- { id: 1, name:'Premium Cotton Fabric', supplier:'TextileCo Lanka', price:'LKR 450/m', rating: 4.8, match: 97, color:'White'},
- { id: 2, name:'Polyester Blend', supplier:'FabricHub Colombo', price:'LKR 280/m', rating: 4.5, match: 89, color:'Blue'},
- { id: 3, name:'Organic Linen', supplier:'EcoTextile SL', price:'LKR 620/m', rating: 4.9, match: 85, color:'Beige'}
- ],
- tailors: [
- { id: 1, name:'Nimal Perera', location:'Colombo 05', experience:'12 years', rating: 4.9, match: 96, speciality:'Formal Wear'},
- { id: 2, name:'Kamala Silva', location:'Kandy', experience:'8 years', rating: 4.7, match: 91, speciality:'Traditional'},
- { id: 3, name:'Ravi Fernando', location:'Galle', experience:'15 years', rating: 4.8, match: 88, speciality:'Casual Wear'}
- ]
-};
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { sendChatMessage } from '../api';
+import toast from 'react-hot-toast';
 
 export default function AIMatch() {
- const { addToCart} = useCart();
- 
- const [formData, setFormData] = useState({
- garmentType:'',
- budget: 50000,
- quantity: 100,
- quality:'Standard'
-});
+  const { addToCart } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
+  const [messages, setMessages] = useState([
+    {
+      role: 'assistant',
+      text: "Hi! I'm your ClothStreet AI Assistant. I can help you find fabrics by color, material, or even recommend the exact amount of fabric you need if you have measurements saved in your profile! Try asking me to 'find denim that fits me' or 'show me white cotton'.",
+      fabrics: [],
+      requiredMeters: 0
+    }
+  ]);
+  const [inputVal, setInputVal] = useState('');
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
- const [loading, setLoading] = useState(false);
- const [results, setResults] = useState(null);
- const [error, setError] = useState(null);
+  const isSeller = user?.role === "seller";
 
- // Estimated price per piece
- const pricePerPiece = Math.round(formData.budget / formData.quantity);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
- const handleSubmit = async () => {
- // Validate: garmentType must be selected
- if (!formData.garmentType) {
- setError('Please select a garment type');
- return;
-}
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
- setLoading(true);
- setError(null);
- setResults(null);
+  const handleSend = async (e) => {
+    if (e) e.preventDefault();
+    if (!inputVal.trim() || loading) return;
 
- try {
- const res = await fetch('/api/ai/recommend', {
- method:'POST',
- headers: {'Content-Type':'application/json'},
- body: JSON.stringify(formData)
-});
+    const userMessage = inputVal.trim();
+    setInputVal('');
+    
+    // Add user message to UI
+    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
+    setLoading(true);
 
- if (!res.ok) throw new Error('API failed');
+    try {
+      // Call python backend via API
+      const res = await sendChatMessage(userMessage, user?.uid);
+      const data = res.data;
+      
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        text: data.message || "Here's what I found for you:",
+        fabrics: data.fabrics || [],
+        requiredMeters: data.required_meters || 0
+      }]);
+    } catch (err) {
+      console.error("AI chat error:", err);
+      toast.error("Failed to connect to the AI engine");
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        text: "Sorry, I'm having trouble connecting to the servers right now. Please try again later.",
+      }]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
- const data = await res.json();
- setResults(data);
+  // Helper handling Add to cart
+  const handleAddToCart = (fab, reqMeters) => {
+    addToCart({
+      id: fab.id,
+      name: fab.name,
+      unitPrice: fab.price,
+      quantity: reqMeters > 0 ? reqMeters : 1,
+      image: fab.image_url || 'https://images.unsplash.com/photo-1605000578643-4f9339e07fb6?auto=format&fit=crop&q=80&w=400',
+      type: 'fabric'
+    });
+    toast.success(`Added ${reqMeters > 0 ? reqMeters : 1}m of ${fab.name} to cart!`);
+  };
 
-} catch (err) {
- console.warn("API failed, falling back to mock data", err);
- // Fallback to mock data if API not ready
- setTimeout(() => {
- setResults(mockResults);
- setLoading(false);
-}, 1500); // simulate network delay
-}
-};
+  return (
+    <div className="flex flex-col h-[calc(100vh-64px)] bg-slate-50">
+      {/* Header */}
+      <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center gap-3 shrink-0 shadow-sm z-10">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 className="font-extrabold text-slate-900 text-lg">AI Shop Assistant</h1>
+          <p className="text-xs text-slate-500 font-medium">Powered by ClothStreet SL Intelligence</p>
+        </div>
+      </div>
 
- const handleQualitySelect = (value) => {
- setFormData(prev => ({ ...prev, quality: value}));
-};
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 flex flex-col items-center">
+        <div className="w-full max-w-4xl flex flex-col gap-6">
+          {messages.map((msg, idx) => {
+            const isUser = msg.role === 'user';
+            
+            return (
+              <div key={idx} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+                
+                {/* Text Bubble */}
+                <div className="flex items-end gap-2 max-w-[85%]">
+                  {!isUser && (
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 flex items-center justify-center shrink-0 mb-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                      </svg>
+                    </div>
+                  )}
+                  
+                  <div className={`px-5 py-3.5 rounded-2xl text-sm leading-relaxed ${
+                    isUser 
+                      ? 'bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-br-sm shadow-md' 
+                      : 'bg-white border border-slate-200 text-slate-800 rounded-bl-sm shadow-sm'
+                  }`}>
+                    {msg.text}
+                  </div>
+                </div>
 
- const handleSliderChange = (e) => {
- setFormData(prev => ({ ...prev, quantity: Number(e.target.value)}));
-};
+                {/* Fabric Cards (Assistant only) */}
+                {msg.fabrics && msg.fabrics.length > 0 && (
+                  <div className="mt-4 w-full pl-10 pr-4 overflow-x-auto pb-4 hide-scrollbar snap-x">
+                    <div className="flex gap-4 w-max">
+                      {msg.fabrics.map(fab => (
+                        <div key={fab.id} className="w-[280px] bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col font-sans transition-transform hover:-translate-y-1 hover:shadow-md snap-start">
+                          
+                          {/* Image area */}
+                          <div className="h-32 bg-slate-100 relative cursor-pointer" onClick={() => navigate(`/shop/${fab.id}`)}>
+                            {fab.image_url ? (
+                              <img src={fab.image_url} alt={fab.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-xl font-bold text-slate-400 opacity-50" style={{ backgroundColor: fab.colors?.[0] || '#e2e8f0' }}>
+                                ✦ {fab.name.substring(0,2).toUpperCase()}
+                              </div>
+                            )}
+                            
+                            {msg.requiredMeters > 0 && (
+                              <div className="absolute bottom-2 left-2 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-md">
+                                Recommends {msg.requiredMeters}m
+                              </div>
+                            )}
+                            
+                            <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-slate-900 text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">
+                              {fab.type || "Fabric"}
+                            </div>
+                          </div>
 
- return (
- <div className="min-h-screen flex flex-col">
- {/* Hero Section */}
- <section className="relative overflow-hidden" style={{ color: '#fff' }}>
-  <img src={heroImg} alt="AI Match Background" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }} />
-  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(15,10,40,0.90) 0%, rgba(30,20,70,0.84) 40%, rgba(55,30,100,0.76) 100%)', zIndex: 1 }} />
+                          {/* Body */}
+                          <div className="p-4 flex flex-col flex-1">
+                            <h3 className="font-bold text-slate-900 text-sm truncate">{fab.name}</h3>
+                            <p className="text-xs text-slate-500 mt-0.5">{fab.location || "Sri Lanka"}</p>
+                            
+                            <div className="mt-flex flex gap-3 text-xs font-semibold mt-3 mb-4">
+                              <span className="text-slate-900">LKR {fab.price?.toLocaleString()}/m</span>
+                              {fab.stock <= 0 ? (
+                                <span className="text-red-500">Out of Stock</span>
+                              ) : (
+                                <span className="text-green-600">{fab.stock}m left</span>
+                              )}
+                            </div>
 
-  <div className="relative max-w-4xl mx-auto flex flex-col items-center text-center px-4" style={{ zIndex: 2, paddingTop: '1.5rem', paddingBottom: '2rem' }}>
-   {/* Pill Badge */}
-   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '999px', border: '1px solid rgba(139,92,246,0.3)', background: 'rgba(139,92,246,0.15)', marginBottom: '16px' }}>
-    <span style={{ fontSize: '13px', fontWeight: 600, color: '#e9d5ff', letterSpacing: '0.02em' }}>✦ Powered by Machine Learning</span>
-   </div>
+                            <div className="mt-auto flex gap-2">
+                              {/* Add to Cart or View Details based on Role */}
+                              {isSeller ? (
+                                <button 
+                                  onClick={() => navigate(`/shop/${fab.id}`)}
+                                  className="flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors border border-slate-200 flex items-center justify-center gap-1.5"
+                                >
+                                  View Details
+                                </button>
+                              ) : (
+                                <button 
+                                  disabled={fab.stock <= 0}
+                                  onClick={() => handleAddToCart(fab, msg.requiredMeters)}
+                                  className={`flex-1 py-2 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${
+                                    fab.stock > 0 
+                                      ? 'bg-purple-100 hover:bg-purple-200 text-purple-700 border border-purple-200' 
+                                      : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                                  }`}
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.2 9.3a1 1 0 0 0 1 1.2h12.5a1 1 0 0 0 1-1.2L17 13M9 20h0M15 20h0"/>
+                                  </svg>
+                                  {msg.requiredMeters > 0 ? `Add ${msg.requiredMeters}m` : 'Add to Cart'}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
 
-   {/* Heading */}
-   <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4" style={{ color: '#ffffff' }}>
-    AI-Powered{' '}
-    <span style={{ background: 'linear-gradient(135deg, #c4b5fd, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Smart Match</span>
-   </h1>
+          {/* Typing indicator */}
+          {loading && (
+            <div className="flex items-end gap-2 max-w-[85%] self-start">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 flex items-center justify-center shrink-0 mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+              </div>
+              <div className="px-5 py-4 bg-white border border-slate-200 rounded-2xl rounded-bl-sm shadow-sm flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce"></div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
 
-   {/* Subtitle */}
-   <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: 'rgba(233,213,255,0.85)' }}>
-    Get intelligent recommendations for fabric suppliers and tailors based on your specific project requirements
-   </p>
-  </div>
- </section>
-
- {/* Main Content Area */}
- <section className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
- <div className="flex flex-col lg:flex-row gap-8">
- 
- {/* LEFT COLUMN - Requirements Form */}
- <div className="w-full lg:w-3/5">
- <div className="rounded-2xl shadow-sm border p-6 md:p-8">
- <h2 className="text-2xl font-bold mb-2">Your Requirements</h2>
- <p className="mb-8">Tell us about your project and our AI will find the best matches</p>
-
- <div className="space-y-6">
- {/* Garment Type */}
- <div>
- <label htmlFor="garmentType" className="block text-sm font-medium mb-2">
- Garment Type<span className="ml-1">*</span>
- </label>
- <select
- id="garmentType"
- value={formData.garmentType}
- onChange={(e) => setFormData({ ...formData, garmentType: e.target.value})}
- className="w-full px-4 py-3 rounded-xl border focus: focus:ring-2 focus:ring-purple-500/20 focus: transition-all outline-none appearance-none"
- >
- <option value="" disabled>Select garment type...</option>
- <option value="T-Shirt">T-Shirt</option>
- <option value="Dress">Dress</option>
- <option value="Suit">Suit</option>
- <option value="Saree">Saree</option>
- <option value="Kurta">Kurta</option>
- <option value="Uniform">Uniform</option>
- <option value="Other">Other</option>
- </select>
- {error && <p className="text-sm mt-1">{error}</p>}
- </div>
-
- {/* Total Budget */}
- <div>
- <label htmlFor="budget" className="block text-sm font-medium mb-2">Total Budget (LKR )</label>
- <div className="relative">
- <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium">LKR </span>
- <input
- type="number"
- id="budget"
- min="1000"
- max="10000000"
- value={formData.budget}
- onChange={(e) => setFormData({ ...formData, budget: e.target.value ? Number(e.target.value) :''})}
- className="w-full pl-12 pr-4 py-3 rounded-xl border focus: focus:ring-2 focus:ring-purple-500/20 focus: transition-all outline-none"
- />
- </div>
- <p className="text-sm mt-2">
- Estimated: ≈ LKR {pricePerPiece} per piece
- </p>
- </div>
-
- {/* Quantity Slider */}
- <div>
- <div className="flex justify-between items-center mb-2">
- <label htmlFor="quantity" className="block text-sm font-medium">Quantity</label>
- <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
- {formData.quantity} pieces
- </span>
- </div>
- <input
- type="range"
- id="quantity"
- min="10"
- max="500"
- value={formData.quantity}
- onChange={handleSliderChange}
- className="w-full h-2 rounded-lg appearance-none cursor-pointer accent-purple-600"
- />
- <div className="flex justify-between text-xs mt-2">
- <span>10</span>
- <span>500</span>
- </div>
- </div>
-
- {/* Quality Toggle */}
- <div>
- <label className="block text-sm font-medium mb-2">Quality Preference</label>
- <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
- {['Budget','Standard','Premium','Luxury'].map((quality) => (
- <button
- key={quality}
- type="button"
- onClick={() => handleQualitySelect(quality)}
- className={`py-2.5 px-4 rounded-xl text-sm font-medium transition-all ${
- formData.quality === quality
- ?' shadow-md shadow-purple-500/30 border'
- :' border hover: hover:'
-}`}
- >
- {quality}
- </button>
- ))}
- </div>
- </div>
-
- {/* Submit Button */}
- <div className="pt-4">
- <button
- type="button"
- onClick={handleSubmit}
- disabled={loading}
- className={`w-full flex items-center justify-center gap-2 py-4 px-6 rounded-xl text-lg font-bold shadow-lg transition-all transform ${
- loading
- ?' cursor-not-allowed'
- :'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 hover:-translate-y-0.5 shadow-purple-500/30'
-}`}
- >
- {loading ? (
- <>
- <div className="w-5 h-5 border-2 border-t-white rounded-full animate-spin"></div>
- <span>Analyzing...</span>
- </>
- ) : (
- <span>✦ Get AI Recommendations →</span>
- )}
- </button>
- </div>
- </div>
- </div>
- </div>
-
- {/* RIGHT COLUMN - Info Cards */}
- <div className="w-full lg:w-2/5 space-y-6">
- 
- {/* Smart AI Engine Card */}
- <div className="rounded-2xl bg-gradient-to-br from-[#1a0533] to-[#2d1b69] p-6 shadow-lg overflow-hidden relative">
- <div className="absolute top-0 right-0 p-8 opacity-10">
- <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
- <path d="M12 2v20"></path>
- <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
- </svg>
- </div>
- <div className="relative z-10">
- <div className="flex items-center gap-3 mb-4">
- <div className="p-2 rounded-lg backdrop-blur-sm">
- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="">
- <path d="M12 2v20"></path>
- <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
- </svg>
- </div>
- <div>
- <h3 className="font-bold text-lg">Smart AI Engine</h3>
- <p className="text-sm">Trained on 10,000+ orders</p>
- </div>
- </div>
- <div className="space-y-3">
- <div className="flex items-start gap-3">
- <div className="mt-1 bg-green-500/20 text-green-400 rounded-full p-0.5">
- <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
- </div>
- <p className="text-sm">Best fabric types for your garment</p>
- </div>
- <div className="flex items-start gap-3">
- <div className="mt-1 bg-green-500/20 text-green-400 rounded-full p-0.5">
- <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
- </div>
- <p className="text-sm">Most cost-effective suppliers</p>
- </div>
- <div className="flex items-start gap-3">
- <div className="mt-1 bg-green-500/20 text-green-400 rounded-full p-0.5">
- <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
- </div>
- <p className="text-sm">Top-rated tailors with relevant experience</p>
- </div>
- <div className="flex items-start gap-3">
- <div className="mt-1 bg-green-500/20 text-green-400 rounded-full p-0.5">
- <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
- </div>
- <p className="text-sm">Optimized quantities to reduce waste</p>
- </div>
- </div>
- </div>
- </div>
-
- {/* How It Works Card */}
- <div className="rounded-2xl border p-6 shadow-sm">
- <div className="flex items-center gap-3 mb-5">
- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="">
- <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
- </svg>
- <h3 className="font-bold text-lg">How It Works</h3>
- </div>
- 
- <div className="space-y-4">
- <div className="flex gap-4">
- <div className="flex-shrink-0 mt-1">
- <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">1</div>
- </div>
- <div>
- <h4 className="font-semibold">🎯 Enter your project requirements</h4>
- <p className="text-sm mt-1">Specify your garment, budget, and desired quality.</p>
- </div>
- </div>
- 
- <div className="flex gap-4">
- <div className="flex-shrink-0 mt-1">
- <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">2</div>
- </div>
- <div>
- <h4 className="font-semibold">📈 AI analyzes market data & past orders</h4>
- <p className="text-sm mt-1">Our engine matches your needs against 10,000+ data points.</p>
- </div>
- </div>
- 
- <div className="flex gap-4">
- <div className="flex-shrink-0 mt-1">
- <div className="w-8 h-8 rounded-full bg-green-50 text-green-600 flex items-center justify-center font-bold text-sm">3</div>
- </div>
- <div>
- <h4 className="font-semibold">💡 Receive personalized matches</h4>
- <p className="text-sm mt-1">Get instant curated lists of fabrics and expert tailors.</p>
- </div>
- </div>
- </div>
- </div>
-
- {/* Trust Badge Card */}
- <div className="rounded-2xl p-6 shadow-lg">
- <div className="flex items-center gap-2 mb-3">
- <div className="flex text-yellow-400">
- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
- </div>
- <h3 className="font-bold text-lg">Trusted by 5,000+ businesses</h3>
- </div>
- <p className="text-sm leading-relaxed">
- AI has helped ClothStreet businesses save an average of <strong className="">23% on procurement costs</strong> and reduce sourcing time by <strong className="">65%</strong>.
- </p>
- </div>
- </div>
- 
- </div>
-
- {/* RESULTS SECTION */}
- {loading && (
- <div className="mt-16 flex flex-col items-center justify-center py-12">
- <div className="w-12 h-12 border-4 border-t-purple-600 rounded-full animate-spin mb-4"></div>
- <p className="font-medium">Analyzing market data & past orders...</p>
- </div>
- )}
-
- {results && !loading && (
- <div className="mt-16 animate-fade-in-up">
- <div className="text-center mb-10">
- <h2 className="text-3xl font-bold">Your Perfect Matches</h2>
- <p className="mt-2">We found the best suppliers and tailors for your specific requirements.</p>
- </div>
-
- {/* Materials Subsection */}
- <div className="mb-12">
- <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
- <span className="p-2 rounded-lg">
- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
- </span>
- Recommended Materials
- </h3>
- 
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
- {results.materials.map((material) => (
- <div key={material.id} className="rounded-2xl p-6 border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
- <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-bold rounded-bl-xl ${
- material.match >= 90 ?'bg-green-100 text-green-700' :
- material.match >= 75 ?'bg-yellow-100 text-yellow-700' :
-''
-}`}>
- {material.match}% Match
- </div>
- 
- <h4 className="font-bold text-lg pr-16">{material.name}</h4>
- <p className="text-sm mb-4">{material.supplier}</p>
- 
- <div className="flex gap-4 mb-6">
- <div className="flex items-center gap-1 text-sm font-medium">
- <span className="text-yellow-400">⭐</span> {material.rating}
- </div>
- <div className="text-sm font-medium border-l pl-4">
- {material.price}
- </div>
- <div className="text-sm border-l pl-4">
- {material.color}
- </div>
- </div>
- 
- <div className="flex gap-3 mt-4">
- <Link
- to="/shop"
- className="flex-1 text-center py-2.5 px-3 rounded-xl hover: font-medium transition-colors text-sm"
- >
- View Details
- </Link>
- <button
- onClick={() => addToCart({ ...material, unitPrice: parseInt(material.price.replace(/\D/g,'')), quantity: 1, type:'fabric', image:'https://images.unsplash.com/photo-1605000578643-4f9339e07fb6?auto=format&fit=crop&q=80&w=400'})}
- className="flex-1 py-2.5 px-3 rounded-xl hover: font-medium transition-colors text-sm shadow-sm"
- >
- Add to Cart
- </button>
- </div>
- </div>
- ))}
- </div>
- </div>
-
- {/* Tailors Subsection */}
- <div>
- <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
- <span className="p-2 rounded-lg">
- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
- </span>
- Recommended Tailors
- </h3>
- 
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
- {results.tailors.map((tailor) => (
- <div key={tailor.id} className="rounded-2xl p-6 border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
- <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-bold rounded-bl-xl ${
- tailor.match >= 90 ?'bg-green-100 text-green-700' :
- tailor.match >= 75 ?'bg-yellow-100 text-yellow-700' :
-''
-}`}>
- {tailor.match}% Match
- </div>
- 
- <h4 className="font-bold text-lg pr-16">{tailor.name}</h4>
- <p className="text-sm mb-4">{tailor.location}</p>
- 
- <div className="flex gap-4 mb-6">
- <div className="flex items-center gap-1 text-sm font-medium">
- <span className="text-yellow-400">⭐</span> {tailor.rating}
- </div>
- <div className="text-sm font-medium border-l pl-4">
- {tailor.experience}
- </div>
- <div className="text-sm border-l pl-4">
- {tailor.speciality}
- </div>
- </div>
- 
- <Link
- to={`/tailors`}
- className="block text-center w-full py-2.5 px-4 rounded-xl hover: hover: font-medium transition-colors text-sm"
- >
- View Profile
- </Link>
- </div>
- ))}
- </div>
- </div>
-
- </div>
- )}
-
- </section>
- </div>
- );
+      {/* Chat Input Bar */}
+      <div className="bg-white border-t border-slate-200 p-4 sm:p-6 shrink-0 shadow-[0_-4px_24px_rgba(0,0,0,0.02)] z-10">
+        <div className="max-w-4xl mx-auto">
+          <form onSubmit={handleSend} className="relative flex items-center">
+            <input 
+              type="text"
+              value={inputVal}
+              onChange={e => setInputVal(e.target.value)}
+              placeholder="Ask me to find fabrics, match colors, or calculate needed lengths..."
+              className="w-full pl-5 pr-14 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-sm shadow-inner"
+              disabled={loading}
+            />
+            <button 
+              type="submit"
+              disabled={!inputVal.trim() || loading}
+              className={`absolute right-2 w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                inputVal.trim() && !loading
+                  ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-md transform hover:scale-105'
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </form>
+          <div className="mt-2 text-center">
+            <p className="text-[10px] text-slate-400 font-medium">ClothStreet AI can make mistakes. Verify quantities before purchasing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
