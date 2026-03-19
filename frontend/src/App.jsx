@@ -72,6 +72,7 @@ export default function App() {
  <Route path="/fabrics" element={<BrowseMaterials />} />
  <Route path="/dashboard" element={<SellerDashboard />} />
  <Route path="/seller-profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
+ <Route path="/supplier/profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
  <Route path="/tailor-dashboard" element={<TailorDashboard />} />
  <Route path="/designer-dashboard" element={<PrivateRoute><DesignerDashboard /></PrivateRoute>} />
  <Route path="/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />

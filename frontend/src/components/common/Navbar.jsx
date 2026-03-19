@@ -149,13 +149,22 @@ export default function Navbar() {
                         Profile
                       </Link>
                     ) : (
-                      <Link
-                        to={user?.role === "tailor" ? "/tailor-profile" : user?.role === "designer" ? "/designer-profile" : "/portfolio"}
-                        onClick={() => setIsProfileOpen(false)}
-                        className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors"
-                      >
-                        Portfolio
-                      </Link>
+                      <>
+                        <Link
+                          to={user?.role === "tailor" ? "/tailor-profile" : user?.role === "designer" ? "/designer-profile" : "/seller-profile"}
+                          onClick={() => setIsProfileOpen(false)}
+                          className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        >
+                          Profile
+                        </Link>
+                        <Link
+                          to={user?.role === "tailor" ? "/tailor-profile" : user?.role === "designer" ? "/designer-profile" : "/portfolio"}
+                          onClick={() => setIsProfileOpen(false)}
+                          className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        >
+                          Portfolio
+                        </Link>
+                      </>
                     )}
 
                     {user.role === "seller" && (
