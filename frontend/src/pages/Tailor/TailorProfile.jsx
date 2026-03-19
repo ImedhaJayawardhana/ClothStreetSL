@@ -4,8 +4,9 @@ import { useAuth } from "../../context/AuthContext";
 import { getTailor, updateTailor, uploadImage } from "../../api";
 import ReviewSection from "../../components/common/ReviewSection";
 import toast from "react-hot-toast";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebase/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth, db } from "../../firebase/firebase";
 
 // ─── Default / placeholder tailor data ───────────────────────────────────────
 const DEFAULT_TAILOR = {
@@ -220,7 +221,7 @@ function Tag({ label, onRemove, editMode }) {
 export default function TailorProfile() {
     const { tailorId } = useParams();
     const navigate = useNavigate();
-    const { user: authUser, updateProfile: updateAuthProfile } = useAuth();
+    const { user: authUser, updateProfile: updateAuthProfile, deleteUserAccount } = useAuth();
 
     // ── State ──
     const [tailor, setTailor] = useState(null);
@@ -249,6 +250,23 @@ export default function TailorProfile() {
     const [draftAvailability, setDraftAvailability] = useState(true);
     const [providerEmail, setProviderEmail] = useState("");
     const [showContactModal, setShowContactModal] = useState(false);
+
+    // Profile settings state (owner only)
+    const [profileData, setProfileData] = useState({
+        name: "", email: "", phone: "",
+        address: { street: "", city: "", province: "", zip: "" },
+        preferences: { emailAlerts: true, smsAlerts: false }
+    });
+    const [editingPersonal, setEditingPersonal] = useState(false);
+    const [editingAddress, setEditingAddress] = useState(false);
+    const [savingProfile, setSavingProfile] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteStep, setDeleteStep] = useState(1);
+    const [deletePassword, setDeletePassword] = useState("");
+    const [deleteReason, setDeleteReason] = useState("");
+    const [deleteFeedback, setDeleteFeedback] = useState("");
+    const [deleteError, setDeleteError] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const profilePhotoRef = useRef();
 
@@ -285,6 +303,27 @@ export default function TailorProfile() {
             setIsSaved(saved.includes(resolvedTailorId));
         }
     }, [authUser, resolvedTailorId]);
+
+    // Load user profile data for settings (owner only)
+    useEffect(() => {
+        if (!isOwner || !resolvedTailorId) return;
+        const fetchUserProfile = async () => {
+            try {
+                const snap = await getDoc(doc(db, "users", resolvedTailorId));
+                if (snap.exists()) {
+                    const d = snap.data();
+                    setProfileData({
+                        name: d.name || "", email: d.email || "", phone: d.phone || "",
+                        address: d.address || { street: "", city: "", province: "", zip: "" },
+                        preferences: d.preferences || { emailAlerts: true, smsAlerts: false }
+                    });
+                }
+            } catch (err) {
+                console.error("Error fetching user profile:", err);
+            }
+        };
+        fetchUserProfile();
+    }, [isOwner, resolvedTailorId]);
 
     // ── Enter edit mode ──
     const enterEditMode = () => {
@@ -449,6 +488,89 @@ export default function TailorProfile() {
             }
         }
         setShowContactModal(true);
+    };
+
+    // ── Profile settings handlers (owner only) ──
+    const DELETE_REASONS = [
+        "I found a better alternative",
+        "I'm not using the platform anymore",
+        "Privacy concerns",
+        "Too many emails / notifications",
+        "Other",
+    ];
+
+    const handleProfileInputChange = (e) => {
+        const { name, value } = e.target;
+        setProfileData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleAddressChange = (e) => {
+        const { name, value } = e.target;
+        setProfileData(prev => ({ ...prev, address: { ...prev.address, [name]: value } }));
+    };
+
+    const handlePreferenceToggle = async (field) => {
+        const newPrefs = { ...profileData.preferences, [field]: !profileData.preferences[field] };
+        setProfileData(prev => ({ ...prev, preferences: newPrefs }));
+        try {
+            await setDoc(doc(db, "users", resolvedTailorId), { preferences: newPrefs }, { merge: true });
+        } catch (err) {
+            console.error("Failed to save preference:", err);
+        }
+    };
+
+    const handleSaveProfile = async () => {
+        setSavingProfile(true);
+        try {
+            await setDoc(doc(db, "users", resolvedTailorId), {
+                name: profileData.name, phone: profileData.phone, address: profileData.address,
+            }, { merge: true });
+            setEditingPersonal(false);
+            setEditingAddress(false);
+            toast.success("Profile saved!");
+        } catch (err) {
+            console.error("Error saving profile:", err);
+            toast.error("Failed to save profile");
+        } finally {
+            setSavingProfile(false);
+        }
+    };
+
+    const handlePasswordReset = async () => {
+        try {
+            await sendPasswordResetEmail(auth, profileData.email);
+            toast.success("Password reset email sent!");
+        } catch {
+            toast.error("Failed to send reset email");
+        }
+    };
+
+    const openDeleteModal = () => {
+        setShowDeleteModal(true); setDeleteStep(1); setDeletePassword(""); setDeleteReason(""); setDeleteFeedback(""); setDeleteError("");
+    };
+    const closeDeleteModal = () => {
+        setShowDeleteModal(false); setDeleteStep(1); setDeletePassword(""); setDeleteReason(""); setDeleteFeedback(""); setDeleteError(""); setIsDeleting(false);
+    };
+    const handleDeleteStep1 = () => {
+        if (!deletePassword.trim()) { setDeleteError("Please enter your password."); return; }
+        setDeleteError(""); setDeleteStep(2);
+    };
+    const handleDeleteStep2 = () => {
+        if (!deleteReason) { setDeleteError("Please select a reason."); return; }
+        setDeleteError(""); setDeleteStep(3);
+    };
+    const handleDeleteConfirm = async () => {
+        setIsDeleting(true); setDeleteError("");
+        try {
+            await deleteUserAccount(deletePassword, deleteReason, deleteFeedback || null);
+            closeDeleteModal(); navigate("/");
+            toast.success("Your account has been deleted. We're sorry to see you go.");
+        } catch (error) {
+            console.error("Delete failed", error);
+            if (error?.code === "auth/wrong-password" || error?.code === "auth/invalid-credential") {
+                setDeleteStep(1); setDeleteError("Incorrect password. Please try again.");
+            } else { setDeleteError("Failed to delete account. Please try again."); }
+        } finally { setIsDeleting(false); }
     };
 
     // ─── Loading skeleton ──────────────────────────────────────────────────────
@@ -928,6 +1050,191 @@ export default function TailorProfile() {
 
                 </div>
             </div>
+
+            {/* ── Owner Profile Settings ── */}
+            {isOwner && (
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+                    <div className="border-t border-slate-200 pt-8 mt-4">
+                        <h2 className="text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-xl bg-purple-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </div>
+                            Profile Settings
+                        </h2>
+
+                        <div className="flex flex-col gap-5">
+                            {/* ── Personal Info ── */}
+                            <div className="rounded-2xl border shadow-sm p-6 bg-white">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        </div>
+                                        <h3 className="font-bold text-sm">Personal Info</h3>
+                                    </div>
+                                    <button onClick={() => setEditingPersonal(!editingPersonal)} className="text-xs font-semibold text-purple-600 hover:text-purple-700 transition-colors">
+                                        {editingPersonal ? "Cancel" : "Edit"}
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    {editingPersonal ? (
+                                        <>
+                                            <div>
+                                                <label className="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
+                                                <input type="text" name="name" value={profileData.name} onChange={handleProfileInputChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-slate-400 mb-1">Email</label>
+                                                <input type="email" value={profileData.email} disabled className="w-full border rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-slate-400 mb-1">Phone</label>
+                                                <input type="tel" name="phone" value={profileData.phone} onChange={handleProfileInputChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" placeholder="0771234567" />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div><span className="block text-xs font-medium text-slate-400 mb-0.5">Full Name</span><span className="text-sm font-semibold text-slate-800">{profileData.name || "—"}</span></div>
+                                            <div><span className="block text-xs font-medium text-slate-400 mb-0.5">Email</span><span className="text-sm font-semibold text-slate-800">{profileData.email || "—"}</span></div>
+                                            <div><span className="block text-xs font-medium text-slate-400 mb-0.5">Phone</span><span className="text-sm font-semibold text-slate-800">{profileData.phone || "—"}</span></div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* ── Address Details ── */}
+                            <div className="rounded-2xl border shadow-sm p-6 bg-white">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                        </div>
+                                        <h3 className="font-bold text-sm">Address Details</h3>
+                                    </div>
+                                    <button onClick={() => setEditingAddress(!editingAddress)} className="text-xs font-semibold text-purple-600 hover:text-purple-700 transition-colors">
+                                        {editingAddress ? "Cancel" : "Edit"}
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {editingAddress ? (
+                                        <>
+                                            <div className="sm:col-span-2"><label className="block text-xs font-medium text-slate-400 mb-1">Street Address</label><input type="text" name="street" value={profileData.address.street} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" /></div>
+                                            <div><label className="block text-xs font-medium text-slate-400 mb-1">City</label><input type="text" name="city" value={profileData.address.city} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" /></div>
+                                            <div><label className="block text-xs font-medium text-slate-400 mb-1">Province</label><input type="text" name="province" value={profileData.address.province} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" /></div>
+                                            <div><label className="block text-xs font-medium text-slate-400 mb-1">Postal / Zip</label><input type="text" name="zip" value={profileData.address.zip} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" /></div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="sm:col-span-2"><span className="block text-xs font-medium text-slate-400 mb-0.5">Street Address</span><span className="text-sm font-semibold text-slate-800">{profileData.address.street || "—"}</span></div>
+                                            <div><span className="block text-xs font-medium text-slate-400 mb-0.5">City</span><span className="text-sm font-semibold text-slate-800">{profileData.address.city || "—"}</span></div>
+                                            <div><span className="block text-xs font-medium text-slate-400 mb-0.5">Province</span><span className="text-sm font-semibold text-slate-800">{profileData.address.province || "—"}</span></div>
+                                            <div><span className="block text-xs font-medium text-slate-400 mb-0.5">Postal / Zip</span><span className="text-sm font-semibold text-slate-800">{profileData.address.zip || "—"}</span></div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* ── Preferences ── */}
+                            <div className="rounded-2xl border shadow-sm p-6 bg-white">
+                                <div className="flex items-center gap-2 mb-5">
+                                    <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg>
+                                    </div>
+                                    <h3 className="font-bold text-sm">Preferences</h3>
+                                </div>
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex items-center justify-between">
+                                        <div><p className="text-sm font-semibold text-slate-800">Email Notifications</p><p className="text-xs text-slate-500">Receive order updates and promotions via email.</p></div>
+                                        <button onClick={() => handlePreferenceToggle("emailAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.emailAlerts ? "#7c3aed" : "#d1d5db" }}>
+                                            <div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: profileData.preferences.emailAlerts ? "22px" : "2px" }} />
+                                        </button>
+                                    </div>
+                                    <div className="h-px bg-slate-100" />
+                                    <div className="flex items-center justify-between">
+                                        <div><p className="text-sm font-semibold text-slate-800">SMS Alerts</p><p className="text-xs text-slate-500">Get real-time text messages when orders are out for delivery.</p></div>
+                                        <button onClick={() => handlePreferenceToggle("smsAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.smsAlerts ? "#7c3aed" : "#d1d5db" }}>
+                                            <div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: profileData.preferences.smsAlerts ? "22px" : "2px" }} />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* ── Account Security ── */}
+                            <div className="rounded-2xl border shadow-sm p-6 bg-white">
+                                <div className="flex items-center gap-2 mb-5">
+                                    <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                    </div>
+                                    <h3 className="font-bold text-sm">Account Security</h3>
+                                </div>
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex items-center justify-between">
+                                        <div><p className="text-sm font-semibold text-slate-800">Password</p><p className="text-xs text-slate-500">Send a secure reset link to your email ({profileData.email}).</p></div>
+                                        <button onClick={handlePasswordReset} className="px-4 py-2 rounded-xl border text-xs font-semibold text-purple-600 hover:bg-purple-50 transition-colors">Change Password</button>
+                                    </div>
+                                    <div className="h-px bg-slate-100" />
+                                    <div className="flex items-center justify-between">
+                                        <div><p className="text-sm font-semibold text-red-600">Delete Account</p><p className="text-xs text-slate-500">Permanently remove your account and data.</p></div>
+                                        <button onClick={openDeleteModal} className="px-4 py-2 rounded-xl border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors">Delete Account</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Save button */}
+                            {(editingPersonal || editingAddress) && (
+                                <div className="flex justify-end">
+                                    <button onClick={handleSaveProfile} disabled={savingProfile} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-semibold text-sm disabled:opacity-50 transition-colors shadow-md">
+                                        {savingProfile ? "Saving..." : "Save Changes"}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Delete Account Modal ── */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={closeDeleteModal}>
+                    <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                        <button className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg" onClick={closeDeleteModal}>✕</button>
+                        {/* Step dots */}
+                        <div className="flex justify-center gap-2 mb-6">
+                            {[1, 2, 3].map((s) => (<div key={s} className={`w-2.5 h-2.5 rounded-full transition-colors ${s === deleteStep ? "bg-purple-600" : s < deleteStep ? "bg-purple-300" : "bg-slate-200"}`} />))}
+                        </div>
+                        {deleteStep === 1 && (<>
+                            <div className="text-center mb-4"><span className="text-3xl">🔒</span></div>
+                            <h3 className="text-lg font-bold text-center mb-1">Verify Your Identity</h3>
+                            <p className="text-sm text-slate-500 text-center mb-4">Enter your password to continue with account deletion.</p>
+                            <input type="password" placeholder="Enter your password" value={deletePassword} onChange={(e) => { setDeletePassword(e.target.value); setDeleteError(""); }} onKeyDown={(e) => e.key === "Enter" && handleDeleteStep1()} autoFocus className="w-full border rounded-xl px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-purple-400" />
+                            {deleteError && <p className="text-red-500 text-xs mb-3">⚠ {deleteError}</p>}
+                            <div className="flex gap-3"><button onClick={closeDeleteModal} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Cancel</button><button onClick={handleDeleteStep1} disabled={!deletePassword.trim()} className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div>
+                        </>)}
+                        {deleteStep === 2 && (<>
+                            <div className="text-center mb-4"><span className="text-3xl">😔</span></div>
+                            <h3 className="text-lg font-bold text-center mb-1">Sorry to See You Go</h3>
+                            <p className="text-sm text-slate-500 text-center mb-4">Could you tell us why you{"'"}re leaving?</p>
+                            <div className="flex flex-col gap-2 mb-4">
+                                {DELETE_REASONS.map((reason) => (<label key={reason} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm cursor-pointer transition-colors ${deleteReason === reason ? "border-purple-400 bg-purple-50" : "hover:bg-slate-50"}`}><input type="radio" name="deleteReason" checked={deleteReason === reason} onChange={() => { setDeleteReason(reason); setDeleteError(""); }} className="accent-purple-600" />{reason}</label>))}
+                            </div>
+                            {deleteReason === "Other" && <textarea placeholder="Your feedback helps us improve..." value={deleteFeedback} onChange={(e) => setDeleteFeedback(e.target.value)} className="w-full border rounded-xl px-3 py-2 text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-purple-400" rows={3} />}
+                            {deleteError && <p className="text-red-500 text-xs mb-3">⚠ {deleteError}</p>}
+                            <div className="flex gap-3"><button onClick={() => setDeleteStep(1)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Back</button><button onClick={handleDeleteStep2} disabled={!deleteReason} className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div>
+                        </>)}
+                        {deleteStep === 3 && (<>
+                            <div className="text-center mb-4"><span className="text-3xl">⚠️</span></div>
+                            <h3 className="text-lg font-bold text-center mb-1">Are You Absolutely Sure?</h3>
+                            <p className="text-sm text-slate-500 text-center mb-4">This action is <strong>permanent</strong> and cannot be undone.</p>
+                            <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-4 text-sm text-red-700">
+                                <p className="font-semibold mb-2">Deleting your account will:</p>
+                                <ul className="list-disc pl-4 space-y-1"><li>Remove your profile and personal data</li><li>Delete your tailor profile and portfolio</li><li>Remove all saved items</li><li>Archive your order history</li></ul>
+                            </div>
+                            {deleteError && <p className="text-red-500 text-xs mb-3">⚠ {deleteError}</p>}
+                            <div className="flex gap-3"><button onClick={() => setDeleteStep(2)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Go Back</button><button onClick={handleDeleteConfirm} disabled={isDeleting} className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold disabled:opacity-50">{isDeleting ? "Deleting..." : "Delete My Account"}</button></div>
+                        </>)}
+                    </div>
+                </div>
+            )}
 
             {/* Contact Modal */}
             {showContactModal && (
