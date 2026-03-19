@@ -548,7 +548,7 @@ export default function Portfolio() {
                                         View My Store
                                     </button>
                                     <button
-                                        onClick={() => navigate("/supplier/profile")}
+                                        onClick={() => navigate("/seller-profile")}
                                         className="flex justify-center items-center gap-2 border hover:bg-gray-50 text-sm font-semibold py-2.5 rounded-xl transition-colors">
                                         Account Settings
                                     </button>
