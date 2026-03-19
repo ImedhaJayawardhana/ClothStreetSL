@@ -174,3 +174,8 @@ class Order(BaseModel):
     provider_id: Optional[str] = None  # UID of the tailor or designer
     quotation_id: Optional[str] = None
     created_at: Optional[datetime] = None
+
+
+class DeleteAccountRequest(BaseModel):
+    reason: str
+    feedback: Optional[str] = None
