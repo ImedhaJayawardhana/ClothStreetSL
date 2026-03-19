@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { getDesigner, updateDesigner, uploadImage } from "../../api";
+import { getDesigner, updateDesigner, uploadImage, getMyOrders } from "../../api";
 import ReviewSection from "../../components/common/ReviewSection";
 import toast from "react-hot-toast";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -203,6 +203,10 @@ export default function DesignerProfile() {
     const [deleteError, setDeleteError] = useState("");
     const [isDeleting, setIsDeleting] = useState(false);
 
+    // Personal orders state (orders where designer is the buyer)
+    const [personalOrders, setPersonalOrders] = useState([]);
+    const [personalOrdersLoading, setPersonalOrdersLoading] = useState(true);
+
     const profilePhotoRef = useRef();
 
     const resolvedDesignerId = designerId || authUser?.uid;
@@ -229,6 +233,15 @@ export default function DesignerProfile() {
         };
         fetchDesigner();
     }, [resolvedDesignerId]);
+
+    // ── Fetch personal orders (where designer is the buyer) ──
+    useEffect(() => {
+        if (!isOwner) { setPersonalOrdersLoading(false); return; }
+        getMyOrders()
+            .then(res => setPersonalOrders(res.data || []))
+            .catch(err => console.error("Personal orders error:", err))
+            .finally(() => setPersonalOrdersLoading(false));
+    }, [isOwner]);
 
     useEffect(() => {
         if (authUser) {
@@ -888,6 +901,91 @@ export default function DesignerProfile() {
 
                 </div>
             </div>
+
+            {/* ── Owner Personal Orders ── */}
+            {isOwner && (
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+                    <div className="border-t border-slate-200 pt-8 mt-4">
+                        <h2 className="text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-xl bg-fuchsia-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                            </div>
+                            Personal Orders
+                            <span className="text-xs font-bold text-slate-400 ml-auto">
+                                {personalOrdersLoading ? "" : `${personalOrders.length} order${personalOrders.length !== 1 ? "s" : ""}`}
+                            </span>
+                        </h2>
+
+                        {personalOrdersLoading ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {[1, 2].map(i => (
+                                    <div key={i} className="rounded-2xl border p-5 animate-pulse">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 rounded-xl bg-slate-100" />
+                                            <div className="flex-1 space-y-2"><div className="h-3 bg-slate-100 rounded w-1/2" /><div className="h-2 bg-slate-100 rounded w-1/3" /></div>
+                                        </div>
+                                        <div className="h-8 bg-slate-100 rounded-xl" />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : personalOrders.length === 0 ? (
+                            <div className="rounded-2xl border border-dashed border-slate-200 p-10 text-center">
+                                <div className="w-14 h-14 rounded-2xl bg-fuchsia-50 flex items-center justify-center mx-auto mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e879f9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                                </div>
+                                <h3 className="text-sm font-bold text-slate-700 mb-1">No personal orders yet</h3>
+                                <p className="text-xs text-slate-400">When you purchase fabrics from the shop, they’ll appear here.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {personalOrders.map(order => {
+                                    const status = order.status?.toLowerCase() || "pending";
+                                    const statusStyles = {
+                                        pending: "bg-amber-50 text-amber-700 border-amber-200",
+                                        processing: "bg-blue-50 text-blue-700 border-blue-200",
+                                        shipped: "bg-indigo-50 text-indigo-700 border-indigo-200",
+                                        completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                                        delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                                        cancelled: "bg-red-50 text-red-600 border-red-200",
+                                    };
+                                    const sc = statusStyles[status] || statusStyles.pending;
+                                    const itemNames = order.items?.map(i => i.name).join(", ") || "Order";
+                                    return (
+                                        <div key={order.id} className="rounded-2xl border border-slate-200 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all bg-white">
+                                            <div className="flex items-start gap-3 mb-3">
+                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-fuchsia-100 to-pink-100 flex items-center justify-center font-bold text-fuchsia-600 shrink-0">
+                                                    {itemNames.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-sm font-bold text-slate-900 truncate">{itemNames}</h4>
+                                                    <p className="text-[11px] text-slate-400 mt-0.5">ID: {order.id?.slice(0, 16)}</p>
+                                                    <span className={`inline-flex items-center mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border ${sc}`}>
+                                                        {order.status}
+                                                    </span>
+                                                </div>
+                                                <span className="text-sm font-extrabold text-slate-900 shrink-0">LKR {order.total_price?.toLocaleString()}</span>
+                                            </div>
+                                            <p className="text-xs text-slate-500 mb-3">
+                                                {order.items?.length} item{order.items?.length !== 1 ? "s" : ""} — {order.items?.map(i => `${i.name} (${i.quantity}${i.unit || "m"})`).join(", ")}
+                                            </p>
+                                            {order.created_at && (
+                                                <p className="text-[10px] text-slate-400 mb-3">Placed: {new Date(order.created_at).toLocaleDateString()}</p>
+                                            )}
+                                            {["pending", "processing", "shipped"].includes(status) && (
+                                                <button onClick={() => navigate(`/order-tracking/${order.id}`, { state: { order } })}
+                                                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold border border-fuchsia-200 text-fuchsia-600 hover:bg-fuchsia-50 transition-all">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                                                    Track Order
+                                                </button>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* ── Owner Profile Settings ── */}
             {isOwner && (
