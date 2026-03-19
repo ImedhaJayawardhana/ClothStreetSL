@@ -76,6 +76,8 @@ export function CartProvider({ children }) {
   }, [cartItems, user?.uid]);
 
   const addToCart = useCallback((item) => {
+    // Block sellers from adding to cart
+    if (user?.role === "seller") return;
     setCartItems((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
@@ -85,7 +87,7 @@ export function CartProvider({ children }) {
       }
       return [...prev, { ...item, quantity: item.quantity || 1, selected: true }];
     });
-  }, []);
+  }, [user?.role]);
 
   const toggleItemSelection = useCallback((id) => {
     setCartItems((prev) =>
