@@ -69,11 +69,7 @@ def delete_current_user(
             backup["cartData"] = cart_doc.to_dict()
 
         # Orders placed by this user
-        orders_query = (
-            db.collection("orders")
-            .where("uid", "==", uid)
-            .stream()
-        )
+        orders_query = db.collection("orders").where("uid", "==", uid).stream()
         orders_list = []
         for o in orders_query:
             orders_list.append({"id": o.id, **o.to_dict()})
@@ -82,9 +78,7 @@ def delete_current_user(
 
         # Quotations created by this user
         quotations_query = (
-            db.collection("quotations")
-            .where("customerId", "==", uid)
-            .stream()
+            db.collection("quotations").where("customerId", "==", uid).stream()
         )
         quotations_list = []
         for q in quotations_query:
@@ -113,4 +107,3 @@ def delete_current_user(
         raise HTTPException(
             status_code=500, detail=f"Failed to delete account: {str(e)}"
         )
-
