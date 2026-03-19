@@ -14,8 +14,6 @@ import {
 import { getAuth, updatePassword, sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../firebase/firebase";
-import { deleteAccount as deleteAccountApi } from "../../api";
 
 const InputField = ({ label, name, value, isReadOnly = false, type = "text", placeholder, isEditing, handleInputChange }) => (
   <div className="mb-4">
@@ -406,14 +404,14 @@ export default function SellerProfile() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div><p className="text-sm font-semibold text-gray-800">Email Notifications</p><p className="text-xs text-gray-500">Receive order updates and promotions via email.</p></div>
-              <button onClick={async () => { const np = { ...preferences, emailAlerts: !preferences.emailAlerts }; setPreferences(np); try { await setDoc(doc(db, "users", user.uid), { preferences: np }, { merge: true }); } catch {} }} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: preferences.emailAlerts ? '#2563eb' : '#d1d5db' }}>
+              <button onClick={async () => { const np = { ...preferences, emailAlerts: !preferences.emailAlerts }; setPreferences(np); try { await setDoc(doc(db, "users", user.uid), { preferences: np }, { merge: true }); } catch { /* ignore */ } }} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: preferences.emailAlerts ? '#2563eb' : '#d1d5db' }}>
                 <div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: preferences.emailAlerts ? '22px' : '2px' }} />
               </button>
             </div>
             <div className="h-px bg-gray-100" />
             <div className="flex items-center justify-between">
               <div><p className="text-sm font-semibold text-gray-800">SMS Alerts</p><p className="text-xs text-gray-500">Get real-time text messages when orders are out for delivery.</p></div>
-              <button onClick={async () => { const np = { ...preferences, smsAlerts: !preferences.smsAlerts }; setPreferences(np); try { await setDoc(doc(db, "users", user.uid), { preferences: np }, { merge: true }); } catch {} }} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: preferences.smsAlerts ? '#2563eb' : '#d1d5db' }}>
+              <button onClick={async () => { const np = { ...preferences, smsAlerts: !preferences.smsAlerts }; setPreferences(np); try { await setDoc(doc(db, "users", user.uid), { preferences: np }, { merge: true }); } catch { /* ignore */ } }} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: preferences.smsAlerts ? '#2563eb' : '#d1d5db' }}>
                 <div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: preferences.smsAlerts ? '22px' : '2px' }} />
               </button>
             </div>

@@ -12,7 +12,7 @@ import "./CustomerProfile.css";
 
 
 export default function CustomerProfile() {
-  const { user, updateProfile, logout, deleteUserAccount } = useAuth();
+  const { user, updateProfile, deleteUserAccount } = useAuth();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
