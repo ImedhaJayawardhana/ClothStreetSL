@@ -34,15 +34,15 @@ export default function Footer() {
               Sri Lanka's unified textile ecosystem — connecting fabric suppliers, skilled tailors, and customers in one seamless platform.
             </p>
             <div className="flex items-center gap-4 pt-2 text-slate-400">
-              <a href="#" className="w-10 h-10 flex items-center justify-center rounded-lg hover:text-amber-500 transition-colors duration-300">
+              <a href="#" className="w-10 h-10 flex items-center justify-center rounded-lg hover:text-white transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
                 <span className="sr-only">Facebook</span>
               </a>
-              <a href="#" className="w-10 h-10 flex items-center justify-center rounded-lg hover:text-amber-500 transition-colors duration-300">
+              <a href="#" className="w-10 h-10 flex items-center justify-center rounded-lg hover:text-white transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></svg>
                 <span className="sr-only">Instagram</span>
               </a>
-              <a href="https://www.linkedin.com/company/cloth-street/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-lg hover:text-amber-500 transition-colors duration-300">
+              <a href="https://www.linkedin.com/company/cloth-street/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-lg hover:text-white transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect width="4" height="12" x="2" y="9" /><circle cx="4" cy="4" r="2" /></svg>
                 <span className="sr-only">LinkedIn</span>
               </a>
@@ -53,16 +53,16 @@ export default function Footer() {
           <div className="space-y-4 lg:ml-8">
             <h3 className="font-semibold tracking-wide text-white">Platform</h3>
             <ul className="space-y-3">
-              <li><Link to="/about" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-amber-500 transition-colors">About Us</Link></li>
-              <li><Link to="/shop" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-amber-500 transition-colors">Fabric Marketplace</Link></li>
+              <li><Link to="/about" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-white transition-colors">About Us</Link></li>
+              <li><Link to="/shop" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-white transition-colors">Fabric Marketplace</Link></li>
               <li>
-                <Link to="/designers" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-amber-500 transition-colors">
+                <Link to="/designers" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-white transition-colors">
                   Find Designers
                 </Link>
               </li>
-              <li><Link to="/match" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-amber-500 transition-colors">AI Recommendations</Link></li>
-              <li><Link to="/orders" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-amber-500 transition-colors">Order Tracking</Link></li>
-              <li><Link to="/register" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-amber-500 transition-colors">Join as Supplier</Link></li>
+              <li><Link to="/match" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-white transition-colors">AI Recommendations</Link></li>
+              <li><Link to="/orders" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-white transition-colors">Order Tracking</Link></li>
+              <li><Link to="/register" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-white transition-colors">Join as Supplier</Link></li>
             </ul>
           </div>
 
@@ -70,10 +70,10 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="font-semibold tracking-wide text-white">For Business</h3>
             <ul className="space-y-3">
-              <li><a href="#" onClick={handleListFabrics} className="text-sm text-slate-300 hover:text-amber-500 transition-colors">List Your Fabrics</a></li>
-              <li><Link to="/register" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-amber-500 transition-colors">Join as Tailor</Link></li>
-              <li><Link to="/register" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-amber-500 transition-colors">Join as Designer</Link></li>
-              <li><Link to="/business/enterprise" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-amber-500 transition-colors">Enterprise Solutions</Link></li>
+              <li><a href="#" onClick={handleListFabrics} className="text-sm text-slate-300 hover:text-white transition-colors">List Your Fabrics</a></li>
+              <li><Link to="/register" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-white transition-colors">Join as Tailor</Link></li>
+              <li><Link to="/register" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-white transition-colors">Join as Designer</Link></li>
+              <li><Link to="/business/enterprise" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-300 hover:text-white transition-colors">Enterprise Solutions</Link></li>
             </ul>
           </div>
 
@@ -91,7 +91,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-4 text-slate-300">
                 <svg className="w-5 h-5 shrink-0 text-slate-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
-                <a href="mailto:hello@clothstreet.lk" className="text-sm hover:text-amber-500 transition-colors">ClothStreet@gmail.com</a>
+                <a href="mailto:hello@clothstreet.lk" className="text-sm hover:text-white transition-colors">ClothStreet@gmail.com</a>
               </li>
             </ul>
           </div>
@@ -104,9 +104,9 @@ export default function Footer() {
             © 2026 ClothStreet. All rights reserved.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-            <Link to="/privacy" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-400 hover:text-amber-500 transition-colors">Privacy Policy</Link>
-            <Link to="/terms" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-400 hover:text-amber-500 transition-colors">Terms of Service</Link>
-            <Link to="/cookies" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-400 hover:text-amber-500 transition-colors">Cookie Policy</Link>
+            <Link to="/privacy" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-400 hover:text-white transition-colors">Privacy Policy</Link>
+            <Link to="/terms" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-400 hover:text-white transition-colors">Terms of Service</Link>
+            <Link to="/cookies" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-400 hover:text-white transition-colors">Cookie Policy</Link>
           </div>
         </div>
       </div>

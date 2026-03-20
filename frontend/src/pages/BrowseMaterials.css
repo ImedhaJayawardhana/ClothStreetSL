@@ -431,8 +431,9 @@
 }
 
 .bm-meta-value.bm-price-highlight {
-  color: var(--clr-primary);
-  font-size: 1.15rem;
+  color: #1A1A1B;
+  font-weight: 800;
+  font-size: 1.05rem;
 }
 
 /* Add to Cart Button */
