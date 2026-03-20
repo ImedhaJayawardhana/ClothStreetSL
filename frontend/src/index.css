@@ -1,1 +1,65 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --brand-primary: #F9A825;
+  --brand-dark: #343A40;
+  --bg-main: #FAF9F6;
+  --text-main: #343A40;
+  --text-muted: #A8A88E;
+  --border-color: #BDB39E;
+  
+  --clr-primary: var(--brand-primary);
+  --clr-primary-2: #E69500;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+}
+
+@theme {
+  --color-amber-500: var(--brand-primary);
+  --color-amber-600: #E69500;
+  --color-orange-500: var(--brand-primary);
+  --color-orange-600: #E69500;
+  
+  --color-slate-900: var(--brand-dark);
+  --color-slate-800: var(--brand-dark);
+  --color-slate-700: var(--brand-dark);
+  --color-slate-600: var(--text-muted);
+  --color-slate-500: var(--text-muted);
+  --color-slate-400: var(--text-muted);
+  --color-slate-300: var(--text-muted);
+  --color-slate-200: var(--border-color);
+  --color-slate-100: var(--border-color);
+  --color-slate-50: var(--bg-main);
+  
+  --color-white: #ffffff;
+  
+  --font-sans: 'Inter', 'Montserrat', sans-serif;
+}
+
+@layer components {
+  /* Secondary Desert Buttons */
+  .btn-secondary,
+  .btn-outline-dark {
+    border: 1px solid var(--brand-dark);
+    color: var(--brand-dark);
+    background-color: transparent;
+    transition: all 0.2s ease;
+  }
+  .btn-secondary:hover,
+  .btn-outline-dark:hover {
+    background-color: var(--brand-dark);
+    color: #FFFFFF;
+  }
+  
+  /* Desert Badges */
+  .badge-desert {
+    background-color: var(--text-muted);
+    color: #FFFFFF;
+    border: none;
+  }
+}
