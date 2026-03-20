@@ -63,6 +63,9 @@ export const updateQuotationDeliverables = (quotationId, files, message = "") =>
 export const deleteQuotation = (id) => api.delete(`/quotations/${id}`);
 
 // ─── Cart ────────────────────────────────────────────
+export const fetchCart = () => api.get("/cart");
+export const saveCart = (items) => api.put("/cart", { items });
+export const clearCartBackend = () => api.delete("/cart");
 export const deleteCartItem = (customerId, providerId) =>
     api.delete(`/cart/${customerId}/item/${providerId}`);
 
