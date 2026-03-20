@@ -105,9 +105,7 @@ def process_ai_chat(
             # Simple matching: Does their speciality include the materials
             # we found?
             if target_materials:
-                if any(
-                    m in p_speciality or m in p_bio for m in target_materials
-                ):
+                if any(m in p_speciality or m in p_bio for m in target_materials):
                     matched_providers.append(p)
             else:
                 # If no specific material, return top rated/featured
@@ -119,8 +117,7 @@ def process_ai_chat(
     # 3. Calculate requirements if sizes are needed
     required_meters = 0
     message = (
-        "Here are some beautiful fabrics I found for you based on your "
-        "request!"
+        "Here are some beautiful fabrics I found for you based on your " "request!"
     )
 
     if needs_size_match:
@@ -210,15 +207,11 @@ def chat_with_ai(request: ChatRequest):
     ]
 
     tailors_ref = db.collection("tailors").stream()
-    tailors = [
-        doc.to_dict() | {"id": doc.id, "type": "tailor"}
-        for doc in tailors_ref
-    ]
+    tailors = [doc.to_dict() | {"id": doc.id, "type": "tailor"} for doc in tailors_ref]
 
     designers_ref = db.collection("designers").stream()
     designers = [
-        doc.to_dict() | {"id": doc.id, "type": "designer"}
-        for doc in designers_ref
+        doc.to_dict() | {"id": doc.id, "type": "designer"} for doc in designers_ref
     ]
 
     # 3. Process the AI intent
