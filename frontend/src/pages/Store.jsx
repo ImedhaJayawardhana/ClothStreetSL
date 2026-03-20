@@ -268,7 +268,7 @@ export default function Store() {
                                                 {item.type}
                                             </div>
                                             <div className="flex items-center justify-between mt-auto">
-                                                <span className="text-lg font-extrabold tracking-tight">
+                                                <span className="text-lg font-extrabold tracking-tight text-slate-900">
                                                     LKR {item.price?.toLocaleString()}
                                                 </span>
                                                 <div className="w-8 h-8 rounded-full flex items-center justify-center group-hover: transition-colors">

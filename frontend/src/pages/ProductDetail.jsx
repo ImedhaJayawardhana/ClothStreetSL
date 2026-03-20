@@ -359,7 +359,7 @@ export default function ProductDetail() {
                 Price Per Meter
               </div>
               <div style={{
-                fontSize: "1.8rem", fontWeight: 800, color: C.purple,
+                fontSize: "1.8rem", fontWeight: 800, color: "#1A1A1B",
                 letterSpacing: "-0.02em"
               }}>
                 LKR {fabric.price?.toLocaleString()}

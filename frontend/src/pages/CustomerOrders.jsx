@@ -254,7 +254,7 @@ export default function CustomerOrders() {
                         { label: "Total Orders", value: ordersLoading ? "..." : totalOrders, color: "bg-amber-100 text-amber-600" },
                         { label: "Active", value: ordersLoading ? "..." : activeOrders, sub: "In progress", color: "bg-amber-100 text-amber-600" },
                         { label: "Completed", value: ordersLoading ? "..." : completedOrders, sub: "Delivered", color: "bg-emerald-100 text-emerald-600" },
-                        { label: "Total Spent", value: ordersLoading ? "..." : `LKR ${(totalSpent / 1000).toFixed(0)}K`, sub: "Total purchases", color: "bg-amber-100 text-amber-600" },
+                        { label: "Total Spent", value: ordersLoading ? "..." : `LKR ${(totalSpent / 1000).toFixed(0)}K`, sub: "Total purchases", color: "bg-slate-100 text-slate-600" },
                     ].map((stat) => (
                         <div key={stat.label} className="border rounded-2xl p-5 flex items-start justify-between hover:shadow-md hover:-translate-y-0.5 transition-all">
                             <div>
@@ -347,7 +347,7 @@ export default function CustomerOrders() {
                                             </div>
                                             <div>
                                                 <span>Price: </span>
-                                                <span className="font-bold text-amber-600">LKR {q.grandTotal ? q.grandTotal.toLocaleString() : (q.price ? q.price.toLocaleString() : "Pending")}</span>
+                                                <span className="font-bold text-slate-900">LKR {q.grandTotal ? q.grandTotal.toLocaleString() : (q.price ? q.price.toLocaleString() : "Pending")}</span>
                                             </div>
                                         </div>
 
@@ -499,7 +499,7 @@ export default function CustomerOrders() {
                                             </div>
                                             <div className="flex items-center gap-1.5 text-xs text-slate-500">
                                                 <span>Total:</span>
-                                                <span className="font-semibold text-emerald-600">
+                                                <span className="font-semibold text-slate-900">
                                                     LKR {order.total_price?.toLocaleString()}
                                                 </span>
                                             </div>

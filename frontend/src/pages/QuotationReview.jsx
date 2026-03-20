@@ -270,13 +270,13 @@ export default function QuotationReview() {
                                     <span className="text-sm font-bold text-amber-900 block">Designer Fee (Pay Now)</span>
                                     <span className="text-xs text-amber-700">Materials will be paid later in the process.</span>
                                 </div>
-                                <span className="text-2xl font-extrabold text-amber-700">LKR {payableTotal.toLocaleString()}</span>
+                                <span className="text-2xl font-extrabold text-slate-900">LKR {payableTotal.toLocaleString()}</span>
                             </div>
                         )}
                         {!isDesigner && (
                             <div className="flex justify-between items-center pt-2">
                                 <span className="text-lg font-bold">Total to Pay</span>
-                                <span className="text-2xl font-extrabold text-amber-600">LKR {payableTotal.toLocaleString()}</span>
+                                <span className="text-2xl font-extrabold text-slate-900">LKR {payableTotal.toLocaleString()}</span>
                             </div>
                         )}
                     </div>
@@ -331,7 +331,7 @@ export default function QuotationReview() {
  Payment
  </h3>
                             <p className="text-sm mb-6">
-                                Amount to pay: <span className="font-bold text-emerald-700">LKR {payableTotal.toLocaleString()}</span>
+                                Amount to pay: <span className="font-bold text-slate-900">LKR {payableTotal.toLocaleString()}</span>
                             </p>
 
  {/* Payment method selection */}
@@ -408,7 +408,7 @@ export default function QuotationReview() {
                         <h3 className="text-lg font-bold mb-1">
                             {(quotation.status === "accepted" || quotation.status === "design_in_progress" || quotation.status === "design_completed" || quotation.status === "design_delivered") ? "Quotation Accepted & Paid" : "Quotation Declined"}
                         </h3>
-                        <p className="text-2xl font-extrabold text-amber-600 mb-2">LKR {(quotation.status === "rejected" ? grandTotal : payableTotal).toLocaleString()}</p>
+                        <p className="text-2xl font-extrabold text-slate-900 mb-2">LKR {(quotation.status === "rejected" ? grandTotal : payableTotal).toLocaleString()}</p>
                         {quotation.paymentMethod && (
                             <p className="text-sm capitalize">Payment: {quotation.paymentMethod}</p>
                         )}
