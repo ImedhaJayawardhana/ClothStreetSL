@@ -38,7 +38,7 @@ export default function AIMatch() {
     }, 10);
   };
 
-  const isSeller = user?.role === "seller";
+
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
