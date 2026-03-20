@@ -61,7 +61,7 @@ export default function BrowseDesigners() {
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(15,10,40,0.90) 0%, rgba(30,20,70,0.84) 40%, rgba(55,30,100,0.76) 100%)', zIndex: 1 }} />
 
                 <div className="max-w-7xl mx-auto text-center relative px-4" style={{ zIndex: 2, paddingTop: '1.5rem', paddingBottom: '2rem' }}>
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase rounded-full px-4 py-1.5 mb-5" style={{ color: '#e9d5ff', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)' }}>
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase rounded-full px-4 py-1.5 mb-5" style={{ color: '#e9d5ff', background: 'rgba(249, 168, 37,0.15)', border: '1px solid rgba(249, 168, 37,0.3)' }}>
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                         </svg>
@@ -69,11 +69,11 @@ export default function BrowseDesigners() {
                     </span>
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4" style={{ color: '#ffffff' }}>
                         Find Expert{' '}
-                        <span style={{ background: 'linear-gradient(135deg, #f0abfc, #c4b5fd)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                        <span style={{ background: 'linear-gradient(135deg, #f0abfc, var(--brand-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                             Designers
                         </span>
                     </h1>
-                    <p className="text-lg max-w-xl mx-auto" style={{ color: 'rgba(233,213,255,0.85)' }}>
+                    <p className="text-lg max-w-xl mx-auto" style={{ color: 'rgba(248, 249, 250,0.85)' }}>
                         {loading ? '...' : `${designers.length}+`} creative professionals for your fashion vision
                     </p>
                 </div>
@@ -134,7 +134,7 @@ export default function BrowseDesigners() {
                                 className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
                                     isActive
                                         ? 'bg-fuchsia-600 border-fuchsia-600 text-white shadow-md shadow-fuchsia-200'
-                                        : 'bg-white hover:border-violet-300 hover:text-violet-600 border-slate-200'
+                                        : 'bg-white hover:border-amber-300 hover:text-amber-600 border-slate-200'
                                 }`}
                             >
                                 {style}
@@ -173,10 +173,10 @@ export default function BrowseDesigners() {
                 ) : filteredDesigners.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
                         {filteredDesigners.map(designer => (
-                            <div key={designer.id} className="rounded-3xl border overflow-hidden shadow-sm hover:shadow-xl hover:shadow-violet-100/50 hover:border-violet-100 transition-all duration-300 group flex flex-col bg-white">
+                            <div key={designer.id} className="rounded-3xl border overflow-hidden shadow-sm hover:shadow-xl hover:shadow-amber-100/50 hover:border-amber-100 transition-all duration-300 group flex flex-col bg-white">
 
                                 {/* Header Image Area */}
-                                <div className="relative h-48 overflow-hidden bg-gradient-to-br from-fuchsia-100 to-purple-100">
+                                <div className="relative h-48 overflow-hidden bg-gradient-to-br from-fuchsia-100 to-amber-100">
                                     {designer.portfolioImages?.[0] ? (
                                         <img src={designer.portfolioImages[0]} alt={designer.name}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -192,7 +192,7 @@ export default function BrowseDesigners() {
                                     {/* Status Badge */}
                                     <div className="absolute inset-x-0 bottom-0 p-3 flex justify-between items-end bg-gradient-to-t from-black/60 to-transparent">
                                         <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase flex items-center gap-1.5 shadow-sm backdrop-blur-md ${
-                                            designer.availability ? 'bg-emerald-500/90 text-white' : 'bg-slate-500/90 text-white'
+                                            designer.availability ? 'bg-[#A8A88E] text-white' : 'bg-slate-500/90 text-white'
                                         }`}>
                                             <span className={`w-1.5 h-1.5 rounded-full ${designer.availability ? 'bg-white' : 'bg-slate-300'}`} />
                                             {designer.availability ? 'Available' : 'Busy'}
@@ -322,7 +322,7 @@ export default function BrowseDesigners() {
                                 <img src={contactDesigner.profilePhoto} alt={contactDesigner.name}
                                     className="w-12 h-12 rounded-full object-cover border-2 border-fuchsia-100" />
                             ) : (
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-fuchsia-400 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-fuchsia-400 to-amber-600 flex items-center justify-center text-white font-bold text-lg">
                                     {contactDesigner.name?.charAt(0)}
                                 </div>
                             )}
@@ -363,9 +363,9 @@ export default function BrowseDesigners() {
                             </a>
 
                             <button onClick={() => { setContactDesigner(null); navigate(`/designer/${contactDesigner.id}`); }}
-                                className="w-full flex items-center gap-3 p-3 hover:bg-violet-50 border hover:border-violet-200 rounded-xl transition-all duration-200">
-                                <div className="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                className="w-full flex items-center gap-3 p-3 hover:bg-amber-50 border hover:border-amber-200 rounded-xl transition-all duration-200">
+                                <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
                                 </div>

@@ -405,7 +405,7 @@ export default function CustomerProfile() {
  <div className="cp-card" style={{ marginBottom:"0"}}>
  <div className="cp-section-header">
  <h3 className="cp-section-title">
- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /><path d="M16 13H8" /><path d="M16 17H8" /><path d="M10 9H8" /></svg>
+ <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /><path d="M16 13H8" /><path d="M16 17H8" /><path d="M10 9H8" /></svg>
  About Me
  </h3>
  </div>
@@ -418,10 +418,10 @@ export default function CustomerProfile() {
  <div className="cp-card" style={{ marginBottom:"0"}}>
  <div className="cp-section-header">
  <h3 className="cp-section-title">
- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
+ <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
  Recent Orders
  </h3>
- <Link to="/orders" style={{ display:"inline-flex", alignItems:"center", gap:"4px", fontSize:"13px", color:"#6366f1", fontWeight:"600", textDecoration:"none"}}>
+ <Link to="/orders" style={{ display:"inline-flex", alignItems:"center", gap:"4px", fontSize:"13px", color:"var(--brand-primary)", fontWeight:"600", textDecoration:"none"}}>
  View All
  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
  </Link>
@@ -438,11 +438,11 @@ export default function CustomerProfile() {
    return (
     <div className="cp-order-item" key={order.id} onClick={() => navigate(`/order-tracking/${order.id}`, { state: { order } })} style={{ cursor: "pointer", borderRadius: "8px", padding: "16px 8px", transition: "background 0.15s ease" }} onMouseEnter={(e) => e.currentTarget.style.background = "#f5f3ff"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
      <div>
-      <p style={{ fontSize: "14px", fontWeight: "700", color: "#1e1b4b" }}>{itemNames}</p>
+      <p style={{ fontSize: "14px", fontWeight: "700", color: "var(--brand-dark)" }}>{itemNames}</p>
       <p style={{ fontSize: "12.5px", color: "#6b7280", marginTop: "2px" }}>{formattedDate}</p>
      </div>
      <div style={{ textAlign: "right" }}>
-      <p style={{ fontSize: "14.5px", fontWeight: "600", color: "#1e1b4b", marginBottom: "6px" }}>LKR {(order.total_price || 0).toLocaleString()}</p>
+      <p style={{ fontSize: "14.5px", fontWeight: "600", color: "var(--brand-dark)", marginBottom: "6px" }}>LKR {(order.total_price || 0).toLocaleString()}</p>
       <span className={`cp-status-pill ${statusClass}`}>{order.status}</span>
      </div>
     </div>
@@ -466,7 +466,7 @@ export default function CustomerProfile() {
  <div className="cp-card" style={{ marginBottom:"0"}}>
  <div className="cp-section-header">
  <h3 className="cp-section-title">
- <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+ <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
  Address Details
  </h3>
  </div>
@@ -494,7 +494,7 @@ export default function CustomerProfile() {
   <div className="cp-card" style={{ marginBottom:"0"}}>
     <div className="cp-section-header">
       <h3 className="cp-section-title">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
         </svg>
         Saved Items
@@ -517,7 +517,7 @@ export default function CustomerProfile() {
                       {tailor.profilePhoto ? <img src={tailor.profilePhoto} alt="" style={{width:"100%", height:"100%", objectFit:"cover"}} /> : tailor.name.charAt(0)}
                     </div>
                     <div>
-                      <p style={{ fontSize:"14px", fontWeight:"600", color:"#1e1b4b"}}>{tailor.name}</p>
+                      <p style={{ fontSize:"14px", fontWeight:"600", color:"var(--brand-dark)"}}>{tailor.name}</p>
                       <p style={{ fontSize:"12px", color:"#6b7280", marginTop:"2px"}}>★ {tailor.rating} • {tailor.location || "Sri Lanka"}</p>
                     </div>
                   </div>
@@ -533,11 +533,11 @@ export default function CustomerProfile() {
               <div style={{ display:"flex", flexDirection:"column", gap:"12px"}}>
                 {savedDesigners.map((designer) => (
                   <div key={designer.uid} onClick={() => navigate(`/designer/${designer.uid}`)} style={{ display:"flex", alignItems:"center", gap:"12px", cursor:"pointer"}} className="cp-saved-item">
-                    <div style={{ width:"40px", height:"40px", borderRadius:"8px", background:"#fdf4ff", display:"flex", alignItems:"center", justifyContent:"center", color:"#d946ef", fontWeight:"bold", fontSize:"16px", overflow:"hidden"}}>
+                    <div style={{ width:"40px", height:"40px", borderRadius:"8px", background:"#fdf4ff", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--brand-primary)", fontWeight:"bold", fontSize:"16px", overflow:"hidden"}}>
                       {designer.profilePhoto ? <img src={designer.profilePhoto} alt="" style={{width:"100%", height:"100%", objectFit:"cover"}} /> : designer.name.charAt(0)}
                     </div>
                     <div>
-                      <p style={{ fontSize:"14px", fontWeight:"600", color:"#1e1b4b"}}>{designer.name}</p>
+                      <p style={{ fontSize:"14px", fontWeight:"600", color:"var(--brand-dark)"}}>{designer.name}</p>
                       <p style={{ fontSize:"12px", color:"#6b7280", marginTop:"2px"}}>★ {designer.rating} • {designer.style || "Designer"}</p>
                     </div>
                   </div>
@@ -557,7 +557,7 @@ export default function CustomerProfile() {
                       {shop.logoUrl ? <img src={shop.logoUrl} alt="" style={{width:"100%", height:"100%", objectFit:"cover"}} /> : (shop.shopName || shop.storeName || "S").charAt(0)}
                     </div>
                     <div>
-                      <p style={{ fontSize:"14px", fontWeight:"600", color:"#1e1b4b"}}>{shop.shopName || shop.storeName || "Seller Store"}</p>
+                      <p style={{ fontSize:"14px", fontWeight:"600", color:"var(--brand-dark)"}}>{shop.shopName || shop.storeName || "Seller Store"}</p>
                       <p style={{ fontSize:"12px", color:"#6b7280", marginTop:"2px"}}>★ {shop.rating || "4.8"} • {shop.address || "Sri Lanka"}</p>
                     </div>
                   </div>
@@ -586,7 +586,7 @@ export default function CustomerProfile() {
  <div className="cp-card" style={{ height:"100%", marginBottom:"0"}}>
  <div className="cp-section-header">
  <h3 className="cp-section-title">
- <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+ <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
  Measurements
  </h3>
  </div>
@@ -829,7 +829,7 @@ export default function CustomerProfile() {
  {/* Email Toggle */}
  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center"}}>
  <div>
- <p style={{ fontSize:"15px", fontWeight:"600", color:"#1e1b4b"}}>Email Notifications</p>
+ <p style={{ fontSize:"15px", fontWeight:"600", color:"var(--brand-dark)"}}>Email Notifications</p>
  <p style={{ fontSize:"13px", color:"#6b7280"}}>Receive order updates and promotions via email.</p>
  </div>
  <label style={{ display:"flex", alignItems:"center", cursor:"pointer"}}>
@@ -846,7 +846,7 @@ export default function CustomerProfile() {
  {/* SMS Toggle */}
  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center"}}>
  <div>
- <p style={{ fontSize:"15px", fontWeight:"600", color:"#1e1b4b"}}>SMS Alerts</p>
+ <p style={{ fontSize:"15px", fontWeight:"600", color:"var(--brand-dark)"}}>SMS Alerts</p>
  <p style={{ fontSize:"13px", color:"#6b7280"}}>Get real-time text messages when orders are out for delivery.</p>
  </div>
  <label style={{ display:"flex", alignItems:"center", cursor:"pointer"}}>
@@ -867,7 +867,7 @@ export default function CustomerProfile() {
  <div style={{ display:"flex", flexDirection:"column", gap:"16px"}}>
  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center"}}>
  <div>
- <p style={{ fontSize:"15px", fontWeight:"600", color:"#1e1b4b"}}>Password</p>
+ <p style={{ fontSize:"15px", fontWeight:"600", color:"var(--brand-dark)"}}>Password</p>
  <p style={{ fontSize:"13px", color:"#6b7280"}}>Send a secure reset link to your email ({user?.email}).</p>
  </div>
  <button className="cp-upload-btn" onClick={handlePasswordReset}>Change Password</button>

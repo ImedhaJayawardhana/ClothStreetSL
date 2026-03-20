@@ -130,7 +130,7 @@ export default function BrowseTailors() {
 
         <div className="max-w-7xl mx-auto text-center relative px-4" style={{ zIndex: 2, paddingTop: '1.5rem', paddingBottom: '2rem' }}>
           {/* Label pill */}
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase rounded-full px-4 py-1.5 mb-5" style={{ color: '#e9d5ff', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)' }}>
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase rounded-full px-4 py-1.5 mb-5" style={{ color: '#e9d5ff', background: 'rgba(249, 168, 37,0.15)', border: '1px solid rgba(249, 168, 37,0.3)' }}>
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -140,13 +140,13 @@ export default function BrowseTailors() {
           {/* Heading */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4" style={{ color: '#ffffff' }}>
             Find Expert{''}
-            <span style={{ background: 'linear-gradient(135deg, #c4b5fd, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <span style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               {' '}Tailors
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg max-w-xl mx-auto" style={{ color: 'rgba(233,213,255,0.85)' }}>
+          <p className="text-lg max-w-xl mx-auto" style={{ color: 'rgba(248, 249, 250,0.85)' }}>
             6+ verified professionals ready for your garment needs
           </p>
 
@@ -213,8 +213,8 @@ export default function BrowseTailors() {
                 key={spec}
                 onClick={() => setActiveSpecialization(key)}
                 className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 border ${isActive
-                  ? 'bg-violet-600 border-violet-600 shadow-md shadow-violet-200'
-                  : ' hover:border-violet-300 hover:text-violet-600'
+                  ? 'bg-amber-600 border-amber-600 shadow-md shadow-amber-200'
+                  : ' hover:border-amber-300 hover:text-amber-600'
                   }`}
               >
                 {spec}
@@ -253,7 +253,7 @@ export default function BrowseTailors() {
         ) : filteredTailors.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
             {filteredTailors.map(tailor => (
-              <div key={tailor.id} className="rounded-3xl border overflow-hidden shadow-sm hover:shadow-xl hover:shadow-violet-100/50 hover:border-violet-100 transition-all duration-300 group flex flex-col">
+              <div key={tailor.id} className="rounded-3xl border overflow-hidden shadow-sm hover:shadow-xl hover:shadow-amber-100/50 hover:border-amber-100 transition-all duration-300 group flex flex-col">
 
                 {/* Header Image Area */}
                 <div className="relative h-48 overflow-hidden">
@@ -268,7 +268,7 @@ export default function BrowseTailors() {
 
                   {/* Badges Overlay */}
                   <div className="absolute inset-x-0 bottom-0 p-3 flex justify-between items-end bg-gradient-to-t from-black/60 to-transparent">
-                    <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase flex items-center gap-1.5 shadow-sm backdrop-blur-md ${(tailor.status === 'Available' || tailor.availability === true) ? 'bg-emerald-500/90' : 'bg-slate-500/90'
+                    <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase flex items-center gap-1.5 shadow-sm backdrop-blur-md ${(tailor.status === 'Available' || tailor.availability === true) ? 'bg-[#A8A88E]' : 'bg-slate-500/90'
                       }`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${(tailor.status === 'Available' || tailor.availability === true) ? 'bg-white' : 'bg-slate-300'}`}></span>
                       {(tailor.status || (tailor.availability ? 'Available' : 'Busy'))}
@@ -304,7 +304,7 @@ export default function BrowseTailors() {
                   <div className="mb-5 flex-grow">
                     <div className="flex flex-wrap gap-2 mb-3">
                       {(tailor.services || tailor.specializations)?.slice(0, 2).map((spec, idx) => (
-                        <span key={idx} className="inline-flex px-2.5 py-1 rounded-md text-[11px] font-semibold text-violet-700 bg-violet-50 border border-violet-100">
+                        <span key={idx} className="inline-flex px-2.5 py-1 rounded-md text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-100">
                           {spec}
                         </span>
                       ))}
@@ -348,7 +348,7 @@ export default function BrowseTailors() {
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={() => navigate(`/tailor/${tailor.id}`)}
-                        className="w-full py-2.5 px-3 bg-violet-600 hover:bg-violet-700 text-sm font-semibold rounded-xl transition-colors shadow-sm shadow-violet-200 flex items-center justify-center gap-1.5 focus:ring-2 focus:ring-violet-500 focus:ring-offset-2"
+                        className="w-full py-2.5 px-3 bg-amber-600 hover:bg-amber-700 text-sm font-semibold rounded-xl transition-colors shadow-sm shadow-amber-200 flex items-center justify-center gap-1.5 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -397,7 +397,7 @@ export default function BrowseTailors() {
             </button>
             <button
               onClick={handleAddMockData}
-              className="inline-flex items-center gap-2 px-5 py-2.5 mt-4 sm:mt-0 sm:ml-4 bg-violet-600 hover:bg-violet-700 text-sm font-semibold rounded-xl transition-colors shadow-sm shadow-violet-200"
+              className="inline-flex items-center gap-2 px-5 py-2.5 mt-4 sm:mt-0 sm:ml-4 bg-amber-600 hover:bg-amber-700 text-sm font-semibold rounded-xl transition-colors shadow-sm shadow-amber-200"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -489,7 +489,7 @@ export default function BrowseTailors() {
                 style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '12px', background: '#fff', cursor: 'pointer', width: '100%', textAlign: 'left' }}
               >
                 <div style={{ width: '40px', height: '40px', background: '#ede9fe', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="20" height="20" fill="none" stroke="#7c3aed" viewBox="0 0 24 24">
+                  <svg width="20" height="20" fill="none" stroke="var(--brand-primary)" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>

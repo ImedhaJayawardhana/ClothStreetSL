@@ -11,7 +11,7 @@ const CHECKOUT_STYLES = `
 .checkout-stepper-inner { max-width: 600px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: center; gap: 0; }
 .checkout-step { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; min-width: 60px; }
 .checkout-step-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; border: 2px solid #d4d4d8; background: #fff; color: #a1a1aa; transition: all 0.25s; }
-.checkout-step.active .checkout-step-circle { background: var(--clr-primary); border-color: var(--clr-primary); color: #fff; box-shadow: 0 2px 10px rgba(124,58,237,0.3); }
+.checkout-step.active .checkout-step-circle { background: var(--clr-primary); border-color: var(--clr-primary); color: #fff; box-shadow: 0 2px 10px rgba(249, 168, 37,0.3); }
 .checkout-step.completed .checkout-step-circle { background: var(--clr-primary); border-color: var(--clr-primary); color: #fff; }
 .checkout-step-label { font-size: 0.75rem; font-weight: 500; color: #a1a1aa; text-align: center; white-space: nowrap; }
 .checkout-step.active .checkout-step-label { color: var(--clr-primary); font-weight: 600; }
@@ -26,12 +26,12 @@ const CHECKOUT_STYLES = `
 .checkout-form-group { margin-bottom: 18px; }
 .checkout-form-label { display: block; font-size: 0.78rem; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
 .checkout-form-input { width: 100%; padding: 12px 16px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; color: #18181b; background: #fafafa; outline: none; transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit; }
-.checkout-form-input:focus { border-color: var(--clr-primary); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); background: #fff; }
+.checkout-form-input:focus { border-color: var(--clr-primary); box-shadow: 0 0 0 3px rgba(249, 168, 37,0.1); background: #fff; }
 .checkout-form-input::placeholder { color: #a1a1aa; }
 .checkout-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 500px) { .checkout-form-row { grid-template-columns: 1fr; } }
-.checkout-continue-btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 32px; background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-2) 100%); color: #fff; border: none; border-radius: 12px; font-size: 0.98rem; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.18s; box-shadow: 0 4px 16px rgba(124,58,237,0.25); margin-top: 8px; }
-.checkout-continue-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(124,58,237,0.35); }
+.checkout-continue-btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 32px; background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-2) 100%); color: #fff; border: none; border-radius: 12px; font-size: 0.98rem; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.18s; box-shadow: 0 4px 16px rgba(249, 168, 37,0.25); margin-top: 8px; }
+.checkout-continue-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(249, 168, 37,0.35); }
 .checkout-continue-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .checkout-summary-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 28px 28px 24px; }
 .checkout-summary-title { font-size: 1.15rem; font-weight: 700; color: #18181b; margin: 0 0 20px; }
@@ -50,7 +50,7 @@ const CHECKOUT_STYLES = `
 .checkout-delivery-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
 .checkout-delivery-option { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border: 2px solid #e5e7eb; border-radius: 14px; cursor: pointer; transition: all 0.2s; background: #fff; }
 .checkout-delivery-option:hover { border-color: var(--clr-glow); background: #faf5ff; }
-.checkout-delivery-option.selected { border-color: var(--clr-primary); background: #f5f3ff; box-shadow: 0 0 0 3px rgba(124,58,237,0.08); }
+.checkout-delivery-option.selected { border-color: var(--clr-primary); background: #f5f3ff; box-shadow: 0 0 0 3px rgba(249, 168, 37,0.08); }
 .checkout-delivery-option-icon { width: 40px; height: 40px; border-radius: 10px; background: #f4f4f5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .checkout-delivery-option.selected .checkout-delivery-option-icon { background: #ede9fe; }
 .checkout-delivery-option-icon svg { width: 20px; height: 20px; color: #71717a; }
@@ -111,7 +111,7 @@ const CHECKOUT_STYLES = `
 .checkout-success-actions { display: flex; align-items: center; justify-content: center; gap: 16px; width: 100%; }
 .checkout-success-btn-secondary { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e5e7eb; color: #18181b; padding: 12px 24px; border-radius: 50px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
 .checkout-success-btn-secondary:hover { background: #f4f4f5; }
-.checkout-success-btn-primary { display: flex; align-items: center; gap: 8px; background: var(--clr-primary); color: #fff; border: none; padding: 12px 32px; border-radius: 50px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(124,58,237,0.25); }
+.checkout-success-btn-primary { display: flex; align-items: center; gap: 8px; background: var(--clr-primary); color: #fff; border: none; padding: 12px 32px; border-radius: 50px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(249, 168, 37,0.25); }
 .checkout-success-btn-primary:hover { background: var(--clr-primary-2); transform: translateY(-1px); }
 @keyframes skeletonPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
@@ -126,7 +126,7 @@ const CHECKOUT_STYLES = `
 .service-modal-desc { font-size: 0.88rem; color: #71717a; margin: 0 0 28px; text-align: center; }
 .service-modal-options { display: flex; flex-direction: column; gap: 14px; }
 .service-modal-option { display: flex; align-items: center; gap: 16px; padding: 20px 22px; border: 2px solid #e5e7eb; border-radius: 18px; cursor: pointer; transition: all 0.2s; background: #fff; }
-.service-modal-option:hover { border-color: var(--clr-glow); background: #faf5ff; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,0.1); }
+.service-modal-option:hover { border-color: var(--clr-glow); background: #faf5ff; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249, 168, 37,0.1); }
 .service-modal-option-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.5rem; }
 .service-modal-option-icon.tailor { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
 .service-modal-option-icon.designer { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
@@ -206,7 +206,7 @@ export default function Checkout() {
     if (loading || !user) {
         return (
             <div className="checkout-page flex flex-col items-center justify-center min-h-[60vh]">
-                <div className="w-10 h-10 border-4 border-slate-200 border-t-purple-600 rounded-full animate-spin"></div>
+                <div className="w-10 h-10 border-4 border-slate-200 border-t-amber-600 rounded-full animate-spin"></div>
                 <p className="mt-4 text-slate-500 font-medium">Verifying secure access...</p>
             </div>
         );
@@ -458,14 +458,14 @@ export default function Checkout() {
 
                             {/* Find a Tailor / Designer */}
                             <div className="checkout-delivery-option"
-                                style={{ border: "2px solid transparent", background: "linear-gradient(#fff,#fff) padding-box, linear-gradient(135deg,#7c3aed,#db2777) border-box" }}
+                                style={{ border: "2px solid transparent", background: "linear-gradient(#fff,#fff) padding-box, linear-gradient(135deg,var(--brand-primary),#db2777) border-box" }}
                                 onClick={() => {
                                     sessionStorage.setItem("clothstreet_checkout_cart", JSON.stringify(selectedCartItems));
                                     setShowServiceModal(true);
                                 }}>
                                 <div className="checkout-delivery-option-icon"
                                     style={{ background: "linear-gradient(135deg,#ede9fe,#fce7f3)" }}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                         <circle cx="9" cy="7" r="4" />
                                         <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -475,12 +475,12 @@ export default function Checkout() {
                                 <div className="checkout-delivery-option-info">
                                     <p className="checkout-delivery-option-name">
                                         Find a Tailor / Designer
-                                        <span style={{ marginLeft: 8, fontSize: "0.7rem", fontWeight: 700, padding: "2px 8px", borderRadius: 6, background: "linear-gradient(135deg,#7c3aed,#db2777)", color: "#fff", verticalAlign: "middle" }}>NEW</span>
+                                        <span style={{ marginLeft: 8, fontSize: "0.7rem", fontWeight: 700, padding: "2px 8px", borderRadius: 6, background: "linear-gradient(135deg,var(--brand-primary),#db2777)", color: "#fff", verticalAlign: "middle" }}>NEW</span>
                                     </p>
                                     <p className="checkout-delivery-option-desc">Get custom tailoring or design work</p>
                                 </div>
-                                <div className="checkout-delivery-option-radio" style={{ borderColor: "#c4b5fd" }}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <div className="checkout-delivery-option-radio" style={{ borderColor: "var(--brand-primary)" }}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
                                     </svg>
                                 </div>

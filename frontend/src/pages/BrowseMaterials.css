@@ -55,7 +55,7 @@
 }
 
 .bm-breadcrumb a:hover {
-  color: #c4b5fd;
+  color: var(--brand-primary);
 }
 
 .bm-breadcrumb svg {
@@ -73,7 +73,7 @@
 
 .bm-hero-subtitle {
   font-size: 1.1rem;
-  color: rgba(233, 213, 255, 0.9);
+  color: rgba(248, 249, 250, 0.9);
   margin: 0;
   max-width: 36rem;
   line-height: 1.6;
