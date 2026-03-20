@@ -132,7 +132,7 @@ export default function QuotationReview() {
  if (loading) {
  return (
  <div className="min-h-screen flex items-center justify-center">
- <div className="w-10 h-10 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
+ <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
  </div>
  );
 }
@@ -142,7 +142,7 @@ export default function QuotationReview() {
  <div className="min-h-screen flex items-center justify-center">
  <div className="text-center">
  <h2 className="text-xl font-bold mb-2">Quotation not found</h2>
- <button onClick={() => navigate("/quotations/offers")} className="text-violet-600 font-semibold hover:underline cursor-pointer">← Back to Quotations</button>
+ <button onClick={() => navigate("/quotations/offers")} className="text-amber-600 font-semibold hover:underline cursor-pointer">← Back to Quotations</button>
  </div>
  </div>
  );
@@ -160,7 +160,7 @@ export default function QuotationReview() {
  return (
  <div className="min-h-screen">
  {/* ── Header ── */}
- <div className="bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-600 px-6 py-6">
+ <div className="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-600 px-6 py-6">
  <div className="max-w-3xl mx-auto flex items-center gap-3">
  <button onClick={() => navigate("/quotations/offers")} className="w-9 h-9 rounded-xl hover: border flex items-center justify-center transition-colors cursor-pointer">
  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
@@ -180,7 +180,7 @@ export default function QuotationReview() {
  <div className={`w-14 h-14 rounded-xl flex items-center justify-center font-bold text-xl shrink-0 ${
  quotation.providerType ==="designer"
  ?"bg-gradient-to-br from-rose-500 to-pink-600"
- :"bg-gradient-to-br from-violet-500 to-purple-600"
+ :"bg-gradient-to-br from-amber-500 to-amber-600"
 }`}>
  {quotation.providerName?.charAt(0) ||"?"}
  </div>
@@ -211,14 +211,14 @@ export default function QuotationReview() {
  {/* ══════════ BILL BREAKDOWN ══════════ */}
  <div className="rounded-2xl border shadow-sm overflow-hidden">
  {/* Bill header */}
- <div className="bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-4">
+ <div className="bg-gradient-to-r from-amber-600 to-amber-600 px-6 py-4">
  <div className="flex justify-between items-center">
  <div>
- <p className="text-xs text-violet-200 uppercase tracking-wider font-semibold">Quotation</p>
+ <p className="text-xs text-amber-200 uppercase tracking-wider font-semibold">Quotation</p>
  <p className="text-base font-bold">{quotation.providerName}</p>
  </div>
  <div className="text-right">
- <p className="text-xs text-violet-200 uppercase tracking-wider font-semibold">Quoted On</p>
+ <p className="text-xs text-amber-200 uppercase tracking-wider font-semibold">Quoted On</p>
  <p className="text-sm font-semibold">{formatDate(quotation.quotedAt)}</p>
  </div>
  </div>
@@ -265,18 +265,18 @@ export default function QuotationReview() {
 
                         {/* Separate Payable Amount for Designers */}
                         {isDesigner && (
-                            <div className="mt-4 p-4 rounded-xl bg-violet-50 border border-violet-100 flex justify-between items-center">
+                            <div className="mt-4 p-4 rounded-xl bg-amber-50 border border-amber-100 flex justify-between items-center">
                                 <div>
-                                    <span className="text-sm font-bold text-violet-900 block">Designer Fee (Pay Now)</span>
-                                    <span className="text-xs text-violet-700">Materials will be paid later in the process.</span>
+                                    <span className="text-sm font-bold text-amber-900 block">Designer Fee (Pay Now)</span>
+                                    <span className="text-xs text-amber-700">Materials will be paid later in the process.</span>
                                 </div>
-                                <span className="text-2xl font-extrabold text-violet-700">LKR {payableTotal.toLocaleString()}</span>
+                                <span className="text-2xl font-extrabold text-amber-700">LKR {payableTotal.toLocaleString()}</span>
                             </div>
                         )}
                         {!isDesigner && (
                             <div className="flex justify-between items-center pt-2">
                                 <span className="text-lg font-bold">Total to Pay</span>
-                                <span className="text-2xl font-extrabold text-violet-600">LKR {payableTotal.toLocaleString()}</span>
+                                <span className="text-2xl font-extrabold text-amber-600">LKR {payableTotal.toLocaleString()}</span>
                             </div>
                         )}
                     </div>
@@ -408,7 +408,7 @@ export default function QuotationReview() {
                         <h3 className="text-lg font-bold mb-1">
                             {(quotation.status === "accepted" || quotation.status === "design_in_progress" || quotation.status === "design_completed" || quotation.status === "design_delivered") ? "Quotation Accepted & Paid" : "Quotation Declined"}
                         </h3>
-                        <p className="text-2xl font-extrabold text-violet-600 mb-2">LKR {(quotation.status === "rejected" ? grandTotal : payableTotal).toLocaleString()}</p>
+                        <p className="text-2xl font-extrabold text-amber-600 mb-2">LKR {(quotation.status === "rejected" ? grandTotal : payableTotal).toLocaleString()}</p>
                         {quotation.paymentMethod && (
                             <p className="text-sm capitalize">Payment: {quotation.paymentMethod}</p>
                         )}
@@ -416,7 +416,7 @@ export default function QuotationReview() {
                         {(quotation.status === "design_in_progress" || quotation.status === "design_completed" || quotation.status === "design_delivered") && (
                             <button
                                 onClick={() => navigate(`/designer-timeline/${quotationId}`)}
-                                className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl transition-colors"
+                                className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition-colors"
                             >
                                 View Design Timeline
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
@@ -430,13 +430,13 @@ export default function QuotationReview() {
                                     onClick={() => navigate(`/request-quote/${quotation.providerId}?combo=${quotation.serviceMode === 'combo_tailor'}`, {
                                         state: { designerDeliverables: quotation.designImages }
                                     })}
-                                    className="px-6 py-3 bg-white border-2 border-violet-200 text-violet-700 hover:bg-violet-50 font-bold rounded-xl transition-colors text-center"
+                                    className="px-6 py-3 bg-white border-2 border-amber-200 text-amber-700 hover:bg-amber-50 font-bold rounded-xl transition-colors text-center"
                                 >
                                     Try Re-quoting {quotation.providerName}
                                 </button>
                                 <button
                                     onClick={() => navigate(`/find-tailor-designer?mode=${quotation.serviceMode || 'tailor'}`)}
-                                    className="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl transition-colors text-center"
+                                    className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition-colors text-center"
                                 >
                                     Find Another Tailor
                                 </button>
