@@ -179,3 +179,18 @@ class Order(BaseModel):
 class DeleteAccountRequest(BaseModel):
     reason: str
     feedback: Optional[str] = None
+
+
+class CartItem(BaseModel):
+    id: str
+    name: str
+    unitPrice: float
+    quantity: int
+    image: Optional[str] = None
+    supplier: Optional[str] = None
+    category: Optional[str] = None
+    selected: Optional[bool] = True
+
+
+class CartUpdate(BaseModel):
+    items: List[CartItem]
