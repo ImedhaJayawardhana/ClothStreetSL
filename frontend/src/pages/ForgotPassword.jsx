@@ -40,11 +40,11 @@ export default function ForgotPassword() {
  alt="Textile background"
  className="w-full h-full object-cover"
  />
- <div className="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-violet-950/85 to-gray-900/90"></div>
+ <div className="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-amber-950/85 to-gray-900/90"></div>
  </div>
 
  {/* Decorative blurred orbs */}
- <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-violet-600/20 rounded-full blur-3xl pointer-events-none"></div>
+ <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-amber-600/20 rounded-full blur-3xl pointer-events-none"></div>
  <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none"></div>
 
  {/* Card */}
@@ -53,7 +53,7 @@ export default function ForgotPassword() {
  {/* Logo / Brand */}
  <div className="text-center mb-8">
  <Link to="/" className="inline-flex items-center gap-2">
- <div className="w-9 h-9 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+ <div className="w-9 h-9 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/30">
  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
  </svg>
@@ -68,8 +68,8 @@ export default function ForgotPassword() {
 
  {/* Icon */}
  <div className="flex justify-center mb-6">
- <div className="w-16 h-16 bg-gradient-to-br from-violet-500/20 to-purple-600/20 border border-violet-500/30 rounded-2xl flex items-center justify-center">
- <svg className="w-8 h-8 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <div className="w-16 h-16 bg-gradient-to-br from-amber-500/20 to-amber-600/20 border border-amber-500/30 rounded-2xl flex items-center justify-center">
+ <svg className="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
  </svg>
  </div>
@@ -77,7 +77,7 @@ export default function ForgotPassword() {
 
  {/* Header */}
  <div className="mb-7 text-center">
- <span className="inline-block text-xs font-semibold tracking-widest text-violet-300 uppercase bg-violet-500/15 border border-violet-500/30 rounded-full px-3 py-1 mb-3">
+ <span className="inline-block text-xs font-semibold tracking-widest text-amber-300 uppercase bg-amber-500/15 border border-amber-500/30 rounded-full px-3 py-1 mb-3">
  Password Reset
  </span>
  <h1 className="text-2xl font-bold">Forgot your password?</h1>
@@ -116,7 +116,7 @@ export default function ForgotPassword() {
  Email Address
  </label>
  <div className="relative">
- <div className="absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-violet-400 transition-colors duration-200">
+ <div className="absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-amber-400 transition-colors duration-200">
  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
  </svg>
@@ -126,7 +126,7 @@ export default function ForgotPassword() {
  placeholder="you@example.com"
  value={email}
  onChange={(e) => setEmail(e.target.value)}
- className="w-full border focus:border-violet-500/60 focus: rounded-xl pl-11 pr-4 py-3 text-sm placeholder-white/25 outline-none transition-all duration-200"
+ className="w-full border focus:border-amber-500/60 focus: rounded-xl pl-11 pr-4 py-3 text-sm placeholder-white/25 outline-none transition-all duration-200"
  required
  autoFocus
  />
@@ -137,7 +137,7 @@ export default function ForgotPassword() {
  <button
  type="submit"
  disabled={loading}
- className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-60 disabled:cursor-not-allowed font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2 mt-2"
+ className="w-full bg-gradient-to-r from-amber-600 to-amber-600 hover:from-amber-500 hover:to-amber-500 disabled:opacity-60 disabled:cursor-not-allowed font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 mt-2"
  >
  {loading ? (
  <>
@@ -162,7 +162,7 @@ export default function ForgotPassword() {
  {/* Back to login */}
  <p className="text-center text-sm mt-6">
  Remember your password?{''}
- <Link to="/login" className="text-violet-400 hover:text-violet-300 font-medium transition-colors duration-200">
+ <Link to="/login" className="text-amber-400 hover:text-amber-300 font-medium transition-colors duration-200">
  Back to Sign In
  </Link>
  </p>
