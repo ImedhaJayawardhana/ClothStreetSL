@@ -254,6 +254,7 @@ export default function BrowseTailors() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
             {filteredTailors.map(tailor => (
               <div key={tailor.id} className="rounded-3xl border overflow-hidden shadow-sm hover:shadow-xl hover:shadow-amber-100/50 hover:border-amber-100 transition-all duration-300 group flex flex-col">
+              <div key={tailor.id} className="rounded-3xl border border-white/50 bg-white/70 backdrop-blur-xl overflow-hidden shadow-[0_8px_32px_0_rgba(31,38,135,0.05)] hover:shadow-[0_12px_40px_0_rgba(124,58,237,0.15)] hover:bg-white/80 transition-all duration-300 group flex flex-col">
 
                 {/* Header Image Area */}
                 <div className="relative h-48 overflow-hidden">
