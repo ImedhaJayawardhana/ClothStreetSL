@@ -41,6 +41,11 @@ function PrivateRoute({ children}) {
  return user ? children : <Navigate to="/login" />;
 }
 
+function PublicOnlyRoute({ children }) {
+ const { user } = useAuth();
+ return user ? <Navigate to="/" /> : children;
+}
+
 export default function App() {
  return (
  <div className="min-h-screen flex flex-col">
@@ -49,8 +54,8 @@ export default function App() {
  <Routes>
  <Route path="/" element={<Home />} />
  <Route path="/about" element={<AboutUs />} />
- <Route path="/login" element={<Login />} />
- <Route path="/register" element={<Register />} />
+ <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+ <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
  <Route path="/forgot-password" element={<ForgotPassword />} />
  <Route path="/tailors" element={<BrowseTailors />} />
  <Route path="/designers" element={<BrowseDesigners />} />
