@@ -32,9 +32,7 @@ export default function Navbar() {
         </svg>
         Shop
       </Link>
-      <Link to="/match" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
-        AI Assistant
-      </Link>
+
     </>
   );
 
