@@ -11,7 +11,7 @@ const PALETTE_SWATCHES = [
     "#78350f", "#92400e", "#d97706", "#f59e0b", "#fcd34d", "#fef08a",
     "#14532d", "#166534", "#16a34a", "#22c55e", "#86efac", "#bbf7d0",
     "#1e3a5f", "#1d4ed8", "#2563eb", "#3b82f6", "#93c5fd", "#bfdbfe",
-    "#4c1d95", "#6d28d9", "#7c3aed", "#a855f7", "#c084fc", "#e9d5ff",
+    "#4c1d95", "#6d28d9", "var(--brand-primary)", "#a855f7", "#c084fc", "#e9d5ff",
     "#831843", "#be185d", "#ec4899", "#f472b6",
 ];
 
@@ -115,7 +115,7 @@ function ItemModal({ item, onClose, onSave, saving }) {
                                 value={form[name] || ""}
                                 onChange={handleChange}
                                 placeholder={placeholder}
-                                className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition"
+                                className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition"
                             />
                         </div>
                     ))}
@@ -140,9 +140,9 @@ function ItemModal({ item, onClose, onSave, saving }) {
                                 <input type="url" value={imageUrlInput}
                                     onChange={(e) => setImageUrlInput(e.target.value)}
                                     placeholder="https://example.com/fabric.jpg"
-                                    className="flex-1 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 transition" />
+                                    className="flex-1 border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 transition" />
                                 <button type="button" onClick={handleApplyUrl}
-                                    className="px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 text-sm font-semibold rounded-xl transition-colors">
+                                    className="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-sm font-semibold rounded-xl transition-colors">
                                     Apply
                                 </button>
                             </div>
@@ -152,7 +152,7 @@ function ItemModal({ item, onClose, onSave, saving }) {
                                 onDragLeave={() => setDragOver(false)}
                                 onDrop={handleDrop}
                                 onClick={() => fileInputRef.current?.click()}
-                                className={`relative border-2 border-dashed rounded-xl cursor-pointer transition-all flex flex-col items-center justify-center gap-2 py-5 ${dragOver ? "border-purple-400 bg-purple-50" : "border-slate-200 hover:border-purple-300 hover:bg-slate-50"}`}
+                                className={`relative border-2 border-dashed rounded-xl cursor-pointer transition-all flex flex-col items-center justify-center gap-2 py-5 ${dragOver ? "border-amber-400 bg-amber-50" : "border-slate-200 hover:border-amber-300 hover:bg-slate-50"}`}
                             >
                                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                                 {form.image ? (
@@ -162,7 +162,7 @@ function ItemModal({ item, onClose, onSave, saving }) {
                                         <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeWidth="1.5" d="M3 16l4-4 4 4 4-5 4 5M3 20h18M3 4h18" />
                                         </svg>
-                                        <p className="text-xs font-medium text-slate-500">Drag & drop or <span className="font-semibold text-purple-600">browse</span></p>
+                                        <p className="text-xs font-medium text-slate-500">Drag & drop or <span className="font-semibold text-amber-600">browse</span></p>
                                         <p className="text-[11px] text-slate-400">PNG, JPG, WEBP up to 10 MB</p>
                                     </>
                                 )}
@@ -194,7 +194,7 @@ function ItemModal({ item, onClose, onSave, saving }) {
                         <label className="block text-xs font-semibold mb-2 text-slate-600">
                             Available Colours
                             {form.colors.length > 0 && (
-                                <span className="ml-2 text-purple-600">{form.colors.length} selected</span>
+                                <span className="ml-2 text-amber-600">{form.colors.length} selected</span>
                             )}
                         </label>
                         <div className="flex flex-wrap gap-2 p-3 rounded-xl border bg-slate-50 mb-3">
@@ -202,14 +202,14 @@ function ItemModal({ item, onClose, onSave, saving }) {
                                 const selected = form.colors.includes(hex);
                                 return (
                                     <button key={hex} type="button" title={hex} onClick={() => toggleColor(hex)}
-                                        className={`w-7 h-7 rounded-full border-2 transition-all hover:scale-110 focus:outline-none ${selected ? "ring-2 ring-purple-300 scale-110 border-purple-400" : "ring-1 ring-gray-200 border-white"}`}
+                                        className={`w-7 h-7 rounded-full border-2 transition-all hover:scale-110 focus:outline-none ${selected ? "ring-2 ring-amber-300 scale-110 border-amber-400" : "ring-1 ring-gray-200 border-white"}`}
                                         style={{ backgroundColor: hex }} />
                                 );
                             })}
                         </div>
                         <div className="flex items-center gap-2">
                             <label className="text-xs font-medium text-slate-500 shrink-0">Custom:</label>
-                            <input type="color" defaultValue="#7c3aed"
+                            <input type="color" defaultValue="var(--brand-primary)"
                                 onChange={(e) => addCustomColor(e.target.value)}
                                 className="w-10 h-8 rounded-lg border cursor-pointer p-0.5" />
                             <span className="text-xs text-slate-400">Click to open colour picker</span>
@@ -243,7 +243,7 @@ function ItemModal({ item, onClose, onSave, saving }) {
                     <button
                         onClick={() => onSave(form)}
                         disabled={saving || !form.name || !form.type || !form.price || !form.stock}
-                        className="px-5 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors flex items-center gap-2"
+                        className="px-5 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors flex items-center gap-2"
                     >
                         {saving ? (
                             <svg className="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -433,7 +433,7 @@ export default function Inventory() {
         {
             label: "Total Listings", value: loading ? "..." : totalListings,
             icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" /></svg>,
-            bg: "from-purple-700 to-purple-900",
+            bg: "from-amber-700 to-amber-900",
         },
         {
             label: "Total Sales", value: loading ? "..." : totalSales,
@@ -447,8 +447,8 @@ export default function Inventory() {
         },
         {
             label: "Stock Value", value: loading ? "..." : formatValue(stockValue),
-            icon: <svg className="w-5 h-5 text-violet-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
-            bg: "from-violet-600 to-violet-900",
+            icon: <svg className="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+            bg: "from-amber-600 to-amber-900",
         },
     ];
 
@@ -459,7 +459,7 @@ export default function Inventory() {
             <div className="relative overflow-hidden"
                 style={{ background: "linear-gradient(135deg, #3b0764 0%, #6d28d9 50%, #4c1d95 100%)" }}>
                 <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full opacity-20"
-                    style={{ background: "radial-gradient(circle, #a78bfa, transparent)" }} />
+                    style={{ background: "radial-gradient(circle, var(--brand-primary), transparent)" }} />
                 <div className="relative max-w-7xl mx-auto px-6 pt-8 pb-10">
                     <div className="flex items-center gap-2 text-white/60 text-xs mb-4">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -481,7 +481,7 @@ export default function Inventory() {
                         </div>
                         <button
                             onClick={() => setModal({ mode: "add" })}
-                            className="flex items-center gap-2 bg-white text-purple-700 font-bold px-5 py-2.5 rounded-xl shadow-lg hover:bg-purple-50 transition-colors text-sm"
+                            className="flex items-center gap-2 bg-white text-amber-700 font-bold px-5 py-2.5 rounded-xl shadow-lg hover:bg-amber-50 transition-colors text-sm"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeWidth="2.5" d="M12 5v14M5 12h14" />
@@ -538,7 +538,7 @@ export default function Inventory() {
                             </svg>
                             <input type="text" placeholder="Search listings…" value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full pl-9 pr-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 transition" />
+                                className="w-full pl-9 pr-3 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 transition" />
                         </div>
                         <div className="flex items-center gap-1 bg-slate-50 rounded-xl p-1">
                             {TABS.map((tab) => (
@@ -549,7 +549,7 @@ export default function Inventory() {
                             ))}
                         </div>
                         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                            className="text-xs border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 transition">
+                            className="text-xs border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400 transition">
                             <option value="name">Name ↕</option>
                             <option value="price">Price ↕</option>
                             <option value="stock">Stock ↕</option>
@@ -558,7 +558,7 @@ export default function Inventory() {
                         <div className="flex items-center gap-1 border rounded-xl p-1">
                             {["grid", "list"].map((v) => (
                                 <button key={v} onClick={() => setViewMode(v)}
-                                    className={`p-1.5 rounded-lg transition-all ${viewMode === v ? "bg-purple-50 text-purple-600" : "text-slate-400 hover:text-slate-600"}`}>
+                                    className={`p-1.5 rounded-lg transition-all ${viewMode === v ? "bg-amber-50 text-amber-600" : "text-slate-400 hover:text-slate-600"}`}>
                                     {v === "grid" ? (
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <rect x="3" y="3" width="7" height="7" rx="1" strokeWidth="2" />
@@ -595,7 +595,7 @@ export default function Inventory() {
                             return (
                                 <div key={item.id}
                                     className={`rounded-2xl border shadow-sm hover:shadow-md transition-all overflow-hidden group relative ${isHidden ? "border-amber-200 opacity-70" : ""}`}>
-                                    <div className="relative h-44 overflow-hidden bg-gradient-to-br from-purple-50 to-gray-100">
+                                    <div className="relative h-44 overflow-hidden bg-gradient-to-br from-amber-50 to-gray-100">
                                         {item.image_url || item.image ? (
                                             <img src={item.image_url || item.image} alt={item.name}
                                                 className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${isHidden ? "grayscale brightness-75" : ""}`} />
@@ -671,7 +671,7 @@ export default function Inventory() {
                                                     {isHidden ? "Show" : "Hide"}
                                                 </button>
                                                 <button onClick={() => setModal({ mode: "edit", item })}
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl transition-colors">
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-semibold rounded-xl transition-colors">
                                                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                     </svg>
@@ -694,13 +694,13 @@ export default function Inventory() {
                         {/* Add New card */}
                         {!loading && (
                             <button onClick={() => setModal({ mode: "add" })}
-                                className="rounded-2xl border-2 border-dashed border-purple-200 hover:border-purple-400 hover:bg-purple-50/50 transition-all flex flex-col items-center justify-center gap-3 min-h-[280px] group">
-                                <div className="w-12 h-12 rounded-full bg-purple-50 group-hover:bg-purple-100 flex items-center justify-center transition-colors">
-                                    <svg className="w-6 h-6 text-purple-400 group-hover:text-purple-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                className="rounded-2xl border-2 border-dashed border-amber-200 hover:border-amber-400 hover:bg-amber-50/50 transition-all flex flex-col items-center justify-center gap-3 min-h-[280px] group">
+                                <div className="w-12 h-12 rounded-full bg-amber-50 group-hover:bg-amber-100 flex items-center justify-center transition-colors">
+                                    <svg className="w-6 h-6 text-amber-400 group-hover:text-amber-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeWidth="2" d="M12 5v14M5 12h14" />
                                     </svg>
                                 </div>
-                                <span className="text-sm font-semibold text-slate-400 group-hover:text-purple-600 transition-colors">
+                                <span className="text-sm font-semibold text-slate-400 group-hover:text-amber-600 transition-colors">
                                     Add New Fabric
                                 </span>
                             </button>
@@ -765,7 +765,7 @@ export default function Inventory() {
                                                         {isHidden ? "Show" : "Hide"}
                                                     </button>
                                                     <button onClick={() => setModal({ mode: "edit", item })}
-                                                        className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl transition-colors">
+                                                        className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-semibold rounded-xl transition-colors">
                                                         Edit
                                                     </button>
                                                     <button onClick={() => handleDelete(item.id, item.name)}

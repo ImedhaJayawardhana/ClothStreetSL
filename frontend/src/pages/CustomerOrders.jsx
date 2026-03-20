@@ -9,16 +9,16 @@ import "./CustomerProfile.css";
 // ── Status config ──
 const STATUS_STYLES = {
     pending: { bg: "bg-amber-100", text: "text-amber-700", border: "#f59e0b" },
-    processing: { bg: "bg-blue-100", text: "text-blue-700", border: "#3b82f6" },
+    processing: { bg: "bg-amber-100", text: "text-amber-700", border: "#3b82f6" },
     completed: { bg: "bg-emerald-100", text: "text-emerald-700", border: "#16a34a" },
     cancelled: { bg: "bg-red-100", text: "text-red-600", border: "#dc2626" },
-    shipped: { bg: "bg-indigo-100", text: "text-indigo-700", border: "#4f46e5" },
+    shipped: { bg: "bg-amber-100", text: "text-amber-700", border: "#4f46e5" },
 };
 
 const QUOTATION_STATUS_STYLES = {
     pending: { bg: "bg-amber-100", text: "text-amber-700", border: "#f59e0b" },
     accepted: { bg: "bg-emerald-100", text: "text-emerald-700", border: "#16a34a" },
-    completed: { bg: "bg-blue-100", text: "text-blue-700", border: "#3b82f6" },
+    completed: { bg: "bg-amber-100", text: "text-amber-700", border: "#3b82f6" },
 };
 
 // ── Loading Skeleton ──
@@ -251,10 +251,10 @@ export default function CustomerOrders() {
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
                     {[
-                        { label: "Total Orders", value: ordersLoading ? "..." : totalOrders, color: "bg-violet-100 text-violet-600" },
-                        { label: "Active", value: ordersLoading ? "..." : activeOrders, sub: "In progress", color: "bg-blue-100 text-blue-600" },
+                        { label: "Total Orders", value: ordersLoading ? "..." : totalOrders, color: "bg-amber-100 text-amber-600" },
+                        { label: "Active", value: ordersLoading ? "..." : activeOrders, sub: "In progress", color: "bg-amber-100 text-amber-600" },
                         { label: "Completed", value: ordersLoading ? "..." : completedOrders, sub: "Delivered", color: "bg-emerald-100 text-emerald-600" },
-                        { label: "Total Spent", value: ordersLoading ? "..." : `LKR ${(totalSpent / 1000).toFixed(0)}K`, sub: "Total purchases", color: "bg-amber-100 text-amber-600" },
+                        { label: "Total Spent", value: ordersLoading ? "..." : `LKR ${(totalSpent / 1000).toFixed(0)}K`, sub: "Total purchases", color: "bg-slate-100 text-slate-600" },
                     ].map((stat) => (
                         <div key={stat.label} className="border rounded-2xl p-5 flex items-start justify-between hover:shadow-md hover:-translate-y-0.5 transition-all">
                             <div>
@@ -281,13 +281,13 @@ export default function CustomerOrders() {
                         </div>
                         <input type="text" placeholder="Search orders..."
                             value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full border rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-100 transition-all bg-white relative z-0 shadow-sm" />
+                            className="w-full border rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-100 transition-all bg-white relative z-0 shadow-sm" />
                     </div>
 
                     <div className="flex items-center gap-1 bg-slate-50 rounded-xl p-1">
                         {["All", "Active", "Completed", "Quotations"].map((tab) => (
                             <button key={tab} onClick={() => setActiveTab(tab)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab ? "bg-white shadow-sm text-indigo-600" : "text-slate-500 hover:text-slate-700"}`}>
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab ? "bg-white shadow-sm text-amber-600" : "text-slate-500 hover:text-slate-700"}`}>
                                 {tab}
                                 {tab === "Quotations" && quotations.length > 0 && (
                                     <span className="ml-1.5 text-xs">({quotations.length})</span>
@@ -312,7 +312,7 @@ export default function CustomerOrders() {
                                     <div key={q.id} className="border rounded-2xl p-6 hover:-translate-y-1 hover:shadow-lg transition-all"
                                         style={{ borderLeft: `4px solid ${sc.border}` }}>
                                         <div className="flex items-start gap-3.5 mb-3">
-                                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center font-bold text-lg text-white shrink-0">
+                                            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center font-bold text-lg text-white shrink-0">
                                                 ✂️
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -347,7 +347,7 @@ export default function CustomerOrders() {
                                             </div>
                                             <div>
                                                 <span>Price: </span>
-                                                <span className="font-bold text-violet-600">LKR {q.grandTotal ? q.grandTotal.toLocaleString() : (q.price ? q.price.toLocaleString() : "Pending")}</span>
+                                                <span className="font-bold text-slate-900">LKR {q.grandTotal ? q.grandTotal.toLocaleString() : (q.price ? q.price.toLocaleString() : "Pending")}</span>
                                             </div>
                                         </div>
 
@@ -361,7 +361,7 @@ export default function CustomerOrders() {
                                         {q.providerType === "designer" && ["design_in_progress", "design_completed", "design_delivered", "completed"].includes(q.status?.toLowerCase()) && (
                                             <button
                                                 onClick={() => navigate(`/designer-timeline/${q.id}`, { state: { quotation: q } })}
-                                                className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold border-2 border-violet-600 text-violet-600 hover:bg-violet-50 transition-all">
+                                                className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold border-2 border-amber-600 text-amber-600 hover:bg-amber-50 transition-all">
                                                 Track Design Progress
                                             </button>
                                         )}
@@ -379,7 +379,7 @@ export default function CustomerOrders() {
                             <h3 className="text-lg font-semibold mb-1 text-slate-700">No quotations yet</h3>
                             <p className="text-sm text-slate-400">Request a quote from a tailor or designer.</p>
                             <button onClick={() => navigate("/tailors")}
-                                className="mt-4 px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold transition-all">
+                                className="mt-4 px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold transition-all">
                                 Browse Tailors
                             </button>
                         </div>
@@ -403,7 +403,7 @@ export default function CustomerOrders() {
                                         {/* Header */}
                                         <div className="flex items-start justify-between gap-3.5 mb-3">
                                             <div className="flex items-start gap-3.5 flex-1 min-w-0">
-                                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center font-bold text-lg text-indigo-600 shrink-0">
+                                                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-100 to-amber-100 flex items-center justify-center font-bold text-lg text-amber-600 shrink-0">
                                                     {itemNames.charAt(0).toUpperCase()}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
@@ -461,7 +461,7 @@ export default function CustomerOrders() {
                                             }
                                             if (isActive) {
                                                 return (
-                                                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3 bg-blue-50 border border-blue-200 text-blue-700">
+                                                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3 bg-amber-50 border border-amber-200 text-amber-700">
                                                         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                             <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                                                         </svg>
@@ -499,7 +499,7 @@ export default function CustomerOrders() {
                                             </div>
                                             <div className="flex items-center gap-1.5 text-xs text-slate-500">
                                                 <span>Total:</span>
-                                                <span className="font-semibold text-emerald-600">
+                                                <span className="font-semibold text-slate-900">
                                                     LKR {order.total_price?.toLocaleString()}
                                                 </span>
                                             </div>
@@ -553,7 +553,7 @@ export default function CustomerOrders() {
                                 </p>
                                 {!searchQuery && (
                                     <button onClick={() => navigate("/shop")}
-                                        className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all">
+                                        className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold transition-all">
                                         Browse Materials
                                     </button>
                                 )}
@@ -593,7 +593,7 @@ export default function CustomerOrders() {
                                 ))}
                             </div>
                             <textarea rows="4"
-                                className="w-full border rounded-xl px-4 py-3 text-sm placeholder-slate-300 focus:ring-2 focus:ring-indigo-100 outline-none transition-all resize-none"
+                                className="w-full border rounded-xl px-4 py-3 text-sm placeholder-slate-300 focus:ring-2 focus:ring-amber-100 outline-none transition-all resize-none"
                                 placeholder="Share your feedback about the product and delivery..."
                                 value={reviewText} onChange={(e) => setReviewText(e.target.value)} />
                         </div>
@@ -603,7 +603,7 @@ export default function CustomerOrders() {
                                 Cancel
                             </button>
                             <button onClick={handleSubmitReview}
-                                className="px-5 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors">
+                                className="px-5 py-2 rounded-xl text-sm font-semibold bg-amber-600 hover:bg-amber-700 text-white transition-colors">
                                 Submit Review
                             </button>
                         </div>

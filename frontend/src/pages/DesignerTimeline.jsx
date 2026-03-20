@@ -43,7 +43,7 @@ export default function DesignerTimeline() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="w-10 h-10 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
@@ -170,13 +170,13 @@ export default function DesignerTimeline() {
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
             {/* Header */}
-            <div className="bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-600 px-6 py-8 pb-16">
+            <div className="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-600 px-6 py-8 pb-16">
                 <div className="max-w-3xl mx-auto flex flex-col items-center text-center">
                     <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl mb-4 text-white shadow-inner backdrop-blur-sm">
                         {quotation.providerName?.charAt(0) || "🎨"}
                     </div>
                     <h1 className="text-2xl font-bold text-white mb-1">Design Timeline</h1>
-                    <p className="text-violet-200">Tracking progress with {quotation.providerName}</p>
+                    <p className="text-amber-200">Tracking progress with {quotation.providerName}</p>
                 </div>
             </div>
 
@@ -192,9 +192,9 @@ export default function DesignerTimeline() {
                                     {/* Icon / Bullet */}
                                     <div className={`absolute -left-6 top-0 w-12 h-12 rounded-full flex items-center justify-center text-xl border-4 border-white shadow-md transition-all
                                         ${step.done 
-                                            ? "bg-gradient-to-br from-violet-500 to-purple-600 text-white" 
+                                            ? "bg-gradient-to-br from-amber-500 to-amber-600 text-white" 
                                             : step.isActive 
-                                                ? "bg-purple-100 border-purple-200 animate-pulse text-purple-700" 
+                                                ? "bg-amber-100 border-amber-200 animate-pulse text-amber-700" 
                                                 : "bg-gray-100 text-gray-400 grayscale"
                                         }
                                     `}>
@@ -203,12 +203,12 @@ export default function DesignerTimeline() {
                                     
                                     {/* Animated line fill for completed steps */}
                                     {step.done && !isLast && (
-                                        <div className="absolute -left-[5px] top-12 bottom-[-40px] w-1 bg-gradient-to-b from-violet-500 to-violet-500 z-0" />
+                                        <div className="absolute -left-[5px] top-12 bottom-[-40px] w-1 bg-gradient-to-b from-amber-500 to-amber-500 z-0" />
                                     )}
 
                                     <div className={`pt-2 transition-all ${step.done || step.isActive ? "opacity-100" : "opacity-50"}`}>
                                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 mb-1">
-                                            <h3 className={`font-bold text-lg ${step.isActive ? "text-violet-700" : "text-gray-900"}`}>
+                                            <h3 className={`font-bold text-lg ${step.isActive ? "text-amber-700" : "text-gray-900"}`}>
                                                 {step.title}
                                             </h3>
                                             {step.date && (
@@ -237,9 +237,9 @@ export default function DesignerTimeline() {
                         </div>
                         
                         {quotation.designDeliveryMessage && (
-                            <div className="mb-6 p-5 bg-indigo-50 border border-indigo-100 rounded-2xl text-indigo-900 whitespace-pre-wrap text-sm shadow-sm">
+                            <div className="mb-6 p-5 bg-amber-50 border border-amber-100 rounded-2xl text-amber-900 whitespace-pre-wrap text-sm shadow-sm">
                                 <span className="font-bold flex items-center gap-2 mb-2">
-                                    <svg className="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+                                    <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
                                     Message from Designer:
                                 </span>
                                 {quotation.designDeliveryMessage}
@@ -251,7 +251,7 @@ export default function DesignerTimeline() {
                             {quotation.designDeliverables.map((url, idx) => {
                                 const isPdf = url.toLowerCase().includes('.pdf');
                                 return (
-                                    <div key={idx} className="group relative rounded-2xl border border-gray-200 bg-gray-50 p-3 hover:border-violet-300 hover:shadow-md transition-all overflow-hidden flex flex-col items-center justify-center aspect-square">
+                                    <div key={idx} className="group relative rounded-2xl border border-gray-200 bg-gray-50 p-3 hover:border-amber-300 hover:shadow-md transition-all overflow-hidden flex flex-col items-center justify-center aspect-square">
                                         {isPdf ? (
                                             <div className="text-5xl mb-2">📄</div>
                                         ) : (
@@ -266,7 +266,7 @@ export default function DesignerTimeline() {
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
                                                 download={`Design_${idx+1}`}
-                                                className="w-full text-center py-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-lg transition-colors"
+                                                className="w-full text-center py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition-colors"
                                             >
                                                 Download
                                             </a>

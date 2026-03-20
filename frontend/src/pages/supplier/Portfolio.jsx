@@ -16,16 +16,16 @@ function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage, upload
         <div className="rounded-2xl border shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-5 pt-5 pb-3">
                 <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-lg bg-purple-50 flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-lg bg-amber-50 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
-                            fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
                             <circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                         </svg>
                     </div>
                     <span className="font-bold text-sm">Portfolio Gallery</span>
                     {images.length > 0 && (
-                        <span className="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+                        <span className="text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-medium">
                             {images.length} photos
                         </span>
                     )}
@@ -35,7 +35,7 @@ function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage, upload
                         <button
                             onClick={() => fileRef.current.click()}
                             disabled={uploading}
-                            className="flex items-center gap-1.5 text-xs border rounded-lg px-3 py-1.5 hover:bg-purple-50 transition-colors font-medium disabled:opacity-50"
+                            className="flex items-center gap-1.5 text-xs border rounded-lg px-3 py-1.5 hover:bg-amber-50 transition-colors font-medium disabled:opacity-50"
                         >
                             {uploading ? (
                                 <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
@@ -249,7 +249,7 @@ export default function Portfolio() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="w-10 h-10 border-4 border-t-transparent border-purple-500 rounded-full animate-spin" />
+                <div className="w-10 h-10 border-4 border-t-transparent border-amber-500 rounded-full animate-spin" />
             </div>
         );
     }
@@ -261,7 +261,7 @@ export default function Portfolio() {
     const displayLogoUrl = editMode ? draftLogoUrl : profile?.logoUrl;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-50">
 
             {/* ── Hero Banner ── */}
             <section className="cp-hero shadow-sm">
@@ -317,7 +317,7 @@ export default function Portfolio() {
                                     {editMode ? (
                                         <input type="text" value={draftLocation}
                                             onChange={(e) => setDraftLocation(e.target.value)}
-                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-48 text-white"
+                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-amber-400 w-48 text-white"
                                             placeholder="City, Sri Lanka" />
                                     ) : (
                                         <span style={{ fontSize: "14px", fontWeight: "400" }}>{profile?.location || "Sri Lanka"}</span>
@@ -331,7 +331,7 @@ export default function Portfolio() {
                                     {editMode ? (
                                         <input type="text" value={draftPhone}
                                             onChange={(e) => setDraftPhone(e.target.value)}
-                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-36 text-white"
+                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-amber-400 w-36 text-white"
                                             placeholder="Contact Phone" />
                                     ) : (
                                         <span style={{ fontSize: "14px", fontWeight: "400" }}>{profile?.phone || "Not provided"}</span>
@@ -397,9 +397,9 @@ export default function Portfolio() {
                         {/* About Me */}
                         <div className="rounded-2xl border shadow-sm p-6">
                             <div className="flex items-center gap-2 mb-4">
-                                <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
+                                <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
-                                        fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                                         <circle cx="12" cy="7" r="4" />
                                     </svg>
@@ -408,7 +408,7 @@ export default function Portfolio() {
                             </div>
                             {editMode ? (
                                 <textarea
-                                    className="w-full text-base leading-relaxed resize-none border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                    className="w-full text-base leading-relaxed resize-none border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-amber-400"
                                     rows={4}
                                     value={draftAbout}
                                     onChange={(e) => setDraftAbout(e.target.value)}
@@ -449,16 +449,16 @@ export default function Portfolio() {
                         <div className="rounded-2xl border shadow-sm overflow-hidden sticky top-24">
 
                             {/* Top accent band */}
-                            <div className="h-2 bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500" />
+                            <div className="h-2 bg-gradient-to-r from-amber-500 via-amber-500 to-amber-500" />
 
                             <div className="p-6 flex flex-col gap-5">
 
                                 {/* Specialties */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
-                                        <div className="w-5 h-5 rounded-md bg-purple-50 flex items-center justify-center">
+                                        <div className="w-5 h-5 rounded-md bg-amber-50 flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width={10} height={10} viewBox="0 0 24 24"
-                                                fill="none" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                fill="none" stroke="var(--brand-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <polyline points="20 6 9 17 4 12" />
                                             </svg>
                                         </div>
@@ -478,7 +478,7 @@ export default function Portfolio() {
                                             <input type="text" value={newSpecialtyInput}
                                                 onChange={(e) => setNewSpecialtyInput(e.target.value)}
                                                 placeholder="Add specialty…"
-                                                className="flex-1 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-purple-400"
+                                                className="flex-1 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-amber-400"
                                                 onKeyDown={(e) => {
                                                     if (e.key === "Enter" && newSpecialtyInput.trim()) {
                                                         setDraftSpecialties((prev) => [...prev, newSpecialtyInput.trim()]);
@@ -490,7 +490,7 @@ export default function Portfolio() {
                                                     setDraftSpecialties((prev) => [...prev, newSpecialtyInput.trim()]);
                                                     setNewSpecialtyInput("");
                                                 }
-                                            }} className="px-3 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 text-sm font-bold transition-colors">+</button>
+                                            }} className="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 text-sm font-bold transition-colors">+</button>
                                         </div>
                                     )}
                                 </div>
@@ -498,7 +498,7 @@ export default function Portfolio() {
                                 {/* Fabric Types */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
-                                        <div className="w-5 h-5 rounded-md bg-indigo-50 flex items-center justify-center">
+                                        <div className="w-5 h-5 rounded-md bg-amber-50 flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width={10} height={10} viewBox="0 0 24 24"
                                                 fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" />
@@ -523,7 +523,7 @@ export default function Portfolio() {
                                             <input type="text" value={newFabricTypeInput}
                                                 onChange={(e) => setNewFabricTypeInput(e.target.value)}
                                                 placeholder="Add fabric type…"
-                                                className="flex-1 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                                                className="flex-1 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-amber-400"
                                                 onKeyDown={(e) => {
                                                     if (e.key === "Enter" && newFabricTypeInput.trim()) {
                                                         setDraftFabricTypes((prev) => [...prev, newFabricTypeInput.trim()]);
@@ -535,7 +535,7 @@ export default function Portfolio() {
                                                     setDraftFabricTypes((prev) => [...prev, newFabricTypeInput.trim()]);
                                                     setNewFabricTypeInput("");
                                                 }
-                                            }} className="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-sm font-bold transition-colors">+</button>
+                                            }} className="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 text-sm font-bold transition-colors">+</button>
                                         </div>
                                     )}
                                 </div>
@@ -544,7 +544,7 @@ export default function Portfolio() {
                                 <div className="pt-2 border-t flex flex-col gap-3">
                                     <button
                                         onClick={() => navigate(`/store/${user?.uid}`)}
-                                        className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold text-[15px] py-3.5 rounded-xl transition-colors shadow-md shadow-purple-200">
+                                        className="w-full bg-gradient-to-r from-amber-600 to-amber-600 hover:from-amber-700 hover:to-amber-700 text-white font-bold text-[15px] py-3.5 rounded-xl transition-colors shadow-md shadow-amber-200">
                                         View My Store
                                     </button>
                                     <button

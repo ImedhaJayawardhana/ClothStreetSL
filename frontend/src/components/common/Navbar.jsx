@@ -23,30 +23,31 @@ export default function Navbar() {
 
   const unauthLinks = (
     <>
-      <Link to="/" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
+      <Link to="/" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         Home
       </Link>
-      <Link to="/shop" className="flex items-center gap-2 px-4 py-2.5 rounded-md hover:bg-slate-100 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700">
+      <Link to="/shop" className="flex items-center gap-2 px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" />
         </svg>
         Shop
       </Link>
+
     </>
   );
 
   const customerLinks = (
     <>
-      <Link to="/shop" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
+      <Link to="/shop" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         Shop
       </Link>
-      <Link to="/tailors" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
+      <Link to="/tailors" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         Tailors
       </Link>
-      <Link to="/designers" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
+      <Link to="/designers" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         Designers
       </Link>
-      <Link to="/match" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
+      <Link to="/match" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         AI Assistant
       </Link>
     </>
@@ -54,22 +55,22 @@ export default function Navbar() {
 
   const businessLinks = (
     <>
-      <Link to={user?.role === "tailor" ? "/tailor-dashboard" : user?.role === "designer" ? "/designer-dashboard" : "/dashboard"} className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
+      <Link to={user?.role === "tailor" ? "/tailor-dashboard" : user?.role === "designer" ? "/designer-dashboard" : "/dashboard"} className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         Dashboard
       </Link>
-      <Link to="/quotation-inbox" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
+      <Link to="/quotation-inbox" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         Quotations
       </Link>
-      <Link to="/shop" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
+      <Link to="/shop" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         Shop
       </Link>
-      <Link to="/tailors" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
+      <Link to="/tailors" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         Tailors
       </Link>
-      <Link to="/designers" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
+      <Link to="/designers" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         Designers
       </Link>
-      <Link to="/match" className="px-4 py-2.5 rounded-md hover:bg-slate-100 font-medium text-sm transition-colors text-slate-700">
+      <Link to="/match" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         AI Assistant
       </Link>
     </>
@@ -104,12 +105,12 @@ export default function Navbar() {
 
           {/* Right Section */}
           <div className="flex items-center space-x-5">
-            <Link to="/cart" className="relative p-2 rounded-full text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+            <Link to="/cart" className="relative p-2 text-slate-700 hover:text-slate-900 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
               </svg>
               {cartProductCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-purple-600 text-white rounded-full text-[10px] font-bold leading-none border-2 border-white">
+                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-amber-600 text-white rounded-full text-[10px] font-bold leading-none border-2 border-white">
                   {cartProductCount > 99 ? "99+" : cartProductCount}
                 </span>
               )}
@@ -128,7 +129,7 @@ export default function Navbar() {
               <div className="relative ml-2" ref={profileRef}>
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center justify-center w-10 h-10 overflow-hidden rounded-full font-bold bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 hover:text-slate-900 transition-all focus:outline-none"
+                  className="flex items-center justify-center w-10 h-10 overflow-hidden font-bold bg-slate-100 text-slate-700 border border-slate-200 hover:text-slate-900 transition-all focus:outline-none"
                 >
                   {user.name ? user.name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase() || 'U'}
                 </button>
@@ -141,7 +142,7 @@ export default function Navbar() {
                     </div>
 
                     {user.role === "customer" ? (
-                      <Link to="/profile" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                      <Link to="/profile" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm hover:text-slate-900 transition-colors">
                         Profile
                       </Link>
                     ) : (
@@ -149,14 +150,14 @@ export default function Navbar() {
                         <Link
                           to={user?.role === "tailor" ? "/tailor-profile" : user?.role === "designer" ? "/designer-profile" : "/seller-profile"}
                           onClick={() => setIsProfileOpen(false)}
-                          className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                          className="block px-4 py-2 text-sm hover:text-slate-900 transition-colors"
                         >
                           Profile
                         </Link>
                         <Link
                           to={user?.role === "tailor" ? "/tailor-profile" : user?.role === "designer" ? "/designer-profile" : "/portfolio"}
                           onClick={() => setIsProfileOpen(false)}
-                          className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                          className="block px-4 py-2 text-sm hover:text-slate-900 transition-colors"
                         >
                           Portfolio
                         </Link>
@@ -164,39 +165,39 @@ export default function Navbar() {
                     )}
 
                     {user.role === "seller" && (
-                      <Link to="/inventory" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                      <Link to="/inventory" onClick={() => setIsProfileOpen(false)} className="block px-4 py-2 text-sm hover:text-slate-900 transition-colors">
                         Inventory
                       </Link>
                     )}
 
                     {/* Personal Orders — shown for customers, tailors, designers (not sellers since they can't buy) */}
                     {user.role !== "seller" && (
-                      <Link to={user?.role === "designer" ? "/designer-orders" : "/orders"} onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                      <Link to={user?.role === "designer" ? "/designer-orders" : "/orders"} onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:text-slate-900 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
                           <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
                         </svg>
-                        {user.role === "customer" ? "Orders" : "Personal Orders"}
+                        My Orders
                       </Link>
                     )}
 
-                    {/* Jobs link for service providers — goes to their dashboard */}
-                    {(user.role === "tailor" || user.role === "designer" || user.role === "seller") && (
+                    {/* Dashboard — business roles only */}
+                    {user.role !== "customer" && (
                       <Link
                         to={user.role === "tailor" ? "/tailor-dashboard" : user.role === "designer" ? "/designer-dashboard" : "/dashboard"}
                         onClick={() => setIsProfileOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:text-slate-900 transition-colors"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <rect width="20" height="14" x="2" y="7" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                         </svg>
-                        Jobs
+                        Dashboard
                       </Link>
                     )}
 
                     {/* My Quotes — customer only */}
                     {user.role === "customer" && (
-                      <Link to="/quotations/offers" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                      <Link to="/quotations/offers" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:text-slate-900 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
@@ -206,7 +207,7 @@ export default function Navbar() {
 
                     {/* Quotation Inbox — tailor/designer only */}
                     {(user.role === "tailor" || user.role === "designer") && (
-                      <Link to="/quotation-inbox" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                      <Link to="/quotation-inbox" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm hover:text-slate-900 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>

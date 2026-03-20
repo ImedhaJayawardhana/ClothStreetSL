@@ -42,9 +42,9 @@
   gap: 8px;
   padding: 6px 16px;
   border-radius: 999px;
-  background: rgba(139, 92, 246, 0.25);
-  border: 1px solid rgba(139, 92, 246, 0.4);
-  color: #c4b5fd;
+  background: rgba(249, 168, 37, 0.25);
+  border: 1px solid rgba(249, 168, 37, 0.4);
+  color: var(--brand-primary);
   font-size: 13px;
   font-weight: 500;
   margin-bottom: 24px;
@@ -55,7 +55,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #a78bfa;
+  background: var(--brand-primary);
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
@@ -85,7 +85,7 @@
 }
 
 .hero-headline .highlight {
-  background: linear-gradient(135deg, #a78bfa, var(--clr-primary));
+  background: linear-gradient(135deg, var(--brand-primary), var(--clr-primary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -122,13 +122,13 @@
   cursor: pointer;
   text-decoration: none;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 4px 20px rgba(249, 168, 37, 0.4);
 }
 
 .btn-primary-hero:hover {
-  background: linear-gradient(135deg, var(--clr-primary-2), #5b21b6);
+  background: linear-gradient(135deg, var(--clr-primary-2), var(--brand-hover));
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.5);
+  box-shadow: 0 8px 30px rgba(249, 168, 37, 0.5);
 }
 
 .btn-outline-hero {
@@ -197,7 +197,7 @@
 }
 
 .hero-search-btn:hover {
-  background: linear-gradient(135deg, var(--clr-primary-2), #5b21b6);
+  background: linear-gradient(135deg, var(--clr-primary-2), var(--brand-hover));
 }
 
 /* Stats Row */
@@ -220,7 +220,7 @@
 }
 
 .hero-stat-value .accent {
-  color: #a78bfa;
+  color: var(--brand-primary);
 }
 
 .hero-stat-label {
@@ -302,7 +302,7 @@
   display: inline-block;
   padding: 5px 16px;
   border-radius: 999px;
-  background: rgba(124, 58, 237, 0.08);
+  background: rgba(249, 168, 37, 0.08);
   color: var(--clr-primary);
   font-size: 13px;
   font-weight: 600;
@@ -360,7 +360,7 @@
 }
 
 .hiw-card-featured:hover {
-  box-shadow: 0 16px 40px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 16px 40px rgba(249, 168, 37, 0.3);
   border-color: transparent;
 }
 
@@ -369,7 +369,7 @@
 }
 
 .hiw-card-featured .hiw-card-text {
-  color: rgba(233, 213, 255, 0.9);
+  color: rgba(248, 249, 250, 0.9);
 }
 
 .hiw-card-featured .hiw-step-number {
@@ -385,7 +385,7 @@
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: rgba(124, 58, 237, 0.08);
+  background: rgba(249, 168, 37, 0.08);
   color: var(--clr-primary);
   font-size: 13px;
   font-weight: 700;
@@ -399,7 +399,7 @@
   width: 64px;
   height: 64px;
   border-radius: 16px;
-  background: rgba(124, 58, 237, 0.08);
+  background: rgba(249, 168, 37, 0.08);
   color: var(--clr-primary);
   display: flex;
   align-items: center;
@@ -478,7 +478,7 @@
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: rgba(124, 58, 237, 0.3);
+  background: rgba(249, 168, 37, 0.3);
   color: #e9d5ff;
   display: flex;
   align-items: center;
@@ -514,7 +514,7 @@
   display: inline-block;
   padding: 5px 16px;
   border-radius: 999px;
-  background: rgba(124, 58, 237, 0.08);
+  background: rgba(249, 168, 37, 0.08);
   color: var(--clr-primary);
   font-size: 13px;
   font-weight: 600;
@@ -547,7 +547,7 @@
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: rgba(124, 58, 237, 0.08);
+  background: rgba(249, 168, 37, 0.08);
   color: var(--clr-primary);
   display: flex;
   align-items: center;
@@ -581,18 +581,18 @@
   font-weight: 600;
   text-decoration: none;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 4px 20px rgba(249, 168, 37, 0.3);
 }
 
 .craft-cta:hover {
-  background: linear-gradient(135deg, var(--clr-primary-2), #5b21b6);
+  background: linear-gradient(135deg, var(--clr-primary-2), var(--brand-hover));
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 8px 30px rgba(249, 168, 37, 0.4);
 }
 
 /* ===== BUILT FOR INDUSTRY SECTION ===== */
 .industry-section {
-  background: radial-gradient(circle at center 20%, #1e1b4b 0%, #0B0F19 60%);
+  background: radial-gradient(circle at center 20%, var(--brand-dark) 0%, #0B0F19 60%);
   padding: 100px 24px;
   position: relative;
   overflow: hidden;
@@ -614,8 +614,8 @@
   display: inline-block;
   padding: 5px 16px;
   border-radius: 999px;
-  background: rgba(124, 58, 237, 0.15);
-  color: #c4b5fd;
+  background: rgba(249, 168, 37, 0.15);
+  color: var(--brand-primary);
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 16px;
@@ -660,7 +660,7 @@
 
 .industry-card:hover {
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(124, 58, 237, 0.4);
+  border-color: rgba(249, 168, 37, 0.4);
   transform: translateY(-5px);
 }
 
@@ -668,8 +668,8 @@
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  background: rgba(124, 58, 237, 0.15);
-  color: #a78bfa;
+  background: rgba(249, 168, 37, 0.15);
+  color: var(--brand-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -713,7 +713,7 @@
 }
 
 .industry-stat-val .accent {
-  color: #a78bfa;
+  color: var(--brand-primary);
 }
 
 .industry-stat-label {
@@ -743,7 +743,7 @@
   padding: 5px 16px;
   border-radius: 999px;
   background: #eef2ff;
-  color: #6366f1;
+  color: var(--brand-primary);
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 14px;
@@ -817,7 +817,7 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a78bfa, var(--clr-primary));
+  background: linear-gradient(135deg, var(--brand-primary), var(--clr-primary));
   color: white;
   display: flex;
   align-items: center;
@@ -827,7 +827,7 @@
 }
 
 .avatar-blue {
-  background: linear-gradient(135deg, #c4b5fd, #8b5cf6);
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary));
 }
 
 .testimonial-name {
@@ -855,7 +855,7 @@
 }
 
 .cta-banner-content {
-  background: linear-gradient(135deg, #8b5cf6 0%, var(--clr-primary-2) 100%);
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--clr-primary-2) 100%);
   border-radius: 24px;
   padding: 64px 40px;
   text-align: center;

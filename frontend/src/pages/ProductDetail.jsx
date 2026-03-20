@@ -225,7 +225,7 @@ export default function ProductDetail() {
                     background: mainImageSrc && i === 0 ? `url(${mainImageSrc}) center/cover` : bg,
                     border: i === activeImg ? `2px solid ${C.purple}` : `1px solid ${C.border}`,
                     cursor: "pointer", overflow: "hidden",
-                    boxShadow: i === activeImg ? `0 0 0 3px rgba(124,58,237,0.15)` : "none",
+                    boxShadow: i === activeImg ? `0 0 0 3px rgba(249, 168, 37,0.15)` : "none",
                     transition: "border 0.2s, transform 0.2s",
                     transform: i === activeImg ? "scale(1.02)" : "scale(1)"
                   }} />
@@ -359,7 +359,7 @@ export default function ProductDetail() {
                 Price Per Meter
               </div>
               <div style={{
-                fontSize: "1.8rem", fontWeight: 800, color: C.purple,
+                fontSize: "1.8rem", fontWeight: 800, color: "#1A1A1B",
                 letterSpacing: "-0.02em"
               }}>
                 LKR {fabric.price?.toLocaleString()}
@@ -512,7 +512,7 @@ export default function ProductDetail() {
                   cursor: fabric.inStock ? "pointer" : "not-allowed",
                   fontWeight: 700, fontSize: "1rem",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  boxShadow: fabric.inStock ? "0 4px 24px rgba(124,58,237,0.4)" : "none",
+                  boxShadow: fabric.inStock ? "0 4px 24px rgba(249, 168, 37,0.4)" : "none",
                   transition: "opacity 0.2s"
                 }}
                 onMouseEnter={e => { if (fabric.inStock) e.currentTarget.style.opacity = "0.9"; }}

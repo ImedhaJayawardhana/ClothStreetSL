@@ -12,19 +12,19 @@ const REQUEST_QUOTE_STYLES = `
 .rq-provider-card { max-width: 960px; margin: -32px auto 0; padding: 0 24px; position: relative; z-index: 20; }
 .rq-provider-inner { background: #fff; border-radius: 20px; padding: 24px 28px; display: flex; align-items: center; gap: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); border: 1px solid #e5e7eb; }
 .rq-provider-avatar { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 800; color: #fff; flex-shrink: 0; }
-.rq-provider-avatar.tailor { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+.rq-provider-avatar.tailor { background: linear-gradient(135deg, var(--brand-primary), #6d28d9); }
 .rq-provider-avatar.designer { background: linear-gradient(135deg, #e11d48, #db2777); }
 .rq-provider-info { flex: 1; min-width: 0; }
 .rq-provider-name { font-size: 1.15rem; font-weight: 700; color: #18181b; margin: 0 0 4px; }
 .rq-provider-meta { font-size: 0.85rem; color: #71717a; margin: 0; display: flex; align-items: center; gap: 8px; }
 .rq-provider-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.rq-provider-badge.tailor { background: #ede9fe; color: #7c3aed; }
+.rq-provider-badge.tailor { background: #ede9fe; color: var(--brand-primary); }
 .rq-provider-badge.designer { background: #fce7f3; color: #db2777; }
 .rq-content { max-width: 960px; margin: 0 auto; padding: 28px 24px 0; }
 .rq-section { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 28px 28px 24px; margin-bottom: 24px; }
 .rq-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
 .rq-section-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.rq-section-icon.purple { background: #ede9fe; color: #7c3aed; }
+.rq-section-icon.purple { background: #ede9fe; color: var(--brand-primary); }
 .rq-section-icon.blue { background: #dbeafe; color: #2563eb; }
 .rq-section-icon.amber { background: #fef3c7; color: #d97706; }
 .rq-section-icon.rose { background: #fce7f3; color: #e11d48; }
@@ -34,24 +34,24 @@ const REQUEST_QUOTE_STYLES = `
 .rq-section-subtitle { font-size: 0.82rem; color: #71717a; margin: 2px 0 0; }
 .rq-product-list { display: flex; flex-direction: column; gap: 10px; }
 .rq-product-item { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: 2px solid #e5e7eb; border-radius: 14px; cursor: pointer; transition: all 0.2s; background: #fff; }
-.rq-product-item:hover { border-color: #c4b5fd; background: #faf5ff; }
-.rq-product-item.selected { border-color: #7c3aed; background: #f5f3ff; box-shadow: 0 0 0 3px rgba(124,58,237,0.08); }
+.rq-product-item:hover { border-color: var(--brand-primary); background: #faf5ff; }
+.rq-product-item.selected { border-color: var(--brand-primary); background: #f5f3ff; box-shadow: 0 0 0 3px rgba(249, 168, 37,0.08); }
 .rq-product-checkbox { width: 22px; height: 22px; border-radius: 6px; border: 2px solid #d4d4d8; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; background: #fff; }
-.rq-product-item.selected .rq-product-checkbox { background: #7c3aed; border-color: #7c3aed; }
+.rq-product-item.selected .rq-product-checkbox { background: var(--brand-primary); border-color: var(--brand-primary); }
 .rq-product-img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; background: #f4f4f5; flex-shrink: 0; }
 .rq-product-info { flex: 1; min-width: 0; }
 .rq-product-name { font-size: 0.95rem; font-weight: 600; color: #18181b; margin: 0 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rq-product-meta { font-size: 0.8rem; color: #71717a; margin: 0; }
-.rq-product-price { font-size: 0.9rem; font-weight: 700; color: #7c3aed; white-space: nowrap; flex-shrink: 0; }
+.rq-product-price { font-size: 0.9rem; font-weight: 700; color: var(--brand-primary); white-space: nowrap; flex-shrink: 0; }
 .rq-date-input { width: 100%; max-width: 280px; padding: 12px 16px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; color: #18181b; background: #fafafa; outline: none; transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit; }
-.rq-date-input:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); background: #fff; }
+.rq-date-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(249, 168, 37,0.1); background: #fff; }
 .rq-textarea { width: 100%; min-height: 120px; padding: 14px 16px; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 0.93rem; color: #18181b; background: #fafafa; outline: none; resize: vertical; font-family: inherit; line-height: 1.5; transition: border-color 0.2s, box-shadow 0.2s; }
-.rq-textarea:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); background: #fff; }
+.rq-textarea:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(249, 168, 37,0.1); background: #fff; }
 .rq-textarea::placeholder { color: #a1a1aa; }
 .rq-upload-zone { border: 2px dashed #d4d4d8; border-radius: 14px; padding: 32px 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: #fafafa; }
-.rq-upload-zone:hover { border-color: #7c3aed; background: #f5f3ff; }
-.rq-upload-zone.dragging { border-color: #7c3aed; background: #ede9fe; }
-.rq-upload-icon { width: 48px; height: 48px; border-radius: 14px; background: #ede9fe; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: #7c3aed; }
+.rq-upload-zone:hover { border-color: var(--brand-primary); background: #f5f3ff; }
+.rq-upload-zone.dragging { border-color: var(--brand-primary); background: #ede9fe; }
+.rq-upload-icon { width: 48px; height: 48px; border-radius: 14px; background: #ede9fe; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: var(--brand-primary); }
 .rq-upload-text { font-size: 0.92rem; font-weight: 600; color: #3f3f46; margin: 0 0 4px; }
 .rq-upload-hint { font-size: 0.78rem; color: #a1a1aa; margin: 0; }
 .rq-upload-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 16px; }
@@ -61,22 +61,22 @@ const REQUEST_QUOTE_STYLES = `
 .rq-upload-preview-remove:hover { background: rgba(220,38,38,0.85); }
 .rq-size-gender-toggle { display: flex; gap: 8px; margin-bottom: 20px; }
 .rq-gender-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: 2px solid #e5e7eb; border-radius: 12px; background: #fff; font-size: 0.9rem; font-weight: 600; color: #52525b; cursor: pointer; transition: all 0.2s; }
-.rq-gender-btn:hover { border-color: #c4b5fd; background: #faf5ff; }
-.rq-gender-btn.active { border-color: #7c3aed; background: #f5f3ff; color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.08); }
+.rq-gender-btn:hover { border-color: var(--brand-primary); background: #faf5ff; }
+.rq-gender-btn.active { border-color: var(--brand-primary); background: #f5f3ff; color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(249, 168, 37,0.08); }
 .rq-size-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 @media (max-width: 500px) { .rq-size-grid { grid-template-columns: 1fr; } }
 .rq-size-field { display: flex; flex-direction: column; gap: 6px; }
 .rq-size-label { font-size: 0.78rem; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px; }
 .rq-size-input-wrap { position: relative; }
 .rq-size-input { width: 100%; padding: 11px 50px 11px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.93rem; color: #18181b; background: #fafafa; outline: none; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s; }
-.rq-size-input:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); background: #fff; }
+.rq-size-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(249, 168, 37,0.1); background: #fff; }
 .rq-size-unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; font-weight: 600; color: #a1a1aa; }
-.rq-submit-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px 32px; background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: #fff; border: none; border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.18s; box-shadow: 0 4px 16px rgba(124,58,237,0.25); }
-.rq-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(124,58,237,0.35); }
+.rq-submit-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px 32px; background: linear-gradient(135deg, var(--brand-primary) 0%, #6d28d9 100%); color: #fff; border: none; border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: transform 0.15s, box-shadow 0.18s; box-shadow: 0 4px 16px rgba(249, 168, 37,0.25); }
+.rq-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(249, 168, 37,0.35); }
 .rq-submit-btn:active { transform: translateY(0); }
 .rq-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 .rq-back-link { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; color: #52525b; font-size: 0.9rem; font-weight: 600; cursor: pointer; padding: 8px 4px; border-radius: 8px; transition: color 0.15s; margin-bottom: 24px; }
-.rq-back-link:hover { color: #7c3aed; }
+.rq-back-link:hover { color: var(--brand-primary); }
 .rq-body-diagram { display: flex; justify-content: center; padding: 16px; margin-bottom: 16px; }
 .rq-body-diagram svg { width: 120px; height: auto; opacity: 0.15; }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -322,10 +322,10 @@ export default function RequestQuote() {
             <style>{REQUEST_QUOTE_STYLES}</style>
 
             {/* ── Hero ── */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-violet-950 via-purple-900 to-indigo-950 py-14 px-4">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-600/15 rounded-full blur-3xl pointer-events-none" />
+            <section className="relative overflow-hidden bg-gradient-to-br from-amber-950 via-amber-900 to-amber-950 py-14 px-4">
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-600/15 rounded-full blur-3xl pointer-events-none" />
                 <div className="max-w-5xl mx-auto text-center relative z-10">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-violet-200 uppercase bg-violet-500/15 border border-violet-400/25 rounded-full px-4 py-1.5 mb-4">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-amber-200 uppercase bg-amber-500/15 border border-amber-400/25 rounded-full px-4 py-1.5 mb-4">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
@@ -333,11 +333,11 @@ export default function RequestQuote() {
                     </span>
                     <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2 text-white">
                         Request a{" "}
-                        <span className="bg-gradient-to-r from-violet-300 to-purple-300 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-amber-300 to-amber-300 bg-clip-text text-transparent">
                             Custom Quote
                         </span>
                     </h1>
-                    <p className="text-base text-violet-200/70 max-w-md mx-auto">
+                    <p className="text-base text-amber-200/70 max-w-md mx-auto">
                         Tell us your vision and get a personalized quote
                     </p>
                 </div>
@@ -580,7 +580,7 @@ export default function RequestQuote() {
                     </div>
 
                     <div className="rq-body-diagram">
-                        <svg viewBox="0 0 100 220" fill="none" stroke="#7c3aed" strokeWidth="1.5">
+                        <svg viewBox="0 0 100 220" fill="none" stroke="var(--brand-primary)" strokeWidth="1.5">
                             <circle cx="50" cy="22" r="15" />
                             <line x1="50" y1="37" x2="50" y2="48" />
                             <line x1="20" y1="55" x2="80" y2="55" />

@@ -39,24 +39,19 @@ export function CartProvider({ children }) {
     prevUidRef.current = user?.uid ?? null;
 
     if (user?.uid) {
-      // User logged in → load their cart from Firestore
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setCartLoaded(false);
       fetchCart()
         .then((res) => {
           if (!cancelled) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setCartItems(res.data.items || []);
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setCartLoaded(true);
           }
         })
         .catch(() => {
           // If API fails, start with empty cart
           if (!cancelled) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setCartItems([]);
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setCartLoaded(true);
           }
         });
@@ -64,7 +59,6 @@ export function CartProvider({ children }) {
       // User logged out (or was never logged in)
       if (prevUid) {
         // Was logged in → now logged out: clear cart
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCartItems([]);
         // Also clear any leftover localStorage keys
         localStorage.removeItem(GUEST_CART_KEY);
@@ -72,10 +66,8 @@ export function CartProvider({ children }) {
         localStorage.removeItem(`clothstreet_cart_${prevUid}`);
       } else {
         // Initial load with no user → load guest cart
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCartItems(loadGuestCart());
       }
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCartLoaded(true);
     }
 

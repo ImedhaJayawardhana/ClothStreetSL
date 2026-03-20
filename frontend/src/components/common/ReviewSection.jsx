@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const C = {
     bgCardAlt: "var(--clr-surface-2, #f8fafc)",
     border: "var(--clr-border-2, #e2e8f0)",
-    purple: "var(--clr-primary, #7c3aed)",
+    purple: "var(--clr-primary, var(--brand-primary))",
     purpleDark: "#1e40af",
     purpleMuted: "var(--clr-glow, #f3e8ff)",
     white: "#ffffff",
@@ -276,7 +276,7 @@ export default function ReviewSection({ targetType, targetId, ownerId }) {
                             <button 
                                 onClick={handleSubmitReview}
                                 disabled={submitting || rating === 0}
-                                style={{ padding: "10px 24px", borderRadius: "8px", background: rating === 0 ? "#cbd5e1" : C.purple, color: C.white, border: "none", fontWeight: 700, cursor: rating === 0 ? "not-allowed" : "pointer", boxShadow: rating > 0 ? "0 2px 8px rgba(124,58,237,0.3)" : "none", transition: "all 0.2s" }}
+                                style={{ padding: "10px 24px", borderRadius: "8px", background: rating === 0 ? "#cbd5e1" : C.purple, color: C.white, border: "none", fontWeight: 700, cursor: rating === 0 ? "not-allowed" : "pointer", boxShadow: rating > 0 ? "0 2px 8px rgba(249, 168, 37,0.3)" : "none", transition: "all 0.2s" }}
                             >
                                 {submitting ? "Submitting..." : "Publish Review"}
                             </button>

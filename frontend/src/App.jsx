@@ -59,7 +59,7 @@ export default function App() {
  <Route path="/forgot-password" element={<ForgotPassword />} />
  <Route path="/tailors" element={<BrowseTailors />} />
  <Route path="/designers" element={<BrowseDesigners />} />
- <Route path="/match" element={<AIMatch />} />
+ <Route path="/match" element={<PrivateRoute><AIMatch /></PrivateRoute>} />
  <Route path="/cart" element={<Cart />} />
  <Route path="/checkout" element={<Checkout />} />
  <Route path="/find-tailor-designer" element={<FindTailorDesigner />} />

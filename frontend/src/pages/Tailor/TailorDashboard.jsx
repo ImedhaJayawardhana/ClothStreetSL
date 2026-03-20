@@ -33,17 +33,17 @@ const DUMMY_REVIEWS = [
 ];
 
 const STATUS_STYLES = {
-  "in progress": "bg-blue-50 text-blue-600",
-  "processing": "bg-blue-50 text-blue-600",
+  "in progress": "bg-amber-50 text-amber-600",
+  "processing": "bg-amber-50 text-amber-600",
   "pending": "bg-slate-50 text-slate-500",
-  "completed": "bg-blue-100 text-blue-700 font-bold",
+  "completed": "bg-amber-100 text-amber-700 font-bold",
   "cancelled": "bg-red-50 text-red-500",
 };
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({ stat }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col gap-3 hover:shadow-md hover:border-blue-100 transition-all duration-200">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col gap-3 hover:shadow-md hover:border-amber-100 transition-all duration-200">
       <div className={`w-10 h-10 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center flex-shrink-0`}>
         {stat.icon}
       </div>
@@ -57,7 +57,7 @@ function StatCard({ stat }) {
 function EarningsCard({ data }) {
   return (
     <div className="bg-white border border-slate-100 rounded-2xl p-6 flex flex-col gap-3 shadow-sm hover:shadow-md transition-all h-full relative overflow-hidden">
-      <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-blue-50/50 rounded-full blur-2xl" />
+      <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-amber-50/50 rounded-full blur-2xl" />
       <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-widest relative z-10">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" /><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" /><path d="M12 18V6" />
@@ -101,7 +101,7 @@ function RatingsCard({ data }) {
           <div key={row.stars} className="flex items-center gap-4">
             <span className="text-[10px] font-black text-slate-400 w-2 text-right">{row.stars}</span>
             <div className="flex-1 h-1.5 bg-slate-50 rounded-full overflow-hidden border border-slate-100/50">
-              <div className="h-full bg-blue-600 rounded-full transition-all duration-700"
+              <div className="h-full bg-amber-600 rounded-full transition-all duration-700"
                 style={{ width: `${(row.count / maxCount) * 100}%` }} />
             </div>
             <span className="text-[10px] font-extrabold text-slate-900 w-8 text-right">{row.count}</span>
@@ -160,7 +160,7 @@ function ActiveOrdersCard({ orders, loading, onStatusChange }) {
       <div className="flex flex-col divide-y divide-slate-50">
         {orders.map((order) => (
           <div key={order.id} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0 group">
-            <div className="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center border border-slate-50 bg-blue-50 text-blue-600 transition-transform group-hover:scale-105">
+            <div className="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center border border-slate-50 bg-amber-50 text-amber-600 transition-transform group-hover:scale-105">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
               </svg>
@@ -183,7 +183,7 @@ function ActiveOrdersCard({ orders, loading, onStatusChange }) {
               {/* NEW: Status dropdown to change order status */}
               {onStatusChange && (
                 <select
-                  className="text-[10px] font-bold border border-slate-200 rounded-lg px-2 py-1 bg-white text-slate-600 cursor-pointer focus:outline-none focus:border-blue-400"
+                  className="text-[10px] font-bold border border-slate-200 rounded-lg px-2 py-1 bg-white text-slate-600 cursor-pointer focus:outline-none focus:border-amber-400"
                   value={order.status?.toLowerCase() || "pending"}
                   onChange={(e) => onStatusChange(order.id, e.target.value, order.quotationId)}
                 >
@@ -250,7 +250,7 @@ function OrderRequestsCard({ requests, loading, onAccept, onDecline }) {
     <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 flex flex-col gap-6 hover:shadow-md transition-all">
       <div className="flex items-center justify-between">
         <h2 className="font-black text-xs text-slate-800 uppercase tracking-widest">New Job Orders</h2>
-        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-blue-50 text-blue-600 border border-blue-100/50">
+        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-amber-50 text-amber-600 border border-amber-100/50">
           {pendingRequests.length} Pending
         </span>
       </div>
@@ -278,7 +278,7 @@ function OrderRequestsCard({ requests, loading, onAccept, onDecline }) {
                 <>
                   <button
                     onClick={() => onAccept(req.id)}
-                    className="flex-1 py-2 rounded-xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-sm"
+                    className="flex-1 py-2 rounded-xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-amber-600 transition-all shadow-sm"
                   >
                     Send Quote
                   </button>
@@ -317,7 +317,7 @@ function ReviewCard({ review }) {
       <p className="text-sm font-bold text-slate-600 italic leading-relaxed flex-1">&ldquo;{review.quote}&rdquo;</p>
       <div className="flex items-center justify-between mt-2 pt-4 border-t border-slate-50">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-[10px] font-black flex items-center justify-center border border-blue-100/50">
+          <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-600 text-[10px] font-black flex items-center justify-center border border-amber-100/50">
             {review.name.charAt(0)}
           </div>
           <span className="font-extrabold text-xs text-slate-900">{review.name}</span>
@@ -492,12 +492,12 @@ export default function TailorDashboard() {
   const stats = [
     {
       id: 1, label: "Active Orders", value: dashboardData ? dashboardData.activeOrders : statCounts.active,
-      color: "text-blue-600", bg: "bg-blue-50",
+      color: "text-amber-600", bg: "bg-amber-50",
       icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>,
     },
     {
       id: 2, label: "Pending", value: dashboardData ? dashboardData.pendingOrders : statCounts.inProgress,
-      color: "text-blue-600", bg: "bg-blue-50",
+      color: "text-amber-600", bg: "bg-amber-50",
       icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><line x1="20" x2="8.12" y1="4" y2="15.88" /><line x1="14.47" x2="20" y1="14.48" y2="20" /><line x1="8.12" x2="12" y1="8.12" y2="12" /></svg>,
     },
     {
@@ -507,7 +507,7 @@ export default function TailorDashboard() {
     },
     {
       id: 4, label: "Completed", value: dashboardData ? dashboardData.completedOrders : statCounts.completed,
-      color: "text-blue-600", bg: "bg-blue-50",
+      color: "text-amber-600", bg: "bg-amber-50",
       icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>,
     },
   ];
@@ -522,7 +522,7 @@ export default function TailorDashboard() {
       {/* ── Sticky Header ── */}
       <div className="px-6 py-5 flex items-center justify-between border-b bg-white/80 backdrop-blur-md sticky top-0 z-30">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center font-bold text-xl text-white shadow-lg shadow-blue-500/20">
+          <div className="w-12 h-12 bg-amber-600 rounded-2xl flex items-center justify-center font-bold text-xl text-white shadow-lg shadow-amber-500/20">
             {avatarLetter}
           </div>
           <div>
@@ -535,7 +535,7 @@ export default function TailorDashboard() {
                 Master Tailor
               </span>
               {pendingCount > 0 && (
-                <span className="inline-block text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-widest shadow-sm shadow-blue-200">
+                <span className="inline-block text-[10px] bg-amber-600 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-widest shadow-sm shadow-amber-200">
                   {pendingCount} New Request{pendingCount !== 1 ? "s" : ""}
                 </span>
               )}
@@ -544,9 +544,9 @@ export default function TailorDashboard() {
         </div>
         <button
           onClick={() => navigate("/tailor-profile")}
-          className="flex items-center gap-2 bg-white border border-slate-200 hover:border-blue-600 hover:bg-blue-50/50 px-5 py-2.5 rounded-xl text-sm font-bold text-slate-900 transition-all shadow-sm"
+          className="flex items-center gap-2 bg-white border border-slate-200 hover:border-amber-600 hover:bg-amber-50/50 px-5 py-2.5 rounded-xl text-sm font-bold text-slate-900 transition-all shadow-sm"
         >
-          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
           </svg>
           Tailor Settings
@@ -592,7 +592,7 @@ export default function TailorDashboard() {
         >
           <div className="flex items-center gap-6">
             <div className="w-14 h-14 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center transition-transform group-hover:scale-105">
-              <svg className="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <svg className="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>

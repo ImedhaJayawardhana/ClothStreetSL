@@ -237,7 +237,7 @@ export default function QuotationResponse() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-sm font-medium">Loading request…</p>
         </div>
       </div>
@@ -249,7 +249,7 @@ export default function QuotationResponse() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-bold mb-2">Request not found</h2>
-          <button onClick={() => navigate("/quotation-inbox")} className="text-violet-600 font-semibold hover:underline cursor-pointer">
+          <button onClick={() => navigate("/quotation-inbox")} className="text-amber-600 font-semibold hover:underline cursor-pointer">
             ← Back to Inbox
           </button>
         </div>
@@ -265,7 +265,7 @@ export default function QuotationResponse() {
   return (
     <div className="min-h-screen">
       {/* ── Header ── */}
-      <div className="bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-600 px-6 py-6">
+      <div className="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-600 px-6 py-6">
         <div className="max-w-4xl mx-auto flex items-center gap-3">
           <button
             onClick={() => navigate("/quotation-inbox")}
@@ -287,7 +287,7 @@ export default function QuotationResponse() {
         {/* ══════════ CUSTOMER INFO ══════════ */}
         <div className="rounded-2xl border shadow-sm p-6">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xl shrink-0">
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center font-bold text-xl shrink-0">
               {quotation.customerName?.charAt(0) || "?"}
             </div>
             <div className="flex-1 min-w-0">
@@ -296,8 +296,8 @@ export default function QuotationResponse() {
             </div>
             <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase ${
               quotation.status === "pending" ? "bg-amber-100 text-amber-700" :
-              quotation.status === "quoted" ? "bg-blue-100 text-blue-700" :
-              isInProgress ? "bg-violet-100 text-violet-700" :
+              quotation.status === "quoted" ? "bg-amber-100 text-amber-700" :
+              isInProgress ? "bg-amber-100 text-amber-700" :
               quotation.status === "design_delivered" || quotation.status === "completed" ? "bg-emerald-100 text-emerald-700" :
               quotation.status === "hibernated" ? "bg-amber-100 text-amber-700" :
               "bg-rose-100 text-rose-700"
@@ -325,7 +325,7 @@ export default function QuotationResponse() {
         {quotation.items?.length > 0 && (
           <div className="rounded-2xl border shadow-sm p-6">
             <h3 className="text-base font-bold mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5 text-violet-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
               </svg>
               Selected Products
@@ -340,7 +340,7 @@ export default function QuotationResponse() {
                     <p className="text-sm font-semibold truncate">{item.name}</p>
                     <p className="text-xs">{item.quantity} {item.unit || "m"}</p>
                   </div>
-                  <p className="text-sm font-bold text-violet-600 whitespace-nowrap">
+                  <p className="text-sm font-bold text-amber-600 whitespace-nowrap">
                     LKR {((item.unitPrice || 0) * (item.quantity || 1)).toLocaleString()}
                   </p>
                 </div>
@@ -356,9 +356,9 @@ export default function QuotationResponse() {
         {/* ══════════ PRICING FORM (only if pending) ══════════ */}
         {!isAlreadyQuoted && (
           <>
-            <div className="rounded-2xl border-2 border-violet-200 shadow-sm p-6">
+            <div className="rounded-2xl border-2 border-amber-200 shadow-sm p-6">
               <h3 className="text-lg font-bold mb-1 flex items-center gap-2">
-                <svg className="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8" />
                   <path d="M12 18V6" />
@@ -377,7 +377,7 @@ export default function QuotationResponse() {
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-500">LKR </span>
                     <input
                       type="number"
-                      className="w-full pl-20 pr-4 py-3 border rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 transition-all"
+                      className="w-full pl-20 pr-4 py-3 border rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 transition-all"
                       placeholder="e.g. 5000"
                       value={laborCharge}
                       onChange={(e) => setLaborCharge(e.target.value)}
@@ -395,7 +395,7 @@ export default function QuotationResponse() {
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-500">LKR </span>
                     <input
                       type="number"
-                      className="w-full pl-20 pr-4 py-3 border rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 transition-all"
+                      className="w-full pl-20 pr-4 py-3 border rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 transition-all"
                       placeholder="e.g. 1000"
                       value={additionalCharges}
                       onChange={(e) => setAdditionalCharges(e.target.value)}
@@ -412,7 +412,7 @@ export default function QuotationResponse() {
                 </label>
                 <input
                   type="text"
-                  className="w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 transition-all"
+                  className="w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 transition-all"
                   placeholder="e.g. Thread, buttons, express finishing..."
                   value={additionalNote}
                   onChange={(e) => setAdditionalNote(e.target.value)}
@@ -426,7 +426,7 @@ export default function QuotationResponse() {
                 </label>
                 <input
                   type="date"
-                  className="max-w-xs px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 transition-all"
+                  className="max-w-xs px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 transition-all"
                   value={completionDate}
                   onChange={(e) => setCompletionDate(e.target.value)}
                   min={minDate}
@@ -439,7 +439,7 @@ export default function QuotationResponse() {
                   Remarks / Notes for Customer
                 </label>
                 <textarea
-                  className="w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-200 focus:border-violet-400 transition-all resize-y min-h-[80px]"
+                  className="w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 transition-all resize-y min-h-[80px]"
                   placeholder="Any notes, conditions, or details you want to share..."
                   value={remarks}
                   onChange={(e) => setRemarks(e.target.value)}
@@ -453,7 +453,7 @@ export default function QuotationResponse() {
                <button
                  onClick={handleSubmit}
                  disabled={submitting}
-                 className="flex-1 flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 font-bold rounded-2xl text-sm transition-all shadow-lg shadow-violet-200 hover:shadow-xl hover:shadow-violet-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white"
+                 className="flex-1 flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-amber-600 to-amber-600 hover:from-amber-700 hover:to-amber-700 font-bold rounded-2xl text-sm transition-all shadow-lg shadow-amber-200 hover:shadow-xl hover:shadow-amber-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white"
                >
                  {submitting ? "Sending..." : "Send Quotation"}
                </button>
@@ -473,16 +473,16 @@ export default function QuotationResponse() {
             
             <h3 className="text-xl font-bold mb-2">Order Management</h3>
             {quotation.grandTotal && (
-              <p className="text-xl font-bold text-violet-600 mb-6">Total Value: LKR {quotation.grandTotal.toLocaleString()}</p>
+              <p className="text-xl font-bold text-amber-600 mb-6">Total Value: LKR {quotation.grandTotal.toLocaleString()}</p>
             )}
 
             {/* STATUS TIMELINE */}
             <div className="mb-8 bg-slate-50 border border-slate-100 rounded-2xl p-6 text-left relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[100px] -z-0 opacity-50"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-bl-[100px] -z-0 opacity-50"></div>
               <h4 className="text-sm font-bold text-slate-800 mb-6 uppercase tracking-wider relative z-10 flex items-center justify-between">
                 Order Timeline
                 {quotation.completionDate && (
-                  <span className="bg-white px-3 py-1 rounded-full text-xs text-indigo-700 border border-indigo-100 shadow-sm flex items-center gap-1.5">
+                  <span className="bg-white px-3 py-1 rounded-full text-xs text-amber-700 border border-amber-100 shadow-sm flex items-center gap-1.5">
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -494,9 +494,9 @@ export default function QuotationResponse() {
                 
                 {/* Step 1: Request Received */}
                 <div className="relative">
-                  <div className="absolute -left-[30px] rounded-full w-5 h-5 bg-violet-500 border-4 border-white shadow shadow-violet-200"></div>
+                  <div className="absolute -left-[30px] rounded-full w-5 h-5 bg-amber-500 border-4 border-white shadow shadow-amber-200"></div>
                   <div>
-                    <span className="text-xs font-semibold text-violet-600 block mb-0.5">Step 1</span>
+                    <span className="text-xs font-semibold text-amber-600 block mb-0.5">Step 1</span>
                     <h5 className="font-bold text-slate-800 text-sm">Request Received</h5>
                     <p className="text-xs text-slate-500 mt-1">{formatDate(quotation.createdAt)}</p>
                   </div>
@@ -504,9 +504,9 @@ export default function QuotationResponse() {
 
                 {/* Step 2: Quoted */}
                 <div className="relative opacity-100">
-                  <div className={`absolute -left-[30px] rounded-full w-5 h-5 border-4 border-white shadow ${quotation.quotedAt ? "bg-violet-500 shadow-violet-200" : "bg-slate-300 shadow-slate-200"}`}></div>
+                  <div className={`absolute -left-[30px] rounded-full w-5 h-5 border-4 border-white shadow ${quotation.quotedAt ? "bg-amber-500 shadow-amber-200" : "bg-slate-300 shadow-slate-200"}`}></div>
                   <div>
-                    <span className={`text-xs font-semibold block mb-0.5 ${quotation.quotedAt ? "text-violet-600" : "text-slate-400"}`}>Step 2</span>
+                    <span className={`text-xs font-semibold block mb-0.5 ${quotation.quotedAt ? "text-amber-600" : "text-slate-400"}`}>Step 2</span>
                     <h5 className={`font-bold text-sm ${quotation.quotedAt ? "text-slate-800" : "text-slate-400"}`}>Quotation Sent</h5>
                     {quotation.quotedAt && <p className="text-xs text-slate-500 mt-1">{formatDate(quotation.quotedAt)}</p>}
                   </div>
@@ -515,9 +515,9 @@ export default function QuotationResponse() {
                 {/* Step 3: Accepted / In Progress */}
                 {(quotation.status === "accepted" || quotation.status === "design_in_progress" || quotation.status === "completed" || quotation.status === "design_delivered") && (
                   <div className="relative opacity-100">
-                    <div className="absolute -left-[30px] rounded-full w-5 h-5 bg-violet-500 border-4 border-white shadow shadow-violet-200"></div>
+                    <div className="absolute -left-[30px] rounded-full w-5 h-5 bg-amber-500 border-4 border-white shadow shadow-amber-200"></div>
                     <div>
-                      <span className="text-xs font-semibold text-violet-600 block mb-0.5">Step 3</span>
+                      <span className="text-xs font-semibold text-amber-600 block mb-0.5">Step 3</span>
                       <h5 className="font-bold text-slate-800 text-sm">Customer Accepted Payment</h5>
                       {quotation.acceptedAt && <p className="text-xs text-slate-500 mt-1">{formatDate(quotation.acceptedAt)}</p>}
                     </div>
@@ -581,14 +581,14 @@ export default function QuotationResponse() {
                       <input 
                         type="file" 
                         multiple 
-                        className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:border-violet-500 bg-white"
+                        className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:border-amber-500 bg-white"
                         onChange={(e) => setUploadFiles(Array.from(e.target.files))}
                       />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5 text-slate-700">Message / Link to Designs</label>
                       <textarea
-                        className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:border-violet-500 min-h-[100px] bg-white resize-y"
+                        className="w-full border border-slate-200 p-3 rounded-xl focus:outline-none focus:border-amber-500 min-h-[100px] bg-white resize-y"
                         placeholder="e.g. Here is the link to the Figma file: https://..."
                         value={uploadMessage}
                         onChange={(e) => setUploadMessage(e.target.value)}
@@ -615,7 +615,7 @@ export default function QuotationResponse() {
                 <h4 className="font-bold mb-4 text-rose-600">{actionMode === "cancel" ? "Cancel Order" : "Hibernate Order"}</h4>
                 <div className="space-y-4">
                   <select 
-                    className="w-full border p-3 rounded-xl focus:outline-none focus:border-violet-500"
+                    className="w-full border p-3 rounded-xl focus:outline-none focus:border-amber-500"
                     value={actionReason}
                     onChange={(e) => setActionReason(e.target.value)}
                   >

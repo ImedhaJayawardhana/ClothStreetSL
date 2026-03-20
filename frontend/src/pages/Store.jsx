@@ -123,7 +123,7 @@ export default function Store() {
                 </button>
             </div>
             {/* ── Header Banner ──────────────────────────────────────── */}
-            <div className="relative bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-600 pt-10 pb-5 px-6 lg:px-12 overflow-hidden mt-4">
+            <div className="relative bg-gradient-to-r from-amber-700 via-amber-600 to-amber-600 pt-10 pb-5 px-6 lg:px-12 overflow-hidden mt-4">
                 {/* Background shapes */}
                 <div className="absolute top-[-50px] left-[-50px] w-64 h-64 rounded-full blur-2xl" />
                 <div className="absolute bottom-[-80px] right-[-20px] w-80 h-80 rounded-full blur-3xl" />
@@ -268,7 +268,7 @@ export default function Store() {
                                                 {item.type}
                                             </div>
                                             <div className="flex items-center justify-between mt-auto">
-                                                <span className="text-lg font-extrabold tracking-tight">
+                                                <span className="text-lg font-extrabold tracking-tight text-slate-900">
                                                     LKR {item.price?.toLocaleString()}
                                                 </span>
                                                 <div className="w-8 h-8 rounded-full flex items-center justify-center group-hover: transition-colors">
@@ -294,7 +294,7 @@ export default function Store() {
                 {/* Right Column (Sidebar) */}
                 <div className="rounded-3xl p-7 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border sticky top-8 relative overflow-hidden">
                     {/* Subtle gradient bar at the top edge */}
-                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-purple-500 to-indigo-500" />
+                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 to-amber-500" />
                     {/* Supplier Badges */}
                     <div className="mb-8 mt-2">
                         <h3 className="flex items-center gap-2 text-[15px] font-bold mb-3">
@@ -339,7 +339,7 @@ export default function Store() {
                     </div>
                     {/* Action Buttons */}
                     <div className="flex flex-col gap-3">
-                        <button className="w-full hover: font-bold text-[15px] py-3.5 rounded-xl transition-colors shadow-md shadow-purple-200 flex items-center justify-center gap-2">
+                        <button className="w-full hover: font-bold text-[15px] py-3.5 rounded-xl transition-colors shadow-md shadow-amber-200 flex items-center justify-center gap-2">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                             </svg>

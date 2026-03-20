@@ -82,12 +82,12 @@ export default function Login() {
           alt="Textile background"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/95 via-blue-50/90 to-slate-100/95"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/95 via-amber-50/90 to-slate-100/95"></div>
       </div>
 
       {/* Decorative blobs */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-amber-100/50 rounded-full blur-3xl opacity-50"></div>
         <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-slate-200/50 rounded-full blur-3xl opacity-50"></div>
       </div>
 
@@ -103,14 +103,14 @@ export default function Login() {
 
         {/* Card */}
         <div className="bg-white border border-slate-200/60 rounded-[2.5rem] p-10 shadow-2xl shadow-slate-200/80 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50/50 rounded-full blur-2xl -mr-16 -mt-16"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50/50 rounded-full blur-2xl -mr-16 -mt-16"></div>
 
           <div className="relative z-10">
             {/* Header */}
             <div className="mb-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 mb-4">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
-                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Secure Access</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-100 mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
+                <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Secure Access</span>
               </div>
               <h1 className="text-3xl font-black text-slate-900 leading-tight">Welcome Back</h1>
               <p className="text-sm text-slate-400 font-bold mt-2 font-serif italic">Sign in to orchestrate your fashion ecosystem</p>
@@ -151,7 +151,7 @@ export default function Login() {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between px-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Password</label>
-                  <Link to="/forgot-password" className="text-[10px] font-black text-blue-600 uppercase tracking-tight hover:underline">
+                  <Link to="/forgot-password" className="text-[10px] font-black text-amber-600 uppercase tracking-tight hover:underline">
                     Reset Password?
                   </Link>
                 </div>
@@ -190,7 +190,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-slate-900 border border-slate-800 text-white font-black uppercase tracking-[0.2em] py-5 rounded-2xl transition-all duration-300 shadow-xl shadow-slate-900/10 hover:bg-blue-600 hover:border-blue-500 flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
+                className="w-full bg-slate-900 border border-slate-800 text-white font-black uppercase tracking-[0.2em] py-5 rounded-2xl transition-all duration-300 shadow-xl shadow-slate-900/10 hover:bg-amber-600 hover:border-amber-500 flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -219,7 +219,7 @@ export default function Login() {
             <button
               onClick={handleGoogleLogin}
               disabled={loading}
-              className="w-full bg-white border border-slate-200 py-4 px-6 rounded-2xl flex items-center justify-center gap-4 transition-all duration-300 hover:border-blue-600/30 hover:bg-slate-50 group shadow-sm disabled:opacity-50"
+              className="w-full bg-white border border-slate-200 py-4 px-6 rounded-2xl flex items-center justify-center gap-4 transition-all duration-300 hover:border-amber-600/30 hover:bg-slate-50 group shadow-sm disabled:opacity-50"
             >
               <svg className="w-5 h-5 transition-transform group-hover:scale-110" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -234,7 +234,7 @@ export default function Login() {
             <div className="text-center mt-10">
               <p className="text-sm text-slate-400 font-bold">
                 New to the ecosystem?{' '}
-                <Link to="/register" className="text-blue-600 hover:text-blue-700 underline underline-offset-4 decoration-2 font-black">
+                <Link to="/register" className="text-amber-600 hover:text-amber-700 underline underline-offset-4 decoration-2 font-black">
                   Create Account
                 </Link>
               </p>
@@ -246,9 +246,9 @@ export default function Login() {
         <div className="mt-8 text-center space-y-2">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-loose">
             Secure Digital Protocol &copy; {new Date().getFullYear()} ClothStreet Lanka <br />
-            <Link to="#" className="hover:text-blue-600 transition-colors mx-2">Terms</Link>
+            <Link to="#" className="hover:text-amber-600 transition-colors mx-2">Terms</Link>
             <span className="text-slate-200">|</span>
-            <Link to="#" className="hover:text-blue-600 transition-colors mx-2">Privacy</Link>
+            <Link to="#" className="hover:text-amber-600 transition-colors mx-2">Privacy</Link>
           </p>
         </div>
       </div>

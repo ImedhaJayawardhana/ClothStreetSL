@@ -6,7 +6,7 @@ export default function AboutUs() {
  <div className="min-h-screen flex flex-col font-sans">
  
  {/* ── Hero Section ── */}
- <section className="relative overflow-hidden bg-gradient-to-r from-violet-800 via-purple-700 to-indigo-800 py-24 sm:py-32">
+ <section className="relative overflow-hidden bg-gradient-to-r from-amber-800 via-amber-700 to-amber-800 py-24 sm:py-32">
  {/* Background decorative blobs */}
  <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" />
  <div className="absolute top-24 -left-24 w-72 h-72 bg-fuchsia-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" />
@@ -54,7 +54,7 @@ export default function AboutUs() {
  
  {/* Visual Side */}
  <div className="relative group">
- <div className="absolute -inset-4 bg-gradient-to-r from-purple-100 to-fuchsia-100 rounded-[2.5rem] transform -rotate-3 transition-transform group-hover:-rotate-1" />
+ <div className="absolute -inset-4 bg-gradient-to-r from-amber-100 to-fuchsia-100 rounded-[2.5rem] transform -rotate-3 transition-transform group-hover:-rotate-1" />
  <img src="https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?auto=format&fit=crop&q=80&w=800" alt="Tailoring workshop" className="relative rounded-3xl shadow-2xl object-cover w-full h-[500px]" />
  {/* Floating badge */}
  <div className="absolute -bottom-6 -right-6 p-6 rounded-2xl shadow-xl flex items-center gap-4">
@@ -124,7 +124,7 @@ export default function AboutUs() {
  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
  {/* Pillar 1 */}
  <div className="rounded-3xl p-8 shadow-sm border hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-4 group">
- <div className="absolute inset-x-0 -top-px h-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-t-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+ <div className="absolute inset-x-0 -top-px h-1 bg-gradient-to-r from-amber-500 to-cyan-500 rounded-t-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -138,7 +138,7 @@ export default function AboutUs() {
 
  {/* Pillar 2 */}
  <div className="rounded-3xl p-8 shadow-sm border hover:shadow-lg transition-all duration-300 relative transform hover:-translate-y-4 group">
- <div className="absolute inset-x-0 -top-px h-1 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-t-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+ <div className="absolute inset-x-0 -top-px h-1 bg-gradient-to-r from-amber-500 to-amber-500 rounded-t-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -170,7 +170,7 @@ export default function AboutUs() {
  {/* ── CTA Banner ── */}
  <section className="py-16 sm:py-24">
  <div className="mx-auto max-w-7xl px-6 lg:px-8">
- <div className="bg-gradient-to-br from-indigo-900 via-purple-900 to-fuchsia-900 rounded-3xl px-6 py-16 sm:p-20 text-center shadow-2xl relative overflow-hidden">
+ <div className="bg-gradient-to-br from-amber-900 via-amber-900 to-fuchsia-900 rounded-3xl px-6 py-16 sm:p-20 text-center shadow-2xl relative overflow-hidden">
  {/* Soft glow behind text */}
  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full filter blur-[100px] opacity-40 mix-blend-screen pointer-events-none" />
  

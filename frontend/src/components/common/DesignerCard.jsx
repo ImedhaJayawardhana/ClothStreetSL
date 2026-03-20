@@ -8,7 +8,7 @@ export default function DesignerCard({ designer}) {
  // Color mapping for specialty pills
  const specialtyColors = {
 'Bridal Couture':'',
-'Evening Wear':'bg-violet-50 text-violet-700 border-violet-100',
+'Evening Wear':'bg-amber-50 text-amber-700 border-amber-100',
 'Traditional Wear':'bg-amber-50 text-amber-700 border-amber-100',
 'Handloom Designs':'bg-emerald-50 text-emerald-700 border-emerald-100',
 'Streetwear':'bg-orange-50 text-orange-700 border-orange-100',
@@ -23,7 +23,7 @@ export default function DesignerCard({ designer}) {
 
  return (
  <>
- <div className="rounded-3xl border overflow-hidden shadow-sm hover:shadow-xl hover:shadow-violet-100/50 hover:border-violet-100 transition-all duration-300 group flex flex-col">
+ <div className="rounded-3xl border overflow-hidden shadow-sm hover:shadow-xl hover:shadow-amber-100/50 hover:border-amber-100 transition-all duration-300 group flex flex-col">
 
  {/* ── Image Section ── */}
  <div className="relative h-52 overflow-hidden">
@@ -45,7 +45,7 @@ export default function DesignerCard({ designer}) {
  <div className="absolute inset-x-0 bottom-0 p-3 flex justify-between items-end bg-gradient-to-t from-black/60 to-transparent">
  <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase flex items-center gap-1.5 shadow-sm backdrop-blur-md ${
  designer.status ==='Available'
- ?'bg-emerald-500/90'
+ ?'bg-[#A8A88E]'
  :''
 }`}>
  <span className={`w-1.5 h-1.5 rounded-full ${
@@ -77,7 +77,7 @@ export default function DesignerCard({ designer}) {
  <div className="flex flex-wrap gap-2 mb-4">
  {designer.specialties.map((spec, idx) => (
  <span key={idx} className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-semibold border ${
- specialtyColors[spec] ||'bg-violet-50 text-violet-700 border-violet-100'
+ specialtyColors[spec] ||'bg-amber-50 text-amber-700 border-amber-100'
 }`}>
  {spec}
  </span>
@@ -184,7 +184,7 @@ export default function DesignerCard({ designer}) {
  <img
  src={designer.image}
  alt={designer.name}
- className="w-12 h-12 rounded-full object-cover border-2 border-violet-100"
+ className="w-12 h-12 rounded-full object-cover border-2 border-amber-100"
  />
  <div>
  <h3 className="font-bold">{designer.name}</h3>
@@ -200,10 +200,10 @@ export default function DesignerCard({ designer}) {
  {designer.email && (
  <a
  href={`mailto:${designer.email}`}
- className="flex items-center gap-3 p-3 hover:bg-violet-50 border hover:border-violet-200 rounded-xl transition-all duration-200 group/link"
+ className="flex items-center gap-3 p-3 hover:bg-amber-50 border hover:border-amber-200 rounded-xl transition-all duration-200 group/link"
  >
- <div className="w-10 h-10 bg-violet-100 group-hover/link:bg-violet-200 rounded-lg flex items-center justify-center transition-colors">
- <svg className="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <div className="w-10 h-10 bg-amber-100 group-hover/link:bg-amber-200 rounded-lg flex items-center justify-center transition-colors">
+ <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
  </svg>
  </div>
@@ -321,7 +321,7 @@ export default function DesignerCard({ designer}) {
  :' border'
 }`}>
  <span className={`w-1.5 h-1.5 rounded-full ${
- designer.status ==='Available' ?'bg-emerald-500' :''
+ designer.status ==='Available' ?'bg-[#A8A88E]' :''
 }`} />
  {designer.status}
  </div>
@@ -337,7 +337,7 @@ export default function DesignerCard({ designer}) {
  <div className="flex flex-wrap gap-2">
  {designer.specialties.map((spec, idx) => (
  <span key={idx} className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-semibold border ${
- specialtyColors[spec] ||'bg-violet-50 text-violet-700 border-violet-100'
+ specialtyColors[spec] ||'bg-amber-50 text-amber-700 border-amber-100'
 }`}>
  {spec}
  </span>
