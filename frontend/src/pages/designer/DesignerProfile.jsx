@@ -91,7 +91,7 @@ function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage, upload
                 <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-lg bg-fuchsia-100 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
-                            fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
                             <circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                         </svg>
@@ -468,7 +468,7 @@ export default function DesignerProfile() {
     // ─── Loading skeleton ──────────────────────────────────────────────────────
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-fuchsia-50 via-white to-purple-50 py-10 px-4">
+            <div className="min-h-screen bg-gradient-to-br from-fuchsia-50 via-white to-amber-50 py-10 px-4">
                 <div className="max-w-5xl mx-auto space-y-6">
                     <Skeleton className="h-52 w-full bg-slate-100" />
                     <div className="flex flex-col lg:flex-row gap-6">
@@ -494,10 +494,10 @@ export default function DesignerProfile() {
     const reviews = designer?.reviews || DEFAULT_DESIGNER.reviews;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-fuchsia-50 via-white to-purple-50">
+        <div className="min-h-screen bg-gradient-to-br from-fuchsia-50 via-white to-amber-50">
 
             {/* ── Hero Banner ── */}
-            <div className="bg-gradient-to-r from-fuchsia-800 via-purple-700 to-violet-800 relative overflow-hidden">
+            <div className="bg-gradient-to-r from-fuchsia-800 via-amber-700 to-amber-800 relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute -top-10 -right-10 w-64 h-64 bg-white/5 rounded-full" />
                     <div className="absolute top-4 right-32 w-32 h-32 bg-white/5 rounded-full" />
@@ -712,7 +712,7 @@ export default function DesignerProfile() {
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="w-7 h-7 rounded-lg bg-fuchsia-100 flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
-                                        fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                                         <circle cx="12" cy="7" r="4" />
                                     </svg>
@@ -747,7 +747,7 @@ export default function DesignerProfile() {
                     <div className="w-full lg:w-72 flex-shrink-0">
                         <div className="rounded-2xl border border-fuchsia-100 shadow-sm overflow-hidden sticky top-24">
 
-                            <div className="h-2 bg-gradient-to-r from-fuchsia-500 via-purple-500 to-violet-500" />
+                            <div className="h-2 bg-gradient-to-r from-fuchsia-500 via-amber-500 to-amber-500" />
 
                             <div className="p-6 flex flex-col gap-5">
 
@@ -769,7 +769,7 @@ export default function DesignerProfile() {
                                     <div className="flex items-center gap-2 mb-3">
                                         <div className="w-5 h-5 rounded-md bg-fuchsia-50 flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width={10} height={10} viewBox="0 0 24 24"
-                                                fill="none" stroke="#d946ef" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                fill="none" stroke="var(--brand-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <polyline points="20 6 9 17 4 12" />
                                             </svg>
                                         </div>
@@ -812,7 +812,7 @@ export default function DesignerProfile() {
                                 {/* Aesthetics */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
-                                        <div className="w-5 h-5 rounded-md bg-indigo-50 flex items-center justify-center">
+                                        <div className="w-5 h-5 rounded-md bg-amber-50 flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width={10} height={10} viewBox="0 0 24 24"
                                                 fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
@@ -834,7 +834,7 @@ export default function DesignerProfile() {
                                             <input type="text" value={newAestheticInput}
                                                 onChange={(e) => setNewAestheticInput(e.target.value)}
                                                 placeholder="Add aesthetic…"
-                                                className="flex-1 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                                                className="flex-1 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-amber-400"
                                                 onKeyDown={(e) => {
                                                     if (e.key === "Enter" && newAestheticInput.trim()) {
                                                         setDraftAesthetics((prev) => [...prev, newAestheticInput.trim()]);
@@ -847,7 +847,7 @@ export default function DesignerProfile() {
                                                     setNewAestheticInput("");
                                                 }
                                             }}
-                                                className="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-sm font-bold transition-colors">
+                                                className="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 text-sm font-bold transition-colors">
                                                 +
                                             </button>
                                         </div>
@@ -860,7 +860,7 @@ export default function DesignerProfile() {
                                 <div className="flex flex-col gap-2.5">
                                     <button 
                                         onClick={handleContactMe}
-                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200"
+                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-fuchsia-600 to-amber-600 hover:from-fuchsia-700 hover:to-amber-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200"
                                     >
                                         Contact Me
                                     </button>
@@ -908,7 +908,7 @@ export default function DesignerProfile() {
                     <div className="border-t border-slate-200 pt-8 mt-4">
                         <h2 className="text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-2.5">
                             <div className="w-8 h-8 rounded-xl bg-fuchsia-100 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
                             </div>
                             Personal Orders
                             <span className="text-xs font-bold text-slate-400 ml-auto">
@@ -942,8 +942,8 @@ export default function DesignerProfile() {
                                     const status = order.status?.toLowerCase() || "pending";
                                     const statusStyles = {
                                         pending: "bg-amber-50 text-amber-700 border-amber-200",
-                                        processing: "bg-blue-50 text-blue-700 border-blue-200",
-                                        shipped: "bg-indigo-50 text-indigo-700 border-indigo-200",
+                                        processing: "bg-amber-50 text-amber-700 border-amber-200",
+                                        shipped: "bg-amber-50 text-amber-700 border-amber-200",
                                         completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
                                         delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
                                         cancelled: "bg-red-50 text-red-600 border-red-200",
@@ -993,7 +993,7 @@ export default function DesignerProfile() {
                     <div className="border-t border-slate-200 pt-8 mt-4">
                         <h2 className="text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-2.5">
                             <div className="w-8 h-8 rounded-xl bg-fuchsia-100 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             </div>
                             Profile Settings
                         </h2>
@@ -1001,7 +1001,7 @@ export default function DesignerProfile() {
                             {/* Personal Info */}
                             <div className="rounded-2xl border border-fuchsia-100 shadow-sm p-6 bg-white">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-2"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><h3 className="font-bold text-sm">Personal Info</h3></div>
+                                    <div className="flex items-center gap-2"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><h3 className="font-bold text-sm">Personal Info</h3></div>
                                     <button onClick={() => setEditingPersonal(!editingPersonal)} className="text-xs font-semibold text-fuchsia-600 hover:text-fuchsia-700">{editingPersonal ? "Cancel" : "Edit"}</button>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1019,7 +1019,7 @@ export default function DesignerProfile() {
                             {/* Address Details */}
                             <div className="rounded-2xl border border-fuchsia-100 shadow-sm p-6 bg-white">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-2"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><h3 className="font-bold text-sm">Address Details</h3></div>
+                                    <div className="flex items-center gap-2"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div><h3 className="font-bold text-sm">Address Details</h3></div>
                                     <button onClick={() => setEditingAddress(!editingAddress)} className="text-xs font-semibold text-fuchsia-600 hover:text-fuchsia-700">{editingAddress ? "Cancel" : "Edit"}</button>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1038,23 +1038,23 @@ export default function DesignerProfile() {
                             </div>
                             {/* Preferences */}
                             <div className="rounded-2xl border border-fuchsia-100 shadow-sm p-6 bg-white">
-                                <div className="flex items-center gap-2 mb-5"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg></div><h3 className="font-bold text-sm">Preferences</h3></div>
+                                <div className="flex items-center gap-2 mb-5"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg></div><h3 className="font-bold text-sm">Preferences</h3></div>
                                 <div className="flex flex-col gap-4">
-                                    <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-slate-800">Email Notifications</p><p className="text-xs text-slate-500">Receive order updates and promotions via email.</p></div><button onClick={() => handlePreferenceToggle("emailAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.emailAlerts ? "#d946ef" : "#d1d5db" }}><div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: profileData.preferences.emailAlerts ? "22px" : "2px" }} /></button></div>
+                                    <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-slate-800">Email Notifications</p><p className="text-xs text-slate-500">Receive order updates and promotions via email.</p></div><button onClick={() => handlePreferenceToggle("emailAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.emailAlerts ? "#10B981" : "#EF4444" }}><div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: profileData.preferences.emailAlerts ? "22px" : "2px" }} /></button></div>
                                     <div className="h-px bg-slate-100" />
-                                    <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-slate-800">SMS Alerts</p><p className="text-xs text-slate-500">Get real-time text messages when orders are out for delivery.</p></div><button onClick={() => handlePreferenceToggle("smsAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.smsAlerts ? "#d946ef" : "#d1d5db" }}><div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: profileData.preferences.smsAlerts ? "22px" : "2px" }} /></button></div>
+                                    <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-slate-800">SMS Alerts</p><p className="text-xs text-slate-500">Get real-time text messages when orders are out for delivery.</p></div><button onClick={() => handlePreferenceToggle("smsAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.smsAlerts ? "#10B981" : "#EF4444" }}><div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: profileData.preferences.smsAlerts ? "22px" : "2px" }} /></button></div>
                                 </div>
                             </div>
                             {/* Account Security */}
                             <div className="rounded-2xl border border-fuchsia-100 shadow-sm p-6 bg-white">
-                                <div className="flex items-center gap-2 mb-5"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d946ef" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3 className="font-bold text-sm">Account Security</h3></div>
+                                <div className="flex items-center gap-2 mb-5"><div className="w-7 h-7 rounded-lg bg-fuchsia-50 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3 className="font-bold text-sm">Account Security</h3></div>
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-slate-800">Password</p><p className="text-xs text-slate-500">Send a secure reset link to your email ({profileData.email}).</p></div><button onClick={handlePasswordReset} className="px-4 py-2 rounded-xl border text-xs font-semibold text-fuchsia-600 hover:bg-fuchsia-50 transition-colors">Change Password</button></div>
                                     <div className="h-px bg-slate-100" />
                                     <div className="flex items-center justify-between"><div><p className="text-sm font-semibold text-red-600">Delete Account</p><p className="text-xs text-slate-500">Permanently remove your account and data.</p></div><button onClick={openDeleteModal} className="px-4 py-2 rounded-xl border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors">Delete Account</button></div>
                                 </div>
                             </div>
-                            {(editingPersonal || editingAddress) && (<div className="flex justify-end"><button onClick={handleSaveProfile} disabled={savingProfile} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 text-white font-semibold text-sm disabled:opacity-50 transition-colors shadow-md">{savingProfile ? "Saving..." : "Save Changes"}</button></div>)}
+                            {(editingPersonal || editingAddress) && (<div className="flex justify-end"><button onClick={handleSaveProfile} disabled={savingProfile} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-600 to-amber-600 hover:from-fuchsia-700 hover:to-amber-700 text-white font-semibold text-sm disabled:opacity-50 transition-colors shadow-md">{savingProfile ? "Saving..." : "Save Changes"}</button></div>)}
                         </div>
                     </div>
                 </div>

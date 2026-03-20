@@ -227,14 +227,14 @@ export default function DesignerOrders() {
  sub:"All time",
  value: stats.total,
  icon: (
- <svg className="w-5 h-5" fill="none" stroke="#a78bfa" strokeWidth="2" viewBox="0 0 24 24">
+ <svg className="w-5 h-5" fill="none" stroke="var(--brand-primary)" strokeWidth="2" viewBox="0 0 24 24">
  <rect x="3" y="3" width="7" height="7" rx="1" />
  <rect x="14" y="3" width="7" height="7" rx="1" />
  <rect x="3" y="14" width="7" height="7" rx="1" />
  <rect x="14" y="14" width="7" height="7" rx="1" />
  </svg>
  ),
- iconBg:"rgba(139, 92, 246, 0.15)",
+ iconBg:"rgba(249, 168, 37, 0.15)",
 },
  {
  label:"Active",
@@ -367,7 +367,7 @@ export default function DesignerOrders() {
  placeholder="Search projects..."
  value={searchTerm}
  onChange={(e) => setSearchTerm(e.target.value)}
- className="w-full pl-10 pr-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus: transition-all placeholder:"
+ className="w-full pl-10 pr-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus: transition-all placeholder:"
  />
  </div>
 
@@ -534,7 +534,7 @@ export default function DesignerOrders() {
  </div>
  <div className="w-full h-1.5 rounded-full bg-slate-200 overflow-hidden">
  <div
- className={`h-full rounded-full transition-all duration-700 ${progressColor || "bg-blue-500"}`}
+ className={`h-full rounded-full transition-all duration-700 ${progressColor || "bg-amber-500"}`}
  style={{ width:`${project.progress || (project.status?.toLowerCase() === "completed" ? 100 : 0)}%`}}
  />
  </div>
@@ -579,7 +579,7 @@ export default function DesignerOrders() {
 
  {/* Action buttons */}
  <div className="flex gap-2">
- <button onClick={() => setSelectedProject(project)} className="flex-1 flex justify-center items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 font-semibold py-2.5 px-3 rounded-xl text-sm transition-all shadow-sm hover:shadow-md">
+ <button onClick={() => setSelectedProject(project)} className="flex-1 flex justify-center items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 font-semibold py-2.5 px-3 rounded-xl text-sm transition-all shadow-sm hover:shadow-md">
  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
  <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -621,7 +621,7 @@ export default function DesignerOrders() {
  key={i}
  onClick={() => setCurrentPage(i + 1)}
  className={`w-9 h-9 rounded-xl text-sm font-bold transition-all flex items-center justify-center ${safePage === i + 1
- ?" shadow-md shadow-purple-600/20"
+ ?" shadow-md shadow-amber-600/20"
  :" border hover: hover:"
 }`}
  >
