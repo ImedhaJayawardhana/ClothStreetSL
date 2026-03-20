@@ -101,7 +101,7 @@ function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage, upload
                 <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-lg flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
-                            fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
                             <circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
                         </svg>
@@ -118,7 +118,7 @@ function PortfolioGallery({ images, editMode, onAddImages, onDeleteImage, upload
                         <button
                             onClick={() => fileRef.current.click()}
                             disabled={uploading}
-                            className="flex items-center gap-1.5 text-xs border rounded-lg px-3 py-1.5 hover:bg-purple-50 transition-colors font-medium disabled:opacity-50"
+                            className="flex items-center gap-1.5 text-xs border rounded-lg px-3 py-1.5 hover:bg-amber-50 transition-colors font-medium disabled:opacity-50"
                         >
                             {uploading ? (
                                 <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
@@ -589,7 +589,7 @@ export default function TailorProfile() {
     // ─── Loading skeleton ──────────────────────────────────────────────────────
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 py-10 px-4">
+            <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-50 py-10 px-4">
                 <div className="max-w-5xl mx-auto space-y-6">
                     <Skeleton className="h-52 w-full bg-slate-100" />
                     <div className="flex flex-col lg:flex-row gap-6">
@@ -615,10 +615,10 @@ export default function TailorProfile() {
     const reviews = tailor?.reviews || DEFAULT_TAILOR.reviews;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-50">
 
             {/* ── Hero Banner ── */}
-            <div className="bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-600 relative overflow-hidden">
+            <div className="bg-gradient-to-r from-amber-700 via-amber-600 to-amber-600 relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute -top-10 -right-10 w-64 h-64 bg-white/5 rounded-full" />
                     <div className="absolute top-4 right-32 w-32 h-32 bg-white/5 rounded-full" />
@@ -710,7 +710,7 @@ export default function TailorProfile() {
                                         type="text"
                                         value={draftName}
                                         onChange={(e) => setDraftName(e.target.value)}
-                                        className="text-2xl font-extrabold leading-tight bg-white/10 border border-white/20 rounded-xl px-3 py-1 focus:outline-none focus:ring-2 focus:ring-violet-400 w-full max-w-sm"
+                                        className="text-2xl font-extrabold leading-tight bg-white/10 border border-white/20 rounded-xl px-3 py-1 focus:outline-none focus:ring-2 focus:ring-amber-400 w-full max-w-sm"
                                         placeholder="Your Name"
                                     />
                                 ) : (
@@ -771,7 +771,7 @@ export default function TailorProfile() {
                                                 type="number"
                                                 value={draftExperience}
                                                 onChange={(e) => setDraftExperience(e.target.value)}
-                                                className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-16"
+                                                className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-amber-400 w-16"
                                             />
                                             <span>yrs exp</span>
                                         </div>
@@ -797,7 +797,7 @@ export default function TailorProfile() {
                                             type="text"
                                             value={draftLocation}
                                             onChange={(e) => setDraftLocation(e.target.value)}
-                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-48"
+                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-amber-400 w-48"
                                             placeholder="City, Sri Lanka"
                                         />
                                     ) : (
@@ -814,7 +814,7 @@ export default function TailorProfile() {
                                             type="text"
                                             value={draftPhoneNumber}
                                             onChange={(e) => setDraftPhoneNumber(e.target.value)}
-                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-violet-400 w-36"
+                                            className="text-sm bg-white/10 border border-white/20 rounded px-2 py-0.5 focus:outline-none focus:ring-1 focus:ring-amber-400 w-36"
                                             placeholder="Contact Phone"
                                         />
                                     ) : (
@@ -849,9 +849,9 @@ export default function TailorProfile() {
                         {/* Bio card */}
                         <div className="rounded-2xl border shadow-sm p-6">
                             <div className="flex items-center gap-2 mb-4">
-                                <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
+                                <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width={14} height={14} viewBox="0 0 24 24"
-                                        fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
                                         <circle cx="12" cy="7" r="4" />
                                     </svg>
@@ -860,7 +860,7 @@ export default function TailorProfile() {
                             </div>
                             {editMode ? (
                                 <textarea
-                                    className="w-full text-base leading-relaxed resize-none border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                    className="w-full text-base leading-relaxed resize-none border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-amber-400"
                                     rows={4}
                                     value={draftBio}
                                     onChange={(e) => setDraftBio(e.target.value)}
@@ -893,7 +893,7 @@ export default function TailorProfile() {
                         <div className="rounded-2xl border shadow-sm overflow-hidden sticky top-24">
 
                             {/* Top accent band */}
-                            <div className="h-2 bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500" />
+                            <div className="h-2 bg-gradient-to-r from-amber-500 via-amber-500 to-amber-500" />
 
                             <div className="p-6 flex flex-col gap-5">
 
@@ -905,7 +905,7 @@ export default function TailorProfile() {
                                             type="number"
                                             value={draftPrice}
                                             onChange={(e) => setDraftPrice(e.target.value)}
-                                            className="border rounded-xl px-3 py-2 font-extrabold text-2xl focus:outline-none focus:ring-2 focus:ring-purple-400 w-full"
+                                            className="border rounded-xl px-3 py-2 font-extrabold text-2xl focus:outline-none focus:ring-2 focus:ring-amber-400 w-full"
                                         />
                                     ) : (
                                         <p className="font-extrabold text-2xl text-slate-900">
@@ -917,9 +917,9 @@ export default function TailorProfile() {
                                 {/* Services */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
-                                        <div className="w-5 h-5 rounded-md bg-purple-50 flex items-center justify-center">
+                                        <div className="w-5 h-5 rounded-md bg-amber-50 flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width={10} height={10} viewBox="0 0 24 24"
-                                                fill="none" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                fill="none" stroke="var(--brand-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <polyline points="20 6 9 17 4 12" />
                                             </svg>
                                         </div>
@@ -939,7 +939,7 @@ export default function TailorProfile() {
                                             <input type="text" value={newServiceInput}
                                                 onChange={(e) => setNewServiceInput(e.target.value)}
                                                 placeholder="Add service…"
-                                                className="flex-1 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-purple-400"
+                                                className="flex-1 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-amber-400"
                                                 onKeyDown={(e) => {
                                                     if (e.key === "Enter" && newServiceInput.trim()) {
                                                         setDraftServices((prev) => [...prev, newServiceInput.trim()]);
@@ -952,7 +952,7 @@ export default function TailorProfile() {
                                                     setNewServiceInput("");
                                                 }
                                             }}
-                                                className="px-3 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 text-sm font-bold transition-colors">
+                                                className="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 text-sm font-bold transition-colors">
                                                 +
                                             </button>
                                         </div>
@@ -962,7 +962,7 @@ export default function TailorProfile() {
                                 {/* Customization Types */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
-                                        <div className="w-5 h-5 rounded-md bg-indigo-50 flex items-center justify-center">
+                                        <div className="w-5 h-5 rounded-md bg-amber-50 flex items-center justify-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width={10} height={10} viewBox="0 0 24 24"
                                                 fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                                 <circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" />
@@ -987,7 +987,7 @@ export default function TailorProfile() {
                                             <input type="text" value={newCustomTypeInput}
                                                 onChange={(e) => setNewCustomTypeInput(e.target.value)}
                                                 placeholder="Add type…"
-                                                className="flex-1 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                                                className="flex-1 border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-amber-400"
                                                 onKeyDown={(e) => {
                                                     if (e.key === "Enter" && newCustomTypeInput.trim()) {
                                                         setDraftCustomTypes((prev) => [...prev, newCustomTypeInput.trim()]);
@@ -1000,7 +1000,7 @@ export default function TailorProfile() {
                                                     setNewCustomTypeInput("");
                                                 }
                                             }}
-                                                className="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-sm font-bold transition-colors">
+                                                className="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 text-sm font-bold transition-colors">
                                                 +
                                             </button>
                                         </div>
@@ -1014,7 +1014,7 @@ export default function TailorProfile() {
                                     {/* Contact Me */}
                                     <button 
                                         onClick={handleContactMe}
-                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200"
+                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-600 hover:from-amber-700 hover:to-amber-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200"
                                     >
                                         Contact Me
                                     </button>
@@ -1069,8 +1069,8 @@ export default function TailorProfile() {
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
                     <div className="border-t border-slate-200 pt-8 mt-4">
                         <h2 className="text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-xl bg-purple-100 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                            <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
                             </div>
                             Personal Orders
                             <span className="text-xs font-bold text-slate-400 ml-auto">
@@ -1092,8 +1092,8 @@ export default function TailorProfile() {
                             </div>
                         ) : personalOrders.length === 0 ? (
                             <div className="rounded-2xl border border-dashed border-slate-200 p-10 text-center">
-                                <div className="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                                <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                                 </div>
                                 <h3 className="text-sm font-bold text-slate-700 mb-1">No personal orders yet</h3>
                                 <p className="text-xs text-slate-400">When you purchase fabrics from the shop, they'll appear here.</p>
@@ -1104,8 +1104,8 @@ export default function TailorProfile() {
                                     const status = order.status?.toLowerCase() || "pending";
                                     const statusStyles = {
                                         pending: "bg-amber-50 text-amber-700 border-amber-200",
-                                        processing: "bg-blue-50 text-blue-700 border-blue-200",
-                                        shipped: "bg-indigo-50 text-indigo-700 border-indigo-200",
+                                        processing: "bg-amber-50 text-amber-700 border-amber-200",
+                                        shipped: "bg-amber-50 text-amber-700 border-amber-200",
                                         completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
                                         delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
                                         cancelled: "bg-red-50 text-red-600 border-red-200",
@@ -1115,7 +1115,7 @@ export default function TailorProfile() {
                                     return (
                                         <div key={order.id} className="rounded-2xl border border-slate-200 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all bg-white">
                                             <div className="flex items-start gap-3 mb-3">
-                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-violet-100 flex items-center justify-center font-bold text-purple-600 shrink-0">
+                                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-amber-100 flex items-center justify-center font-bold text-amber-600 shrink-0">
                                                     {itemNames.charAt(0).toUpperCase()}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
@@ -1135,7 +1135,7 @@ export default function TailorProfile() {
                                             )}
                                             {["pending", "processing", "shipped"].includes(status) && (
                                                 <button onClick={() => navigate(`/order-tracking/${order.id}`, { state: { order } })}
-                                                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold border border-purple-200 text-purple-600 hover:bg-purple-50 transition-all">
+                                                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold border border-amber-200 text-amber-600 hover:bg-amber-50 transition-all">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
                                                     Track Order
                                                 </button>
@@ -1154,8 +1154,8 @@ export default function TailorProfile() {
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
                     <div className="border-t border-slate-200 pt-8 mt-4">
                         <h2 className="text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-xl bg-purple-100 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             </div>
                             Profile Settings
                         </h2>
@@ -1165,12 +1165,12 @@ export default function TailorProfile() {
                             <div className="rounded-2xl border shadow-sm p-6 bg-white">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
-                                        <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                         </div>
                                         <h3 className="font-bold text-sm">Personal Info</h3>
                                     </div>
-                                    <button onClick={() => setEditingPersonal(!editingPersonal)} className="text-xs font-semibold text-purple-600 hover:text-purple-700 transition-colors">
+                                    <button onClick={() => setEditingPersonal(!editingPersonal)} className="text-xs font-semibold text-amber-600 hover:text-amber-700 transition-colors">
                                         {editingPersonal ? "Cancel" : "Edit"}
                                     </button>
                                 </div>
@@ -1179,7 +1179,7 @@ export default function TailorProfile() {
                                         <>
                                             <div>
                                                 <label className="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
-                                                <input type="text" name="name" value={profileData.name} onChange={handleProfileInputChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" />
+                                                <input type="text" name="name" value={profileData.name} onChange={handleProfileInputChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-medium text-slate-400 mb-1">Email</label>
@@ -1187,7 +1187,7 @@ export default function TailorProfile() {
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-medium text-slate-400 mb-1">Phone</label>
-                                                <input type="tel" name="phone" value={profileData.phone} onChange={handleProfileInputChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" placeholder="0771234567" />
+                                                <input type="tel" name="phone" value={profileData.phone} onChange={handleProfileInputChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" placeholder="0771234567" />
                                             </div>
                                         </>
                                     ) : (
@@ -1204,22 +1204,22 @@ export default function TailorProfile() {
                             <div className="rounded-2xl border shadow-sm p-6 bg-white">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
-                                        <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                        <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                                         </div>
                                         <h3 className="font-bold text-sm">Address Details</h3>
                                     </div>
-                                    <button onClick={() => setEditingAddress(!editingAddress)} className="text-xs font-semibold text-purple-600 hover:text-purple-700 transition-colors">
+                                    <button onClick={() => setEditingAddress(!editingAddress)} className="text-xs font-semibold text-amber-600 hover:text-amber-700 transition-colors">
                                         {editingAddress ? "Cancel" : "Edit"}
                                     </button>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {editingAddress ? (
                                         <>
-                                            <div className="sm:col-span-2"><label className="block text-xs font-medium text-slate-400 mb-1">Street Address</label><input type="text" name="street" value={profileData.address.street} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" /></div>
-                                            <div><label className="block text-xs font-medium text-slate-400 mb-1">City</label><input type="text" name="city" value={profileData.address.city} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" /></div>
-                                            <div><label className="block text-xs font-medium text-slate-400 mb-1">Province</label><input type="text" name="province" value={profileData.address.province} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" /></div>
-                                            <div><label className="block text-xs font-medium text-slate-400 mb-1">Postal / Zip</label><input type="text" name="zip" value={profileData.address.zip} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400" /></div>
+                                            <div className="sm:col-span-2"><label className="block text-xs font-medium text-slate-400 mb-1">Street Address</label><input type="text" name="street" value={profileData.address.street} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" /></div>
+                                            <div><label className="block text-xs font-medium text-slate-400 mb-1">City</label><input type="text" name="city" value={profileData.address.city} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" /></div>
+                                            <div><label className="block text-xs font-medium text-slate-400 mb-1">Province</label><input type="text" name="province" value={profileData.address.province} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" /></div>
+                                            <div><label className="block text-xs font-medium text-slate-400 mb-1">Postal / Zip</label><input type="text" name="zip" value={profileData.address.zip} onChange={handleAddressChange} className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" /></div>
                                         </>
                                     ) : (
                                         <>
@@ -1235,22 +1235,22 @@ export default function TailorProfile() {
                             {/* ── Preferences ── */}
                             <div className="rounded-2xl border shadow-sm p-6 bg-white">
                                 <div className="flex items-center gap-2 mb-5">
-                                    <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg>
+                                    <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg>
                                     </div>
                                     <h3 className="font-bold text-sm">Preferences</h3>
                                 </div>
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center justify-between">
                                         <div><p className="text-sm font-semibold text-slate-800">Email Notifications</p><p className="text-xs text-slate-500">Receive order updates and promotions via email.</p></div>
-                                        <button onClick={() => handlePreferenceToggle("emailAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.emailAlerts ? "#7c3aed" : "#d1d5db" }}>
+                                        <button onClick={() => handlePreferenceToggle("emailAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.emailAlerts ? "#10B981" : "#EF4444" }}>
                                             <div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: profileData.preferences.emailAlerts ? "22px" : "2px" }} />
                                         </button>
                                     </div>
                                     <div className="h-px bg-slate-100" />
                                     <div className="flex items-center justify-between">
                                         <div><p className="text-sm font-semibold text-slate-800">SMS Alerts</p><p className="text-xs text-slate-500">Get real-time text messages when orders are out for delivery.</p></div>
-                                        <button onClick={() => handlePreferenceToggle("smsAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.smsAlerts ? "#7c3aed" : "#d1d5db" }}>
+                                        <button onClick={() => handlePreferenceToggle("smsAlerts")} className="relative w-11 h-6 rounded-full transition-colors" style={{ background: profileData.preferences.smsAlerts ? "#10B981" : "#EF4444" }}>
                                             <div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all" style={{ left: profileData.preferences.smsAlerts ? "22px" : "2px" }} />
                                         </button>
                                     </div>
@@ -1260,15 +1260,15 @@ export default function TailorProfile() {
                             {/* ── Account Security ── */}
                             <div className="rounded-2xl border shadow-sm p-6 bg-white">
                                 <div className="flex items-center gap-2 mb-5">
-                                    <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                    <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                                     </div>
                                     <h3 className="font-bold text-sm">Account Security</h3>
                                 </div>
                                 <div className="flex flex-col gap-4">
                                     <div className="flex items-center justify-between">
                                         <div><p className="text-sm font-semibold text-slate-800">Password</p><p className="text-xs text-slate-500">Send a secure reset link to your email ({profileData.email}).</p></div>
-                                        <button onClick={handlePasswordReset} className="px-4 py-2 rounded-xl border text-xs font-semibold text-purple-600 hover:bg-purple-50 transition-colors">Change Password</button>
+                                        <button onClick={handlePasswordReset} className="px-4 py-2 rounded-xl border text-xs font-semibold text-amber-600 hover:bg-amber-50 transition-colors">Change Password</button>
                                     </div>
                                     <div className="h-px bg-slate-100" />
                                     <div className="flex items-center justify-between">
@@ -1281,7 +1281,7 @@ export default function TailorProfile() {
                             {/* Save button */}
                             {(editingPersonal || editingAddress) && (
                                 <div className="flex justify-end">
-                                    <button onClick={handleSaveProfile} disabled={savingProfile} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white font-semibold text-sm disabled:opacity-50 transition-colors shadow-md">
+                                    <button onClick={handleSaveProfile} disabled={savingProfile} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-600 hover:from-amber-700 hover:to-amber-700 text-white font-semibold text-sm disabled:opacity-50 transition-colors shadow-md">
                                         {savingProfile ? "Saving..." : "Save Changes"}
                                     </button>
                                 </div>
@@ -1298,26 +1298,26 @@ export default function TailorProfile() {
                         <button className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg" onClick={closeDeleteModal}>✕</button>
                         {/* Step dots */}
                         <div className="flex justify-center gap-2 mb-6">
-                            {[1, 2, 3].map((s) => (<div key={s} className={`w-2.5 h-2.5 rounded-full transition-colors ${s === deleteStep ? "bg-purple-600" : s < deleteStep ? "bg-purple-300" : "bg-slate-200"}`} />))}
+                            {[1, 2, 3].map((s) => (<div key={s} className={`w-2.5 h-2.5 rounded-full transition-colors ${s === deleteStep ? "bg-amber-600" : s < deleteStep ? "bg-amber-300" : "bg-slate-200"}`} />))}
                         </div>
                         {deleteStep === 1 && (<>
                             <div className="text-center mb-4"><span className="text-3xl">🔒</span></div>
                             <h3 className="text-lg font-bold text-center mb-1">Verify Your Identity</h3>
                             <p className="text-sm text-slate-500 text-center mb-4">Enter your password to continue with account deletion.</p>
-                            <input type="password" placeholder="Enter your password" value={deletePassword} onChange={(e) => { setDeletePassword(e.target.value); setDeleteError(""); }} onKeyDown={(e) => e.key === "Enter" && handleDeleteStep1()} autoFocus className="w-full border rounded-xl px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-purple-400" />
+                            <input type="password" placeholder="Enter your password" value={deletePassword} onChange={(e) => { setDeletePassword(e.target.value); setDeleteError(""); }} onKeyDown={(e) => e.key === "Enter" && handleDeleteStep1()} autoFocus className="w-full border rounded-xl px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-amber-400" />
                             {deleteError && <p className="text-red-500 text-xs mb-3">⚠ {deleteError}</p>}
-                            <div className="flex gap-3"><button onClick={closeDeleteModal} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Cancel</button><button onClick={handleDeleteStep1} disabled={!deletePassword.trim()} className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div>
+                            <div className="flex gap-3"><button onClick={closeDeleteModal} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Cancel</button><button onClick={handleDeleteStep1} disabled={!deletePassword.trim()} className="flex-1 py-2.5 rounded-xl bg-amber-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div>
                         </>)}
                         {deleteStep === 2 && (<>
                             <div className="text-center mb-4"><span className="text-3xl">😔</span></div>
                             <h3 className="text-lg font-bold text-center mb-1">Sorry to See You Go</h3>
                             <p className="text-sm text-slate-500 text-center mb-4">Could you tell us why you{"'"}re leaving?</p>
                             <div className="flex flex-col gap-2 mb-4">
-                                {DELETE_REASONS.map((reason) => (<label key={reason} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm cursor-pointer transition-colors ${deleteReason === reason ? "border-purple-400 bg-purple-50" : "hover:bg-slate-50"}`}><input type="radio" name="deleteReason" checked={deleteReason === reason} onChange={() => { setDeleteReason(reason); setDeleteError(""); }} className="accent-purple-600" />{reason}</label>))}
+                                {DELETE_REASONS.map((reason) => (<label key={reason} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm cursor-pointer transition-colors ${deleteReason === reason ? "border-amber-400 bg-amber-50" : "hover:bg-slate-50"}`}><input type="radio" name="deleteReason" checked={deleteReason === reason} onChange={() => { setDeleteReason(reason); setDeleteError(""); }} className="accent-amber-600" />{reason}</label>))}
                             </div>
-                            {deleteReason === "Other" && <textarea placeholder="Your feedback helps us improve..." value={deleteFeedback} onChange={(e) => setDeleteFeedback(e.target.value)} className="w-full border rounded-xl px-3 py-2 text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-purple-400" rows={3} />}
+                            {deleteReason === "Other" && <textarea placeholder="Your feedback helps us improve..." value={deleteFeedback} onChange={(e) => setDeleteFeedback(e.target.value)} className="w-full border rounded-xl px-3 py-2 text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400" rows={3} />}
                             {deleteError && <p className="text-red-500 text-xs mb-3">⚠ {deleteError}</p>}
-                            <div className="flex gap-3"><button onClick={() => setDeleteStep(1)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Back</button><button onClick={handleDeleteStep2} disabled={!deleteReason} className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div>
+                            <div className="flex gap-3"><button onClick={() => setDeleteStep(1)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Back</button><button onClick={handleDeleteStep2} disabled={!deleteReason} className="flex-1 py-2.5 rounded-xl bg-amber-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div>
                         </>)}
                         {deleteStep === 3 && (<>
                             <div className="text-center mb-4"><span className="text-3xl">⚠️</span></div>

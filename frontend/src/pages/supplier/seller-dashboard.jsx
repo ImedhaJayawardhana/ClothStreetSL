@@ -36,9 +36,9 @@ const quickActions = [
  label:"Find Tailors",
  desc:"1,200+ skilled professionals",
  route:"/tailors",
- iconBg:"bg-violet-100",
+ iconBg:"bg-amber-100",
  icon: (
- <svg className="w-7 h-7 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <svg className="w-7 h-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <circle cx="6" cy="6" r="3" strokeWidth="2" />
  <circle cx="6" cy="18" r="3" strokeWidth="2" />
  <line x1="20" x2="8.12" y1="4" y2="15.88" strokeWidth="2" />

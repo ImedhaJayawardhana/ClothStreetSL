@@ -7,10 +7,10 @@
   --clr-surface-2: #f1f5f9;
   --clr-border: rgba(0, 0, 0, 0.06);
   --clr-border-2: rgba(0, 0, 0, 0.12);
-  --clr-primary: #7c3aed;
-  --clr-primary-2: #8b5cf6;
+  --clr-primary: var(--brand-primary);
+  --clr-primary-2: var(--brand-primary);
   --clr-accent: #ef4444;
-  --clr-glow: rgba(124, 58, 237, 0.15);
+  --clr-glow: rgba(249, 168, 37, 0.15);
   --clr-text: #0f172a;
   --clr-text-2: #334155;
   --clr-muted: #64748b;

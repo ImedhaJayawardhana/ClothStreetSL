@@ -29,7 +29,7 @@ const InputField = ({ label, name, value, isReadOnly = false, type = "text", pla
         value={value}
         onChange={handleInputChange}
         placeholder={placeholder}
-        className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow outline-none"
+        className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-shadow outline-none"
       />
     )}
   </div>
@@ -202,7 +202,7 @@ export default function SellerProfile() {
     return (
       <div className="min-h-screen flex items-center justify-center pt-20">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-t-transparent border-blue-600 rounded-full animate-spin" />
+          <div className="w-10 h-10 border-4 border-t-transparent border-amber-600 rounded-full animate-spin" />
           <p className="text-sm font-medium">Loading profile…</p>
         </div>
       </div>
@@ -267,7 +267,7 @@ export default function SellerProfile() {
         {/* Account Details Card */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             Account Details
@@ -301,7 +301,7 @@ export default function SellerProfile() {
         {/* Business Details Card */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
             Business Details
@@ -363,7 +363,7 @@ export default function SellerProfile() {
         {/* Bank Details Card */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
             </svg>
             Bank Details
@@ -395,7 +395,7 @@ export default function SellerProfile() {
         {/* Preferences Card */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="3" strokeWidth="2" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
             </svg>
@@ -421,7 +421,7 @@ export default function SellerProfile() {
         {/* Account Security Card */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <rect strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" width="18" height="11" x="3" y="11" rx="2" ry="2" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
@@ -430,7 +430,7 @@ export default function SellerProfile() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div><p className="text-sm font-semibold text-gray-800">Password</p><p className="text-xs text-gray-500">Send a secure reset link to your email.</p></div>
-              <button onClick={async () => { try { await sendPasswordResetEmail(getAuth(), user.email); toast.success("Password reset email sent!"); } catch { toast.error("Failed to send reset email"); } }} className="px-4 py-2 rounded-xl border text-xs font-semibold text-blue-600 hover:bg-blue-50 transition-colors">Change Password</button>
+              <button onClick={async () => { try { await sendPasswordResetEmail(getAuth(), user.email); toast.success("Password reset email sent!"); } catch { toast.error("Failed to send reset email"); } }} className="px-4 py-2 rounded-xl border text-xs font-semibold text-amber-600 hover:bg-amber-50 transition-colors">Change Password</button>
             </div>
             <div className="h-px bg-gray-100" />
             <div className="flex items-center justify-between">
@@ -446,23 +446,23 @@ export default function SellerProfile() {
       {showDeleteModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => { setShowDeleteModal(false); }}>
           <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-center gap-2 mb-6">{[1, 2, 3].map((s) => (<div key={s} className={`w-2.5 h-2.5 rounded-full transition-colors ${s === deleteStep ? 'bg-blue-600' : s < deleteStep ? 'bg-blue-300' : 'bg-gray-200'}`} />))}</div>
+            <div className="flex justify-center gap-2 mb-6">{[1, 2, 3].map((s) => (<div key={s} className={`w-2.5 h-2.5 rounded-full transition-colors ${s === deleteStep ? 'bg-amber-600' : s < deleteStep ? 'bg-amber-300' : 'bg-gray-200'}`} />))}</div>
             {deleteStep === 1 && (<>
               <div className="text-center mb-4"><span className="text-3xl">🔒</span></div>
               <h3 className="text-lg font-bold text-center mb-1">Verify Your Identity</h3>
               <p className="text-sm text-gray-500 text-center mb-4">Enter your password to continue.</p>
-              <input type="password" placeholder="Enter your password" value={deletePassword} onChange={(e) => { setDeletePassword(e.target.value); setDeleteError(""); }} onKeyDown={(e) => e.key === "Enter" && deletePassword.trim() && (setDeleteError(""), setDeleteStep(2))} autoFocus className="w-full border rounded-xl px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+              <input type="password" placeholder="Enter your password" value={deletePassword} onChange={(e) => { setDeletePassword(e.target.value); setDeleteError(""); }} onKeyDown={(e) => e.key === "Enter" && deletePassword.trim() && (setDeleteError(""), setDeleteStep(2))} autoFocus className="w-full border rounded-xl px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-amber-400" />
               {deleteError && <p className="text-red-500 text-xs mb-3">⚠ {deleteError}</p>}
-              <div className="flex gap-3"><button onClick={() => setShowDeleteModal(false)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Cancel</button><button onClick={() => { if (!deletePassword.trim()) { setDeleteError("Please enter your password."); return; } setDeleteError(""); setDeleteStep(2); }} disabled={!deletePassword.trim()} className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div>
+              <div className="flex gap-3"><button onClick={() => setShowDeleteModal(false)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Cancel</button><button onClick={() => { if (!deletePassword.trim()) { setDeleteError("Please enter your password."); return; } setDeleteError(""); setDeleteStep(2); }} disabled={!deletePassword.trim()} className="flex-1 py-2.5 rounded-xl bg-amber-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div>
             </>)}
             {deleteStep === 2 && (<>
               <div className="text-center mb-4"><span className="text-3xl">😔</span></div>
               <h3 className="text-lg font-bold text-center mb-1">Sorry to See You Go</h3>
               <p className="text-sm text-gray-500 text-center mb-4">Could you tell us why you{"'"}re leaving?</p>
-              <div className="flex flex-col gap-2 mb-4">{DELETE_REASONS.map((reason) => (<label key={reason} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm cursor-pointer transition-colors ${deleteReason === reason ? 'border-blue-400 bg-blue-50' : 'hover:bg-gray-50'}`}><input type="radio" name="deleteReason" checked={deleteReason === reason} onChange={() => { setDeleteReason(reason); setDeleteError(""); }} className="accent-blue-600" />{reason}</label>))}</div>
-              {deleteReason === "Other" && <textarea placeholder="Your feedback..." value={deleteFeedback} onChange={(e) => setDeleteFeedback(e.target.value)} className="w-full border rounded-xl px-3 py-2 text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400" rows={3} />}
+              <div className="flex flex-col gap-2 mb-4">{DELETE_REASONS.map((reason) => (<label key={reason} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm cursor-pointer transition-colors ${deleteReason === reason ? 'border-amber-400 bg-amber-50' : 'hover:bg-gray-50'}`}><input type="radio" name="deleteReason" checked={deleteReason === reason} onChange={() => { setDeleteReason(reason); setDeleteError(""); }} className="accent-amber-600" />{reason}</label>))}</div>
+              {deleteReason === "Other" && <textarea placeholder="Your feedback..." value={deleteFeedback} onChange={(e) => setDeleteFeedback(e.target.value)} className="w-full border rounded-xl px-3 py-2 text-sm mb-3 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400" rows={3} />}
               {deleteError && <p className="text-red-500 text-xs mb-3">⚠ {deleteError}</p>}
-              <div className="flex gap-3"><button onClick={() => setDeleteStep(1)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Back</button><button onClick={() => { if (!deleteReason) { setDeleteError("Please select a reason."); return; } setDeleteError(""); setDeleteStep(3); }} disabled={!deleteReason} className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div>
+              <div className="flex gap-3"><button onClick={() => setDeleteStep(1)} className="flex-1 py-2.5 rounded-xl border text-sm font-medium">Back</button><button onClick={() => { if (!deleteReason) { setDeleteError("Please select a reason."); return; } setDeleteError(""); setDeleteStep(3); }} disabled={!deleteReason} className="flex-1 py-2.5 rounded-xl bg-amber-600 text-white text-sm font-semibold disabled:opacity-50">Continue</button></div>
             </>)}
             {deleteStep === 3 && (<>
               <div className="text-center mb-4"><span className="text-3xl">⚠️</span></div>
