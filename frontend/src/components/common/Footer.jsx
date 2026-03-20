@@ -1,6 +1,7 @@
 import { Link, useNavigate} from"react-router-dom";
 import { useAuth} from"../../context/AuthContext";
 import toast from"react-hot-toast";
+import logo from "../../assets/logo.png";
 
 export default function Footer() {
  const { user} = useAuth();
@@ -26,13 +27,8 @@ export default function Footer() {
 
           {/* Brand Column */}
           <div className="space-y-4">
-            <Link to="/" onClick={() => window.scrollTo(0, 0)} className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><line x1="20" x2="8.12" y1="4" y2="15.88" /><line x1="14.47" x2="20" y1="14.48" y2="20" /><line x1="8.12" x2="12" y1="8.12" y2="12" />
-                </svg>
-              </div>
-              <span className="text-2xl font-bold tracking-tight text-slate-900">ClothStreet</span>
+            <Link to="/" onClick={() => window.scrollTo(0, 0)} className="inline-block mt-2">
+              <img src={logo} alt="ClothStreet Logo" className="w-44 md:w-52 h-auto object-contain -my-6 mix-blend-darken" />
             </Link>
             <p className="text-sm leading-relaxed max-w-xs text-slate-700">
               Sri Lanka's unified textile ecosystem — connecting fabric suppliers, skilled tailors, and customers in one seamless platform.
