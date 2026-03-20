@@ -335,8 +335,11 @@
 
 .hiw-card {
   position: relative;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
   border-radius: 16px;
   padding: 36px 28px;
   text-align: center;
@@ -351,8 +354,9 @@
 
 /* Featured card (step 2) */
 .hiw-card-featured {
-  background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-2));
-  border-color: transparent;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.85), rgba(91, 33, 182, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(124, 58, 237, 0.15);
 }
 
 .hiw-card-featured:hover {
@@ -644,12 +648,14 @@
 }
 
 .industry-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 32px 24px;
   transition: all 0.3s ease;
-  backdrop-filter: blur(12px);
 }
 
 .industry-card:hover {
@@ -766,12 +772,14 @@
 }
 
 .testimonial-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
   border-radius: 16px;
   padding: 36px 32px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
 }
