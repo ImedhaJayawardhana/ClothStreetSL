@@ -102,9 +102,12 @@ def process_ai_chat(
             p_speciality = p.get("speciality", "").lower()
             p_bio = p.get("bio", "").lower()
 
-            # Simple matching: Does their speciality include the materials we found?
+            # Simple matching: Does their speciality include the materials
+            # we found?
             if target_materials:
-                if any(m in p_speciality or m in p_bio for m in target_materials):
+                if any(
+                    m in p_speciality or m in p_bio for m in target_materials
+                ):
                     matched_providers.append(p)
             else:
                 # If no specific material, return top rated/featured
@@ -115,7 +118,10 @@ def process_ai_chat(
 
     # 3. Calculate requirements if sizes are needed
     required_meters = 0
-    message = "Here are some beautiful fabrics I found for you based on your request!"
+    message = (
+        "Here are some beautiful fabrics I found for you based on your "
+        "request!"
+    )
 
     if needs_size_match:
         if user_measurements and (
@@ -132,29 +138,44 @@ def process_ai_chat(
                 required_meters = 2.5
 
             message = (
-                f"Based on your profile measurements, you'll need approximately {required_meters}m "
-                "of fabric. Here are some perfect matches!"
+                f"Based on your profile measurements, you'll need "
+                f"approximately {required_meters}m of fabric. "
+                "Here are some perfect matches!"
             )
         else:
             message = (
-                "It looks like you haven't updated your size chart yet! Please navigate to your profile "
-                "to update your measurements (chest, waist, etc.), or you can tell me your sizes right here "
-                "so I can give you accurate recommendations."
+                "It looks like you haven't updated your size chart yet! "
+                "Please navigate to your profile to update your "
+                "measurements (chest, waist, etc.), or you can tell me "
+                "your sizes right here so I can give you accurate "
+                "recommendations."
             )
 
     if needs_provider_match:
         if matched_providers:
-            message = "I've found some expert tailors and designers who specialize in your requested style or materials!"
+            message = (
+                "I've found some expert tailors and designers who specialize "
+                "in your requested style or materials!"
+            )
             if "cart" in prompt_lower:
-                message = "I've analyzed your cart! Here are the best tailors and designers to work with those specific materials."
+                message = (
+                    "I've analyzed your cart! Here are the best tailors and "
+                    "designers to work with those specific materials."
+                )
         else:
-            message = "I couldn't find a specific specialist for that material, but here are some of our top-rated professionals!"
+            message = (
+                "I couldn't find a specific specialist for that material, "
+                "but here are some of our top-rated professionals!"
+            )
             matched_providers = (tailors + designers)[:3]
 
     # Fallback for fabrics
     if not matched_fabrics and not needs_provider_match:
         matched_fabrics = fabrics[:5]
-        message = "Try asking for specific colors or materials like 'white cotton' or 'match a tailor for my cart'!"
+        message = (
+            "Try asking for specific colors or materials like 'white cotton' "
+            "or 'match a tailor for my cart'!"
+        )
 
     return {
         "message": message,
@@ -189,11 +210,15 @@ def chat_with_ai(request: ChatRequest):
     ]
 
     tailors_ref = db.collection("tailors").stream()
-    tailors = [doc.to_dict() | {"id": doc.id, "type": "tailor"} for doc in tailors_ref]
+    tailors = [
+        doc.to_dict() | {"id": doc.id, "type": "tailor"}
+        for doc in tailors_ref
+    ]
 
     designers_ref = db.collection("designers").stream()
     designers = [
-        doc.to_dict() | {"id": doc.id, "type": "designer"} for doc in designers_ref
+        doc.to_dict() | {"id": doc.id, "type": "designer"}
+        for doc in designers_ref
     ]
 
     # 3. Process the AI intent
