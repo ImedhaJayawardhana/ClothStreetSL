@@ -83,7 +83,7 @@ export default function AIMatch() {
     <div className="flex flex-col h-[calc(100vh-64px)] bg-slate-50">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center gap-3 shrink-0 shadow-sm z-10">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white shadow-md">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
           </svg>
@@ -106,8 +106,8 @@ export default function AIMatch() {
                 {/* Text Bubble */}
                 <div className="flex items-end gap-2 max-w-[85%]">
                   {!isUser && (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 flex items-center justify-center shrink-0 mb-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-100 to-amber-100 border border-amber-200 flex items-center justify-center shrink-0 mb-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                       </svg>
                     </div>
@@ -179,7 +179,7 @@ export default function AIMatch() {
                                   onClick={() => handleAddToCart(fab, msg.requiredMeters)}
                                   className={`flex-1 py-2 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${
                                     fab.stock > 0 
-                                      ? 'bg-purple-100 hover:bg-purple-200 text-purple-700 border border-purple-200' 
+                                      ? 'bg-amber-100 hover:bg-amber-200 text-amber-700 border border-amber-200' 
                                       : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
                                   }`}
                                 >
@@ -203,15 +203,15 @@ export default function AIMatch() {
           {/* Typing indicator */}
           {loading && (
             <div className="flex items-end gap-2 max-w-[85%] self-start">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 flex items-center justify-center shrink-0 mb-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-100 to-amber-100 border border-amber-200 flex items-center justify-center shrink-0 mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                 </svg>
               </div>
               <div className="px-5 py-4 bg-white border border-slate-200 rounded-2xl rounded-bl-sm shadow-sm flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce"></div>
+                <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-bounce"></div>
               </div>
             </div>
           )}
@@ -228,7 +228,7 @@ export default function AIMatch() {
               value={inputVal}
               onChange={e => setInputVal(e.target.value)}
               placeholder="Ask me to find fabrics, match colors, or calculate needed lengths..."
-              className="w-full pl-5 pr-14 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-sm shadow-inner"
+              className="w-full pl-5 pr-14 py-4 rounded-2xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-sm shadow-inner"
               disabled={loading}
             />
             <button 
@@ -236,7 +236,7 @@ export default function AIMatch() {
               disabled={!inputVal.trim() || loading}
               className={`absolute right-2 w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
                 inputVal.trim() && !loading
-                  ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-md transform hover:scale-105'
+                  ? 'bg-amber-600 text-white hover:bg-amber-700 shadow-md transform hover:scale-105'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
               }`}
             >
