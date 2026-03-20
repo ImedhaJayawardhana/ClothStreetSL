@@ -1,29 +1,24 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "./AuthContext";
+import { fetchCart, saveCart } from "../api";
 
 const CartContext = createContext();
 
-const BASE_CART_STORAGE_KEY = "clothstreet_cart";
+const GUEST_CART_KEY = "clothstreet_cart";
 
-function getCartStorageKey(userId) {
-  return userId ? `${BASE_CART_STORAGE_KEY}_${userId}` : BASE_CART_STORAGE_KEY;
-}
-
-function loadCartFromStorage(userId) {
+function loadGuestCart() {
   try {
-    const key = getCartStorageKey(userId);
-    const stored = localStorage.getItem(key);
+    const stored = localStorage.getItem(GUEST_CART_KEY);
     return stored ? JSON.parse(stored) : [];
   } catch {
     return [];
   }
 }
 
-function saveCartToStorage(userId, items) {
+function saveGuestCart(items) {
   try {
-    const key = getCartStorageKey(userId);
-    localStorage.setItem(key, JSON.stringify(items));
+    localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items));
   } catch {
     // Storage full or unavailable
   }
@@ -31,95 +26,136 @@ function saveCartToStorage(userId, items) {
 
 export function CartProvider({ children }) {
   const { user } = useAuth();
+  const [cartItems, setCartItems] = useState([]);
+  const [cartLoaded, setCartLoaded] = useState(false);
 
-  // Initialize with current user's cart (or guest cart)
-  const [cartItems, setCartItems] = useState(() => loadCartFromStorage(user?.uid));
+  // Track previous uid to detect login/logout transitions
+  const prevUidRef = useRef(undefined);
 
-  // Switch cart when user logs in or out and merge guest cart if applicable
+  // ── Load cart when user changes ───────────────────────
   useEffect(() => {
-    let nextCart;
+    let cancelled = false;
+    const prevUid = prevUidRef.current;
+    prevUidRef.current = user?.uid ?? null;
 
     if (user?.uid) {
-      const guestCart = loadCartFromStorage(null);
-      const userCart = loadCartFromStorage(user.uid);
-
-      if (guestCart.length > 0) {
-        // Merge guest cart into user cart
-        const merged = [...userCart];
-        guestCart.forEach((guestItem) => {
-          const existing = merged.find((i) => i.id === guestItem.id);
-          if (existing) {
-            existing.quantity += guestItem.quantity || 1;
-          } else {
-            merged.push(guestItem);
+      // User logged in → load their cart from Firestore
+      setCartLoaded(false);
+      fetchCart()
+        .then((res) => {
+          if (!cancelled) {
+            setCartItems(res.data.items || []);
+            setCartLoaded(true);
+          }
+        })
+        .catch(() => {
+          // If API fails, start with empty cart
+          if (!cancelled) {
+            setCartItems([]);
+            setCartLoaded(true);
           }
         });
-
-        saveCartToStorage(user.uid, merged);
-        // Clear the guest cart now that it's merged
-        localStorage.removeItem(getCartStorageKey(null));
-        nextCart = merged;
-      } else {
-        nextCart = userCart;
-      }
     } else {
-      nextCart = loadCartFromStorage(null);
+      // User logged out (or was never logged in)
+      if (prevUid) {
+        // Was logged in → now logged out: clear cart
+        setCartItems([]);
+        // Also clear any leftover localStorage keys
+        localStorage.removeItem(GUEST_CART_KEY);
+        // Remove user-specific keys too
+        localStorage.removeItem(`clothstreet_cart_${prevUid}`);
+      } else {
+        // Initial load with no user → load guest cart
+        setCartItems(loadGuestCart());
+      }
+      setCartLoaded(true);
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setCartItems(nextCart);
+    return () => { cancelled = true; };
   }, [user?.uid]);
 
-  // Persist to localStorage whenever cartItems changes
-  useEffect(() => {
-    saveCartToStorage(user?.uid, cartItems);
-  }, [cartItems, user?.uid]);
+  // ── Sync helper: persist to Firestore or localStorage ──
+  const syncCart = useCallback((items) => {
+    if (user?.uid) {
+      // Sync to Firestore (fire-and-forget)
+      saveCart(items).catch(() => {
+        // Silently fail — cart is still in memory
+      });
+    } else {
+      saveGuestCart(items);
+    }
+  }, [user?.uid]);
 
   const addToCart = useCallback((item) => {
     // Block sellers from adding to cart
     if (user?.role === "seller") return;
     setCartItems((prev) => {
       const existing = prev.find((i) => i.id === item.id);
+      let next;
       if (existing) {
-        return prev.map((i) =>
+        next = prev.map((i) =>
           i.id === item.id ? { ...i, quantity: i.quantity + (item.quantity || 1) } : i
         );
+      } else {
+        next = [...prev, { ...item, quantity: item.quantity || 1, selected: true }];
       }
-      return [...prev, { ...item, quantity: item.quantity || 1, selected: true }];
+      syncCart(next);
+      return next;
     });
-  }, [user?.role]);
+  }, [user?.role, syncCart]);
 
   const toggleItemSelection = useCallback((id) => {
-    setCartItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, selected: i.selected === false ? true : false } : i))
-    );
-  }, []);
+    setCartItems((prev) => {
+      const next = prev.map((i) => (i.id === id ? { ...i, selected: i.selected === false ? true : false } : i));
+      syncCart(next);
+      return next;
+    });
+  }, [syncCart]);
 
   const toggleAllSelection = useCallback((isSelected) => {
-    setCartItems((prev) => prev.map((i) => ({ ...i, selected: isSelected })));
-  }, []);
+    setCartItems((prev) => {
+      const next = prev.map((i) => ({ ...i, selected: isSelected }));
+      syncCart(next);
+      return next;
+    });
+  }, [syncCart]);
 
   const clearSelectedItems = useCallback(() => {
-    setCartItems((prev) => prev.filter((i) => i.selected === false));
-  }, []);
+    setCartItems((prev) => {
+      const next = prev.filter((i) => i.selected === false);
+      syncCart(next);
+      return next;
+    });
+  }, [syncCart]);
 
   const removeFromCart = useCallback((id) => {
-    setCartItems((prev) => prev.filter((i) => i.id !== id));
-  }, []);
+    setCartItems((prev) => {
+      const next = prev.filter((i) => i.id !== id);
+      syncCart(next);
+      return next;
+    });
+  }, [syncCart]);
 
   const updateQuantity = useCallback((id, quantity) => {
     if (quantity <= 0) {
-      setCartItems((prev) => prev.filter((i) => i.id !== id));
+      setCartItems((prev) => {
+        const next = prev.filter((i) => i.id !== id);
+        syncCart(next);
+        return next;
+      });
       return;
     }
-    setCartItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, quantity } : i))
-    );
-  }, []);
+    setCartItems((prev) => {
+      const next = prev.map((i) => (i.id === id ? { ...i, quantity } : i));
+      syncCart(next);
+      return next;
+    });
+  }, [syncCart]);
 
   const clearCart = useCallback(() => {
     setCartItems([]);
-  }, []);
+    syncCart([]);
+  }, [syncCart]);
 
   // Number of distinct product lines in the cart
   const cartProductCount = cartItems.length;
@@ -156,6 +192,7 @@ export function CartProvider({ children }) {
         selectedCartCount,
         selectedCartProductCount,
         selectedCartSubtotal,
+        cartLoaded,
       }}
     >
       {children}

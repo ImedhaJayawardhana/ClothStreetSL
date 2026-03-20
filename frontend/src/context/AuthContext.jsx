@@ -113,6 +113,12 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
+    // Clear localStorage cart keys before signing out
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      localStorage.removeItem(`clothstreet_cart_${currentUser.uid}`);
+    }
+    localStorage.removeItem("clothstreet_cart");
     return signOut(auth);
   }
 
