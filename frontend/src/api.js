@@ -79,13 +79,11 @@ export const cancelOrder = (id) => api.delete(`/orders/${id}`);
 export const uploadImage = (file, folder = "general") => {
     const formData = new FormData();
     formData.append("file", file);
-    return api.post(`/storage/upload?folder=${folder}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-    });
+    return api.post(`/storage/upload?folder=${folder}`, formData);
 };
 export const deleteImage = (filename) =>
     api.delete(`/storage/delete?filename=${filename}`);
 
 // ─── AI Chat ─────────────────────────────────────────
-export const sendChatMessage = (prompt, userId) => 
+export const sendChatMessage = (prompt, userId) =>
     api.post("/ai/chat", { prompt, userId });
