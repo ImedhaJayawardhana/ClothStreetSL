@@ -8,7 +8,7 @@
   --text-main: #343A40;
   --text-muted: #A8A88E;
   --border-color: #BDB39E;
-  
+
   --clr-primary: var(--brand-primary);
   --clr-primary-2: #E69500;
 }
@@ -24,7 +24,7 @@ body {
   --color-amber-600: #E69500;
   --color-orange-500: var(--brand-primary);
   --color-orange-600: #E69500;
-  
+
   --color-slate-900: var(--brand-dark);
   --color-slate-800: var(--brand-dark);
   --color-slate-700: var(--brand-dark);
@@ -35,13 +35,14 @@ body {
   --color-slate-200: var(--border-color);
   --color-slate-100: var(--border-color);
   --color-slate-50: var(--bg-main);
-  
+
   --color-white: #ffffff;
-  
+
   --font-sans: 'Inter', 'Montserrat', sans-serif;
 }
 
 @layer components {
+
   /* Secondary Desert Buttons */
   .btn-secondary,
   .btn-outline-dark {
@@ -50,12 +51,13 @@ body {
     background-color: transparent;
     transition: all 0.2s ease;
   }
+
   .btn-secondary:hover,
   .btn-outline-dark:hover {
     background-color: var(--brand-dark);
     color: #FFFFFF;
   }
-  
+
   /* Desert Badges */
   .badge-desert {
     background-color: var(--text-muted);
