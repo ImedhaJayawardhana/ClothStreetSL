@@ -23,7 +23,7 @@ export default function Navbar() {
 
   const unauthLinks = (
     <>
-      <Link to="/" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
+      <Link to="/home" className="px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
         Home
       </Link>
       <Link to="/shop" className="flex items-center gap-2 px-4 py-2.5 hover:text-slate-900 font-medium text-sm transition-colors text-slate-700 uppercase tracking-[0.1em]">
@@ -91,7 +91,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo Section */}
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/home" className="flex items-center gap-2">
               <img src={logo} alt="ClothStreet Logo" className="w-36 sm:w-44 md:w-48 h-auto object-contain -my-8 mix-blend-darken" />
             </Link>
           </div>
