@@ -1,11 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { ShoppingBag, Scissors, PenTool, CheckCircle, MessageSquare, Briefcase, Factory } from 'lucide-react';
 
 import logo from '../assets/logo.png';
-import textileBg from '../assets/textile-hero-bg.png';
-import craftspersonBg from '../assets/craftsperson-bg.png';
+
+// Reusable Premium Button Component
+const PremiumButton = ({ onClick, children, outline = false, className = "" }) => {
+  if (outline) {
+    return (
+      <button 
+        onClick={onClick}
+        className={`px-8 py-4 rounded-2xl font-semibold text-lg text-orange-600 bg-white border-2 border-orange-500 shadow-sm hover:bg-orange-50 transition-colors ${className}`}
+      >
+        {children}
+      </button>
+    );
+  }
+  return (
+    <button 
+      onClick={onClick}
+      className={`px-8 py-4 rounded-2xl font-semibold text-lg text-white bg-orange-500 shadow-md hover:bg-orange-600 transition-colors ${className}`}
+    >
+      {children}
+    </button>
+  );
+};
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -42,27 +63,7 @@ const LandingPage = () => {
     }
   };
 
-  // Reusable Premium Button Component
-  const PremiumButton = ({ onClick, children, outline = false, className = "" }) => {
-    if (outline) {
-      return (
-        <button 
-          onClick={onClick}
-          className={`px-8 py-4 rounded-2xl font-semibold text-lg text-orange-600 bg-white border-2 border-orange-500 shadow-sm hover:bg-orange-50 transition-colors ${className}`}
-        >
-          {children}
-        </button>
-      );
-    }
-    return (
-      <button 
-        onClick={onClick}
-        className={`px-8 py-4 rounded-2xl font-semibold text-lg text-white bg-orange-500 shadow-md hover:bg-orange-600 transition-colors ${className}`}
-      >
-        {children}
-      </button>
-    );
-  };
+  // PremiumButton is extracted outside the component
 
   return (
     <div 
