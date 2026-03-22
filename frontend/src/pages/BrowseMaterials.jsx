@@ -74,6 +74,10 @@ export default function BrowseMaterials() {
     // Mobile sidebar toggle
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 20;
+
     // ── Fetch fabrics from FastAPI ──
     useEffect(() => {
         const fetchFabrics = async () => {
@@ -120,6 +124,11 @@ export default function BrowseMaterials() {
         );
     }
 
+    /* ── Reset pagination on filter change ── */
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, selectedTypes, selectedLocations, maxPrice, maxMinOrder]);
+
     /* ── Filtered fabrics ── */
     const filteredFabrics = useMemo(() => {
         return fabrics.filter((fab) => {
@@ -151,6 +160,13 @@ export default function BrowseMaterials() {
             return true;
         });
     }, [fabrics, searchQuery, selectedTypes, selectedLocations, maxPrice, maxMinOrder]);
+
+    /* ── Paginated fabrics ── */
+    const totalPages = Math.ceil(filteredFabrics.length / itemsPerPage);
+    const currentFabrics = filteredFabrics.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
 
     /* ── Add to cart handler ── */
     function handleAddToCart(fab) {
@@ -336,7 +352,7 @@ export default function BrowseMaterials() {
                         )}
 
                         {/* Real fabric cards */}
-                        {!loading && filteredFabrics.map((fab, idx) => (
+                        {!loading && currentFabrics.map((fab, idx) => (
                             <div
                                 className="bm-card"
                                 key={fab.id}
@@ -467,6 +483,35 @@ export default function BrowseMaterials() {
                             </div>
                         ))}
                     </div>
+
+                    {/* Pagination Controls */}
+                    {!loading && totalPages > 1 && (
+                        <div className="bm-pagination" style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '32px', paddingBottom: '24px', flexWrap: 'wrap' }}>
+                            <button 
+                                disabled={currentPage === 1}
+                                onClick={() => { setCurrentPage(prev => Math.max(prev - 1, 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', background: currentPage === 1 ? '#f8fafc' : 'white', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', fontSize: '14px', fontWeight: 600, color: currentPage === 1 ? '#94a3b8' : '#0f172a' }}
+                            >
+                                Previous
+                            </button>
+                            {Array.from({ length: totalPages }).map((_, i) => (
+                                <button 
+                                    key={i}
+                                    onClick={() => { setCurrentPage(i + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                    style={{ width: '40px', height: '40px', borderRadius: '8px', border: `1px solid ${currentPage === i + 1 ? '#0f172a' : '#e2e8f0'}`, background: currentPage === i + 1 ? '#0f172a' : 'white', color: currentPage === i + 1 ? 'white' : '#0f172a', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s' }}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                            <button 
+                                disabled={currentPage === totalPages}
+                                onClick={() => { setCurrentPage(prev => Math.min(prev + 1, totalPages)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', background: currentPage === totalPages ? '#f8fafc' : 'white', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', fontSize: '14px', fontWeight: 600, color: currentPage === totalPages ? '#94a3b8' : '#0f172a' }}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
 
                     {/* Empty state */}
                     {!loading && filteredFabrics.length === 0 && !error && (
