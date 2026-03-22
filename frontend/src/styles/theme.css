@@ -1,0 +1,259 @@
+:root {
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --clr-bg: #ffffff;
+  --clr-surface: #f8fafc;
+  --clr-surface-2: #f1f5f9;
+  --clr-border: rgba(0, 0, 0, 0.06);
+  --clr-border-2: rgba(0, 0, 0, 0.12);
+  --clr-primary: var(--brand-primary);
+  --clr-primary-2: var(--brand-primary);
+  --clr-accent: #ef4444;
+  --clr-glow: rgba(249, 168, 37, 0.15);
+  --clr-text: #0f172a;
+  --clr-text-2: #334155;
+  --clr-muted: #64748b;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* BACKGROUND */
+body,
+#root {
+  background-color: var(--clr-bg);
+  color: var(--clr-text-2);
+  font-family: var(--font-body);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80vw;
+  height: 50vh;
+  background: radial-gradient(circle, var(--clr-glow) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  bottom: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80vw;
+  height: 50vh;
+  background: radial-gradient(circle, rgba(255, 107, 107, 0.15) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* TYPOGRAPHY */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--clr-text);
+}
+
+h1 {
+  font-weight: 800;
+}
+
+p,
+span,
+li {
+  font-family: var(--font-body) !important;
+}
+
+.text-muted,
+.hint-text {
+  color: var(--clr-muted) !important;
+}
+
+/* CARDS & CONTAINERS */
+.theme-card,
+.card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border-2);
+  border-radius: var(--radius-lg);
+  transition: transform 300ms var(--ease-smooth), box-shadow 300ms var(--ease-smooth);
+}
+
+.theme-card:hover,
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px var(--clr-glow);
+  border-color: var(--clr-primary);
+}
+
+/* BUTTONS */
+button,
+.theme-btn,
+.btn {
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border-2);
+  color: var(--clr-text);
+  border-radius: var(--radius-sm);
+  transition: background 300ms var(--ease-smooth), box-shadow 300ms var(--ease-smooth), transform 150ms ease;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+button:hover,
+.theme-btn:hover,
+.btn:hover {
+  background: rgba(123, 94, 248, 0.2);
+  box-shadow: 0 0 10px var(--clr-glow);
+  border-color: var(--clr-primary);
+}
+
+button:active,
+.theme-btn:active,
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* INPUTS & FORMS */
+input,
+textarea,
+select,
+.theme-input,
+.form-control {
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border-2);
+  color: var(--clr-text);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  transition: outline 300ms var(--ease-smooth), border-color 300ms var(--ease-smooth);
+  font-family: var(--font-body);
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.theme-input:focus,
+.form-control:focus {
+  outline: 2px solid var(--clr-primary);
+  outline-offset: 2px;
+  border-color: transparent;
+}
+
+/* Removed global link overrides to prevent conflicts with local styling */
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up-enter {
+  animation: fadeUp 0.6s var(--ease-smooth) forwards;
+}
+
+/* A highly specific rule to make sure all page containers get the fadeUp effect */
+main>div,
+#root>div>div {
+  animation: fadeUp 0.6s var(--ease-smooth) forwards;
+}
+
+/* STAGGER CHILDREN */
+/* Using nth-child to add animation delays globally */
+main>div>*:nth-child(1),
+#root>div>div>*:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+main>div>*:nth-child(2),
+#root>div>div>*:nth-child(2) {
+  animation-delay: 0.10s;
+}
+
+main>div>*:nth-child(3),
+#root>div>div>*:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+main>div>*:nth-child(4),
+#root>div>div>*:nth-child(4) {
+  animation-delay: 0.20s;
+}
+
+main>div>*:nth-child(5),
+#root>div>div>*:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+main>div>*:nth-child(6),
+#root>div>div>*:nth-child(6) {
+  animation-delay: 0.30s;
+}
+
+main>div>*:nth-child(7),
+#root>div>div>*:nth-child(7) {
+  animation-delay: 0.35s;
+}
+
+main>div>*:nth-child(8),
+#root>div>div>*:nth-child(8) {
+  animation-delay: 0.40s;
+}
+
+main>div>*:nth-child(9),
+#root>div>div>*:nth-child(9) {
+  animation-delay: 0.45s;
+}
+
+main>div>*:nth-child(10),
+#root>div>div>*:nth-child(10) {
+  animation-delay: 0.50s;
+}
+
+/* GLOBALIZE TRANSITIONS */
+* {
+  transition: background-color 300ms var(--ease-smooth), color 300ms var(--ease-smooth), border-color 300ms var(--ease-smooth), box-shadow 300ms var(--ease-smooth), transform 300ms var(--ease-smooth);
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--clr-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--clr-muted);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--clr-primary);
+}
