@@ -6,7 +6,7 @@ import urllib.request
 from datetime import datetime, timezone
 
 sys.path.append(".")
-from firebase.admin import db
+from firebase.admin import db  # noqa: E402
 
 FRONTEND_PUBLIC_DIR = "../frontend/public/products"
 os.makedirs(FRONTEND_PUBLIC_DIR, exist_ok=True)
@@ -149,7 +149,8 @@ def seed_db():
     print(f"Deleted {deleted_count} old test fabrics featuring fakestore images.")
 
     print(
-        f"Starting database seeding for {len(products_to_seed)} truly realistic local-hosted clothing items..."
+        f"Starting database seeding for {len(products_to_seed)} "
+        "truly realistic local-hosted clothing items..."
     )
     count = 0
     for product in products_to_seed:
@@ -165,7 +166,8 @@ def seed_db():
         count += 1
 
     print(
-        f"Successfully guaranteed {count} clothing items with 100% unbreakable LOCAL images."
+        f"Successfully guaranteed {count} clothing items with 100% "
+        "unbreakable LOCAL images."
     )
 
 
