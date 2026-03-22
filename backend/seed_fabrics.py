@@ -4,7 +4,7 @@ import random
 from datetime import datetime, timezone
 
 sys.path.append(".")
-from firebase.admin import db
+from firebase.admin import db  # noqa: E402
 
 types_men = ["Cotton", "Wool", "Linen", "Denim", "Corduroy", "Flannel"]
 types_women = ["Silk", "Chiffon", "Georgette", "Lace", "Satin", "Velvet", "Crepe"]
