@@ -4,7 +4,7 @@ import random
 from datetime import datetime, timezone
 
 sys.path.append(".")
-from firebase.admin import db
+from firebase.admin import db  # noqa: E402
 
 # Highly robust image URLs that will NEVER break (FakeStoreAPI)
 clothing_data = {
@@ -106,7 +106,7 @@ def seed_db():
             doc.reference.delete()
             deleted_count += 1
 
-    # 3. Aggressive cleanup: delete anything with loremflickr or unsplash if it was missed
+    # 3. Aggressive cleanup: delete anything with loremflickr/unsplash if missed
     docs_all = collection.stream()
     for doc in docs_all:
         d_dict = doc.to_dict()
@@ -118,7 +118,8 @@ def seed_db():
     print(f"Deleted {deleted_count} old test fabrics featuring broken/slow images.")
 
     print(
-        f"Starting database seeding for {len(products_to_seed)} perfectly reliable clothing items..."
+        f"Starting database seeding for {len(products_to_seed)} "
+        "perfectly reliable clothing items..."
     )
     count = 0
     for product in products_to_seed:

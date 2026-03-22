@@ -2,12 +2,12 @@ import sys
 import re
 import uuid
 import random
+import requests
+from bs4 import BeautifulSoup
 from datetime import datetime, timezone
 
 sys.path.append(".")
-from firebase.admin import db
-import requests
-from bs4 import BeautifulSoup
+from firebase.admin import db  # noqa: E402
 
 
 def get_shopify_images(url):
@@ -59,7 +59,7 @@ def get_nolimit_images():
 
                     src = urllib.parse.unquote(parsed)
                 images.append(src)
-    except Exception as e:
+    except Exception:
         pass
     return list(set(images))
 
@@ -171,7 +171,8 @@ def seed_db():
             deleted += 1
 
     print(
-        f"Deleted {deleted} old items. Inserting {len(products_to_seed)} massive catalog updates..."
+        f"Deleted {deleted} old items. "
+        f"Inserting {len(products_to_seed)} massive catalog updates..."
     )
 
     count = 0
@@ -187,7 +188,8 @@ def seed_db():
         count += 1
 
     print(
-        f"Successfully guaranteed {count} clothing items harvested from Sri Lanka's top platforms."
+        f"Successfully guaranteed {count} clothing items "
+        "harvested from Sri Lanka's top platforms."
     )
 
 

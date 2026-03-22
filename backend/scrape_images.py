@@ -2,12 +2,11 @@ import sys
 import subprocess
 
 try:
-    import bs4
+    import bs4  # noqa: F401
 except ImportError:
     subprocess.check_call(
         [sys.executable, "-m", "pip", "install", "beautifulsoup4", "requests"]
     )
-    import bs4
 
 import requests
 from bs4 import BeautifulSoup
