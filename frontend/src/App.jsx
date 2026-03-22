@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate} from"react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAuth} from"./context/AuthContext";
 import { Toaster} from"react-hot-toast";
 import Home from"./pages/Home";
@@ -9,6 +9,7 @@ import Cart from"./pages/Cart";
 import Checkout from"./pages/Checkout";
 import BrowseMaterials from"./pages/BrowseMaterials";
 import BrowseDesigners from"./pages/BrowseDesigners";
+import LandingPage from "./pages/LandingPage";
 import Navbar from"./components/common/Navbar";
 import Footer from"./components/common/Footer";
 import SellerDashboard from"./pages/supplier/seller-dashboard";
@@ -47,12 +48,16 @@ function PublicOnlyRoute({ children }) {
 }
 
 export default function App() {
+ const location = useLocation();
+ const isLandingPage = location.pathname === '/';
+
  return (
  <div className="min-h-screen flex flex-col">
- <Navbar />
+ {!isLandingPage && <Navbar />}
  <main className="flex-1">
  <Routes>
- <Route path="/" element={<Home />} />
+ <Route path="/" element={<LandingPage />} />
+ <Route path="/home" element={<Home />} />
  <Route path="/about" element={<AboutUs />} />
  <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
  <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
@@ -92,7 +97,7 @@ export default function App() {
  <Route path="/store/:sellerId" element={<Store />} />
  </Routes>
  </main>
- <Footer />
+ {!isLandingPage && <Footer />}
  <Toaster position="bottom-right" />
  </div>
  );
