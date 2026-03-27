@@ -337,7 +337,7 @@ const LandingPage = () => {
                 ))}
               </ul>
 
-              <button onClick={() => navigate('/login')} className="bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-white text-lg font-medium px-8 py-4 rounded-2xl transition-all shadow-xl flex items-center space-x-3 group">
+              <button onClick={() => { window.scrollTo(0, 0); navigate('/register'); }} className="bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-white text-lg font-medium px-8 py-4 rounded-2xl transition-all shadow-xl flex items-center space-x-3 group">
                 <MessageSquare size={22} className="group-hover:text-orange-400 transition-colors" />
                 <span>Initialize Assistant</span>
               </button>
