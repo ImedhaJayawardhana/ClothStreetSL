@@ -170,7 +170,7 @@ const LandingPage = () => {
                 <PremiumButton onClick={() => navigate('/shop')} className="w-full sm:w-auto">
                   I'm a Buyer
                 </PremiumButton>
-                <PremiumButton onClick={() => navigate('/login')} outline className="w-full sm:w-auto">
+                <PremiumButton onClick={() => navigate('/register', { state: { defaultRole: 'seller' } })} outline className="w-full sm:w-auto">
                   I'm a Seller
                 </PremiumButton>
               </motion.div>
