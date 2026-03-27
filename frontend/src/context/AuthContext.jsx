@@ -23,14 +23,19 @@ export function AuthProvider({ children }) {
   async function register(name, email, password, role) {
     const result = await createUserWithEmailAndPassword(auth, email, password);
 
-    // Save to users collection
-    await setDoc(doc(db, "users", result.user.uid), {
+    const userData = {
       uid: result.user.uid,
       name,
       email,
       role,
       createdAt: new Date()
-    });
+    };
+
+    // Save to users collection
+    await setDoc(doc(db, "users", result.user.uid), userData);
+
+    // Immediately update local state to avoid race condition with onAuthStateChanged
+    setUser(userData);
 
     // Get token for backend calls
     const token = await result.user.getIdToken();
@@ -63,20 +68,33 @@ export function AuthProvider({ children }) {
   }
 
   async function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password);
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    try {
+      const userDoc = await getDoc(doc(db, "users", result.user.uid));
+      if (userDoc.exists()) {
+        setUser({ uid: result.user.uid, ...userDoc.data() });
+      } else {
+        setUser(result.user);
+      }
+    } catch (err) {
+      console.error("Failed to fetch user role during login", err);
+    }
+    return result;
   }
 
   async function loginWithGoogle(role = "customer") {
     const result = await signInWithPopup(auth, googleProvider);
     const userDoc = await getDoc(doc(db, "users", result.user.uid));
     if (!userDoc.exists()) {
-      await setDoc(doc(db, "users", result.user.uid), {
+      const userData = {
         uid: result.user.uid,
         name: result.user.displayName,
         email: result.user.email,
         role,
         createdAt: new Date()
-      });
+      };
+      await setDoc(doc(db, "users", result.user.uid), userData);
+      setUser(userData);
 
       // Register in FastAPI backend
       const token = await result.user.getIdToken();

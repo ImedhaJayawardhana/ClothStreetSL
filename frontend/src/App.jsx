@@ -80,10 +80,10 @@ export default function App() {
  <Route path="/shop" element={<BrowseMaterials />} />
  <Route path="/shop/:fabricId" element={<ProductDetail />} />
  <Route path="/fabrics" element={<BrowseMaterials />} />
- <Route path="/dashboard" element={<SellerDashboard />} />
+ <Route path="/dashboard" element={<PrivateRoute><SellerDashboard /></PrivateRoute>} />
  <Route path="/seller-profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
  <Route path="/supplier/profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
- <Route path="/tailor-dashboard" element={<TailorDashboard />} />
+ <Route path="/tailor-dashboard" element={<PrivateRoute><TailorDashboard /></PrivateRoute>} />
  <Route path="/designer-dashboard" element={<PrivateRoute><DesignerDashboard /></PrivateRoute>} />
  <Route path="/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />
  <Route path="/profile" element={<PrivateRoute><CustomerProfile /></PrivateRoute>} />
