@@ -80,10 +80,10 @@ export default function App() {
                     <Route path="/shop" element={<BrowseMaterials />} />
                     <Route path="/shop/:fabricId" element={<ProductDetail />} />
                     <Route path="/fabrics" element={<BrowseMaterials />} />
-                    <Route path="/dashboard" element={<SellerDashboard />} />
+                    <Route path="/dashboard" element={<PrivateRoute><SellerDashboard /></PrivateRoute>} />
                     <Route path="/seller-profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
                     <Route path="/supplier/profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
-                    <Route path="/tailor-dashboard" element={<TailorDashboard />} />
+                    <Route path="/tailor-dashboard" element={<PrivateRoute><TailorDashboard /></PrivateRoute>} />
                     <Route path="/designer-dashboard" element={<PrivateRoute><DesignerDashboard /></PrivateRoute>} />
                     <Route path="/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />
                     <Route path="/profile" element={<PrivateRoute><CustomerProfile /></PrivateRoute>} />
@@ -97,32 +97,8 @@ export default function App() {
                     <Route path="/store/:sellerId" element={<Store />} />
                 </Routes>
             </main>
-            <Footer />
+            {!isLandingPage && <Footer />}
             <Toaster position="bottom-right" />
         </div>
     );
- <Route path="/shop" element={<BrowseMaterials />} />
- <Route path="/shop/:fabricId" element={<ProductDetail />} />
- <Route path="/fabrics" element={<BrowseMaterials />} />
- <Route path="/dashboard" element={<PrivateRoute><SellerDashboard /></PrivateRoute>} />
- <Route path="/seller-profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
- <Route path="/supplier/profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
- <Route path="/tailor-dashboard" element={<PrivateRoute><TailorDashboard /></PrivateRoute>} />
- <Route path="/designer-dashboard" element={<PrivateRoute><DesignerDashboard /></PrivateRoute>} />
- <Route path="/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />
- <Route path="/profile" element={<PrivateRoute><CustomerProfile /></PrivateRoute>} />
- <Route path="/orders" element={<PrivateRoute><CustomerOrders /></PrivateRoute>} />
- <Route path="/tailor-profile" element={<PrivateRoute><TailorProfile /></PrivateRoute>} />
- <Route path="/tailor/:tailorId" element={<TailorProfile />} />
- <Route path="/designer-profile" element={<PrivateRoute><DesignerProfile /></PrivateRoute>} />
- <Route path="/designer/:designerId" element={<DesignerProfile />} />
- <Route path="/designer-orders" element={<PrivateRoute><DesignerOrders /></PrivateRoute>} />
- <Route path="/portfolio" element={<PrivateRoute><Portfolio /></PrivateRoute>} />
- <Route path="/store/:sellerId" element={<Store />} />
- </Routes>
- </main>
- {!isLandingPage && <Footer />}
- <Toaster position="bottom-right" />
- </div>
- );
 }
