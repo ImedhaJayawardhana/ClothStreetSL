@@ -10,7 +10,7 @@ import logo from '../assets/logo.png';
 const PremiumButton = ({ onClick, children, outline = false, className = "" }) => {
   if (outline) {
     return (
-      <button 
+      <button
         onClick={onClick}
         className={`px-8 py-4 rounded-2xl font-semibold text-lg text-orange-600 bg-white border-2 border-orange-500 shadow-sm hover:bg-orange-50 transition-colors ${className}`}
       >
@@ -19,7 +19,7 @@ const PremiumButton = ({ onClick, children, outline = false, className = "" }) =
     );
   }
   return (
-    <button 
+    <button
       onClick={onClick}
       className={`px-8 py-4 rounded-2xl font-semibold text-lg text-white bg-orange-500 shadow-md hover:bg-orange-600 transition-colors ${className}`}
     >
@@ -66,7 +66,7 @@ const LandingPage = () => {
   // PremiumButton is extracted outside the component
 
   return (
-    <div 
+    <div
       className="min-h-screen text-slate-900 font-sans selection:bg-orange-200 selection:text-orange-900"
       style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/woven-light.png')", backgroundColor: "#FAFAFA" }}
     >
@@ -80,10 +80,10 @@ const LandingPage = () => {
           {/* Desktop Nav */}
           <div className="hidden md:flex space-x-8 items-center bg-white/40 backdrop-blur-md px-6 py-2 rounded-full border border-white/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]">
             {['Why Us?', 'Features', 'Process', 'Team', 'FAQ'].map((item) => (
-              <a 
+              <a
                 key={item}
-                href={`#${item.toLowerCase().replace(' ', '-')}`} 
-                onClick={(e) => scrollToSection(e, item.toLowerCase().replace(' ', '-'))} 
+                href={`#${item.toLowerCase().replace(' ', '-')}`}
+                onClick={(e) => scrollToSection(e, item.toLowerCase().replace(' ', '-'))}
                 className="text-sm font-semibold text-slate-600 hover:text-orange-600 transition-colors"
               >
                 {item}
@@ -92,8 +92,8 @@ const LandingPage = () => {
           </div>
 
           <div className="hidden md:flex">
-            <button 
-              onClick={() => navigate('/home')} 
+            <button
+              onClick={() => navigate('/home')}
               className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.3),0_4px_10px_-2px_rgba(249,115,22,0.4)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_6px_15px_-3px_rgba(249,115,22,0.5)] transform hover:-translate-y-0.5"
             >
               Partner With Us
@@ -110,16 +110,16 @@ const LandingPage = () => {
 
         {/* Mobile Nav */}
         {mobileMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }} 
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="md:hidden absolute top-full left-0 w-full bg-white/90 backdrop-blur-xl shadow-2xl py-6 border-t border-slate-100 flex flex-col px-6 space-y-5"
           >
             {['Why Us?', 'Features', 'Process', 'Team', 'FAQ'].map((item) => (
-              <a 
+              <a
                 key={item}
-                href={`#${item.toLowerCase().replace(' ', '-')}`} 
-                onClick={(e) => scrollToSection(e, item.toLowerCase().replace(' ', '-'))} 
+                href={`#${item.toLowerCase().replace(' ', '-')}`}
+                onClick={(e) => scrollToSection(e, item.toLowerCase().replace(' ', '-'))}
                 className="text-lg font-medium text-slate-700 hover:text-orange-500"
               >
                 {item}
@@ -140,44 +140,44 @@ const LandingPage = () => {
 
         <div className="container mx-auto px-6 max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
+
             {/* Hero Text */}
-            <motion.div 
-              initial="hidden" animate="visible" variants={staggerContainer} 
+            <motion.div
+              initial="hidden" animate="visible" variants={staggerContainer}
               className="lg:col-span-6 z-10 text-center lg:text-left"
             >
               <motion.div variants={fadeInUp} className="inline-flex items-center space-x-2 bg-white/60 backdrop-blur-sm border border-orange-200 shadow-sm rounded-full px-4 py-1.5 mb-8">
                 <span className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)] animate-pulse"></span>
                 <span className="text-xs font-bold tracking-wider text-orange-600 uppercase">Live in Sri Lanka</span>
               </motion.div>
-              
-              <motion.h1 
-                variants={fadeInUp} 
+
+              <motion.h1
+                variants={fadeInUp}
                 className="text-5xl md:text-6xl lg:text-[5rem] font-serif font-bold leading-[1.1] mb-6 text-slate-900 drop-shadow-sm"
               >
                 Sri Lanka's Unified Apparel Ecosystem
               </motion.h1>
-              
+
               <motion.h2 variants={fadeInUp} className="text-3xl md:text-4xl font-serif font-bold italic text-orange-500 mb-8 drop-shadow-sm">
                 Sourcing Fabrics Just Got Simple
               </motion.h2>
-              
+
               <motion.p variants={fadeInUp} className="text-lg md:text-xl text-slate-600 mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
                 Stop wasting days in Pettah markets. Connect directly with elite wholesalers, check live stock, and hire master tailors—all from your phone.
               </motion.p>
-              
+
               <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
                 <PremiumButton onClick={() => navigate('/shop')} className="w-full sm:w-auto">
                   I'm a Buyer
                 </PremiumButton>
-                <PremiumButton onClick={() => navigate('/login')} outline className="w-full sm:w-auto">
+                <PremiumButton onClick={() => navigate('/register', { state: { defaultRole: 'seller' } })} outline className="w-full sm:w-auto">
                   I'm a Seller
                 </PremiumButton>
               </motion.div>
             </motion.div>
 
             {/* Complex Multi-Layer Image Stack */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
@@ -202,7 +202,7 @@ const LandingPage = () => {
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[40%] w-[55%] h-[75%] bg-white rounded-3xl p-2 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.3)] transform hover:scale-105 transition-transform duration-500 z-30 border-4 border-white">
                 <div className="w-full h-full rounded-xl overflow-hidden relative">
                   <img src="https://images.pexels.com/photos/461035/pexels-photo-461035.jpeg?auto=compress&cs=tinysrgb&w=800" alt="High-end Tailoring" className="w-full h-full object-cover" />
-                  
+
                   {/* Glassmorphism Badge */}
                   <div className="absolute bottom-6 left-6 right-6 bg-white/40 backdrop-blur-xl border border-white/60 p-4 rounded-xl shadow-lg flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white shadow-inner">
@@ -225,13 +225,13 @@ const LandingPage = () => {
       <section className="py-8 bg-slate-900 border-y border-slate-800 relative z-20 overflow-hidden shadow-2xl">
         <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none"></div>
         <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none"></div>
-        
+
         <div className="flex text-slate-400 items-center">
           <div className="uppercase tracking-[0.2em] text-xs font-bold text-slate-500 px-8 flex-shrink-0 z-20 bg-slate-900">
             Trusted By Elite Suppliers
           </div>
-          <motion.div 
-            animate={{ x: [0, -1000] }} 
+          <motion.div
+            animate={{ x: [0, -1000] }}
             transition={{ repeat: Infinity, duration: 40, ease: "linear" }}
             className="flex items-center space-x-16 whitespace-nowrap opacity-70 hover:opacity-100 transition-opacity"
           >
@@ -256,7 +256,7 @@ const LandingPage = () => {
             <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium">Experience a seamlessly connected platform bringing every facet of the fashion industry into one unified marketplace.</p>
           </div>
 
-          <motion.div 
+          <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={staggerContainer}
             className="grid grid-cols-1 lg:grid-cols-3 gap-8"
           >
@@ -275,7 +275,7 @@ const LandingPage = () => {
 
             {/* Card 2 */}
             <motion.div variants={fadeInUp} className="group relative bg-white/60 backdrop-blur-sm p-1 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/80">
-               <div className="bg-gradient-to-br from-[#FDFBF7] to-[#F4F1EA] h-full rounded-[1.35rem] p-8 border border-white relative overflow-hidden">
+              <div className="bg-gradient-to-br from-[#FDFBF7] to-[#F4F1EA] h-full rounded-[1.35rem] p-8 border border-white relative overflow-hidden">
                 <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-stone-200/40 rounded-full blur-2xl group-hover:bg-orange-200/40 transition-colors duration-500"></div>
                 <div className="w-16 h-16 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.05),inset_0_2px_0_rgba(255,255,255,1)] rounded-2xl flex items-center justify-center mb-8 text-slate-700 group-hover:text-orange-500 transition-colors relative z-10">
                   <ShoppingBag size={32} strokeWidth={1.5} />
@@ -287,7 +287,7 @@ const LandingPage = () => {
 
             {/* Card 3 */}
             <motion.div variants={fadeInUp} className="group relative bg-white/60 backdrop-blur-sm p-1 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/80">
-               <div className="bg-gradient-to-br from-[#FDFBF7] to-[#F4F1EA] h-full rounded-[1.35rem] p-8 border border-white relative overflow-hidden">
+              <div className="bg-gradient-to-br from-[#FDFBF7] to-[#F4F1EA] h-full rounded-[1.35rem] p-8 border border-white relative overflow-hidden">
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-stone-200/30 rounded-full blur-3xl group-hover:bg-orange-200/30 transition-colors duration-500"></div>
                 <div className="w-16 h-16 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.05),inset_0_2px_0_rgba(255,255,255,1)] rounded-2xl flex items-center justify-center mb-8 text-slate-700 group-hover:text-orange-500 transition-colors relative z-10">
                   <PenTool size={32} strokeWidth={1.5} />
@@ -310,18 +310,18 @@ const LandingPage = () => {
 
         <div className="container mx-auto px-6 max-w-7xl relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            
+
             {/* Left Content */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}
             >
               <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6 drop-shadow-lg text-white">
-                Meet Your ClothStreet <br/><span className="italic text-orange-400">AI Assistant.</span>
+                Meet Your ClothStreet <br /><span className="italic text-orange-400">AI Assistant.</span>
               </h2>
               <p className="text-xl text-slate-300 mb-10 leading-relaxed font-light shadow-sm">
                 Not sure how much fabric you need? Our intelligent assistant calculates exact yardage based on your unique body measurements and selected pattern. Perfect fit, zero waste.
               </p>
-              
+
               <ul className="space-y-6 mb-12">
                 {[
                   "Natural language conceptual requests",
@@ -336,15 +336,15 @@ const LandingPage = () => {
                   </li>
                 ))}
               </ul>
-              
-              <button onClick={() => navigate('/login')} className="bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-white text-lg font-medium px-8 py-4 rounded-2xl transition-all shadow-xl flex items-center space-x-3 group">
+
+              <button onClick={() => { window.scrollTo(0, 0); navigate('/register'); }} className="bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md text-white text-lg font-medium px-8 py-4 rounded-2xl transition-all shadow-xl flex items-center space-x-3 group">
                 <MessageSquare size={22} className="group-hover:text-orange-400 transition-colors" />
                 <span>Initialize Assistant</span>
               </button>
             </motion.div>
 
             {/* Right Flow UI Mockup - Glassmorphism */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
@@ -420,7 +420,7 @@ const LandingPage = () => {
               { name: 'Kavinda', role: 'DataBase Lead', img: '/img/KavindaNew.png' },
               { name: 'Mario', role: 'Backend Architect', img: '/img/marioNew.png' }
             ].map((member, idx) => (
-              <motion.div 
+              <motion.div
                 key={idx}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -439,35 +439,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="bg-slate-950 text-slate-400 py-16 border-t border-slate-800 relative z-10">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <div className="flex flex-col md:flex-row justify-between items-center bg-slate-900/50 backdrop-blur-sm p-8 rounded-3xl border border-slate-800/80 mb-8">
-            <div className="mb-6 md:mb-0">
-               <a href="#" className="flex items-center">
-                <img src={logo} alt="ClothStreet Logo" className="h-32 md:h-40 w-auto object-contain bg-white/5 rounded-2xl p-2 drop-shadow-xl" />
-              </a>
-              <p className="text-sm font-medium mt-2 max-w-xs">The unified digital foundation for Sri Lanka's textile industry.</p>
-            </div>
-            
-            <div className="flex space-x-8">
-              <a href="#" className="font-semibold text-slate-300 hover:text-orange-500 transition-colors">Why Us?</a>
-              <a href="#" className="font-semibold text-slate-300 hover:text-orange-500 transition-colors">Features</a>
-              <a href="#" className="font-semibold text-slate-300 hover:text-orange-500 transition-colors">Team</a>
-              <a href="#" className="font-semibold text-slate-300 hover:text-orange-500 transition-colors">Privacy</a>
-            </div>
-          </div>
-          
-          <div className="flex flex-col md:flex-row justify-between items-center text-sm font-medium px-4">
-            <p>&copy; 2025 Team CS-129. All rights reserved.</p>
-            <p className="mt-2 md:mt-0 flex items-center space-x-1">
-              <span>Made with</span>
-              <span className="text-red-500">❤️</span>
-              <span>in Sri Lanka.</span>
-            </p>
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 };
