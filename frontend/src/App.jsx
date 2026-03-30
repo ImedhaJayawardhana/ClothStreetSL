@@ -51,39 +51,39 @@ export default function App() {
     const location = useLocation();
     const isLandingPage = location.pathname === '/';
 
-    return (
-        <div className="min-h-screen flex flex-col">
-            {!isLandingPage && <Navbar />}
-            <main className="flex-1">
-                <Routes>
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path="/home" element={<Home />} />
-                    <Route path="/about" element={<AboutUs />} />
-                    <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
-                    <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/tailors" element={<BrowseTailors />} />
-                    <Route path="/designers" element={<BrowseDesigners />} />
-                    <Route path="/match" element={<PrivateRoute><AIMatch /></PrivateRoute>} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/find-tailor-designer" element={<FindTailorDesigner />} />
-                    <Route path="/request-quote" element={<RequestQuote />} />
-                    <Route path="/request-quote/:providerId" element={<RequestQuote />} />
-                    <Route path="/quotation-inbox" element={<QuotationInbox />} />
-                    <Route path="/quotation-response/:quotationId" element={<QuotationResponse />} />
-                    <Route path="/quotation-review/:quotationId" element={<QuotationReview />} />
-                    <Route path="/quotations/offers" element={<PrivateRoute><QuotationOffers /></PrivateRoute>} />
-                    <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
-                    <Route path="/designer-timeline/:quotationId" element={<PrivateRoute><DesignerTimeline /></PrivateRoute>} />
+ return (
+  <div className="min-h-screen flex flex-col">
+ {!isLandingPage && <Navbar />}
+ <main className="flex-1">
+ <Routes>
+ <Route path="/" element={<LandingPage />} />
+ <Route path="/home" element={<Home />} />
+ <Route path="/about" element={<AboutUs />} />
+ <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+ <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
+ <Route path="/forgot-password" element={<ForgotPassword />} />
+ <Route path="/tailors" element={<BrowseTailors />} />
+ <Route path="/designers" element={<BrowseDesigners />} />
+ <Route path="/match" element={<PrivateRoute><AIMatch /></PrivateRoute>} />
+ <Route path="/cart" element={<Cart />} />
+ <Route path="/checkout" element={<Checkout />} />
+ <Route path="/find-tailor-designer" element={<FindTailorDesigner />} />
+ <Route path="/request-quote" element={<RequestQuote />} />
+ <Route path="/request-quote/:providerId" element={<RequestQuote />} />
+ <Route path="/quotation-inbox" element={<QuotationInbox />} />
+ <Route path="/quotation-response/:quotationId" element={<QuotationResponse />} />
+ <Route path="/quotation-review/:quotationId" element={<QuotationReview />} />
+ <Route path="/quotations/offers" element={<PrivateRoute><QuotationOffers /></PrivateRoute>} />
+ <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
+ <Route path="/designer-timeline/:quotationId" element={<PrivateRoute><DesignerTimeline /></PrivateRoute>} />
 
                     <Route path="/shop" element={<BrowseMaterials />} />
                     <Route path="/shop/:fabricId" element={<ProductDetail />} />
                     <Route path="/fabrics" element={<BrowseMaterials />} />
-                    <Route path="/dashboard" element={<SellerDashboard />} />
+                    <Route path="/dashboard" element={<PrivateRoute><SellerDashboard /></PrivateRoute>} />
                     <Route path="/seller-profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
                     <Route path="/supplier/profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
-                    <Route path="/tailor-dashboard" element={<TailorDashboard />} />
+                    <Route path="/tailor-dashboard" element={<PrivateRoute><TailorDashboard /></PrivateRoute>} />
                     <Route path="/designer-dashboard" element={<PrivateRoute><DesignerDashboard /></PrivateRoute>} />
                     <Route path="/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />
                     <Route path="/profile" element={<PrivateRoute><CustomerProfile /></PrivateRoute>} />
@@ -97,32 +97,8 @@ export default function App() {
                     <Route path="/store/:sellerId" element={<Store />} />
                 </Routes>
             </main>
-            <Footer />
+            {!isLandingPage && <Footer />}
             <Toaster position="bottom-right" />
         </div>
     );
- <Route path="/shop" element={<BrowseMaterials />} />
- <Route path="/shop/:fabricId" element={<ProductDetail />} />
- <Route path="/fabrics" element={<BrowseMaterials />} />
- <Route path="/dashboard" element={<PrivateRoute><SellerDashboard /></PrivateRoute>} />
- <Route path="/seller-profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
- <Route path="/supplier/profile" element={<PrivateRoute><SellerProfile /></PrivateRoute>} />
- <Route path="/tailor-dashboard" element={<PrivateRoute><TailorDashboard /></PrivateRoute>} />
- <Route path="/designer-dashboard" element={<PrivateRoute><DesignerDashboard /></PrivateRoute>} />
- <Route path="/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />
- <Route path="/profile" element={<PrivateRoute><CustomerProfile /></PrivateRoute>} />
- <Route path="/orders" element={<PrivateRoute><CustomerOrders /></PrivateRoute>} />
- <Route path="/tailor-profile" element={<PrivateRoute><TailorProfile /></PrivateRoute>} />
- <Route path="/tailor/:tailorId" element={<TailorProfile />} />
- <Route path="/designer-profile" element={<PrivateRoute><DesignerProfile /></PrivateRoute>} />
- <Route path="/designer/:designerId" element={<DesignerProfile />} />
- <Route path="/designer-orders" element={<PrivateRoute><DesignerOrders /></PrivateRoute>} />
- <Route path="/portfolio" element={<PrivateRoute><Portfolio /></PrivateRoute>} />
- <Route path="/store/:sellerId" element={<Store />} />
- </Routes>
- </main>
- {!isLandingPage && <Footer />}
- <Toaster position="bottom-right" />
- </div>
- );
 }

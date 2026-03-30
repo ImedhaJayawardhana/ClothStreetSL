@@ -8,8 +8,7 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const location = useLocation();
-  const [role, setRole] = useState(location.state?.defaultRole || 'customer');
+  const [role, setRole] = useState('customer');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
@@ -17,6 +16,7 @@ export default function Register() {
 
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   async function handleRegister(e) {
     e.preventDefault();
